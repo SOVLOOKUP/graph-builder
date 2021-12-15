@@ -1,5 +1,5 @@
 {
-  "name": "graphinsight",
+  "name": "graph-builder",
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
