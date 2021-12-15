@@ -7,7 +7,9 @@
     "serve": "vite preview"
   },
   "dependencies": {
+    "@antv/x6": "^1.28.1",
     "@mdi/font": "^6.5.95",
+    "acebase": "^1.12.1",
     "vue": "^3.2.16",
     "vuetify": "^3.0.0-alpha.0"
   },
