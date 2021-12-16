@@ -9,6 +9,7 @@ import { Graph } from '@antv/x6'
 import { onMounted, ref } from 'vue'
 import getdb from '../lib/db'
 import type { AceBase, DataReference } from 'acebase'
+import worker from '../lib/workers'
 
 const r = 60
 const container = ref(undefined)
@@ -20,7 +21,10 @@ onMounted(async () => {
   graph = new Graph({
     container: container.value,
     autoResize: true,
-    selecting: true,
+    selecting: {
+      enabled: true,
+      rubberband: true, // 启用框选
+    },
     // 网格
     grid: true,
     // 异步渲染
@@ -41,6 +45,16 @@ onMounted(async () => {
 
   // 双击添加节点
   graph.on('blank:dblclick', (e) => addNode(e.x, e.y))
+
+  graph.on('blank:dblclick', async (e) => {
+    console.time('运行时间')
+
+    const sum = await worker.add(2, 3)
+
+    console.log(`2 + 3 = ${sum}`)
+
+    console.timeEnd('运行时间')
+  })
 
   // 鼠标进入显示叉叉
   graph.on('cell:mouseenter', ({ cell }) => {
