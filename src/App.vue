@@ -2,12 +2,11 @@
   <v-app>
     <AppBar />
     <v-main>
-      <Main />
+      <router-view />
     </v-main>
   </v-app>
 </template>
 
 <script setup lang="ts">
-import Main from '@/views/Main.vue'
 import AppBar from '@/components/AppBar.vue'
 </script>

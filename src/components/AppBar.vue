@@ -1,30 +1,24 @@
 <template>
   <v-app-bar density="compact">
-    <img
-      src="https://gw.alipayobjects.com/zos/antfincdn/0b4HzOcEJY/Graphin.svg"
-      alt=""
-    />
+    <img :src="routes[0].icon" @click="$router.push(routes[0].path)" />
     <v-app-bar-title>知智 · 图谱一体化构建工具</v-app-bar-title>
 
     <v-spacer />
 
-    <v-btn>
-      <v-icon center icon="mdi-database" />
-      <span>数据源</span>
-    </v-btn>
-
-    <v-btn>
-      <v-icon center icon="mdi-tag" />
-      <span>标签</span>
-    </v-btn>
-
-    <v-divider inset vertical></v-divider>
-
-    <v-btn class="mr-4 ml-5" color="primary">
-      <v-icon center icon="mdi-google-ads" />
-      <span>开始构建</span>
+    <v-btn
+      :color="$router.currentRoute.value.name === btn.name ? 'primary' : ''"
+      @click="$router.push(btn.path)"
+      v-for="btn in btns"
+      :key="btn.name"
+    >
+      <v-icon center :icon="btn.icon" />
+      <span>{{ btn.name }}</span>
     </v-btn>
   </v-app-bar>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { routes } from '../plugins/vueRouter'
+
+const btns = routes.filter((btn) => btn.name !== '首页')
+</script>

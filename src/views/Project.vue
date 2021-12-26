@@ -3,5 +3,5 @@
 </template>
 
 <script lang="ts" setup>
-import Container from '@/components/Container.vue'
+import Container from '@/components/GraphCanvas.vue'
 </script>
