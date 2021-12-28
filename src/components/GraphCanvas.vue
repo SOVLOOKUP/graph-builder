@@ -7,15 +7,11 @@
 <script lang="ts" setup>
 import { Graph } from '@antv/x6'
 import { onMounted, ref } from 'vue'
-import getdb from '../lib/db'
-import type { AceBase, DataReference } from 'acebase'
 import worker from '../lib/workers'
 
 const r = 60
 const container = ref(undefined)
-let db: AceBase
 let graph: Graph
-let dbNodes: DataReference
 
 onMounted(async () => {
   graph = new Graph({
@@ -40,8 +36,6 @@ onMounted(async () => {
       allowBlank: false,
     },
   })
-  db = await getdb()
-  dbNodes = db.ref('container/nodes')
 
   // 双击添加节点
   graph.on('blank:dblclick', (e) => addNode(e.x, e.y))
