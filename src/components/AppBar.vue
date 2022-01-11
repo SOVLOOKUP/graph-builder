@@ -1,5 +1,6 @@
 <template>
-  <v-app-bar density="compact">
+  <!-- todo 未登录状态下不显示 -->
+  <v-app-bar density="compact" v-if="true">
     <img :src="routes[0].icon" @click="$router.push(routes[0].path)" />
     <v-app-bar-title>知智 · 图谱一体化构建工具</v-app-bar-title>
 
