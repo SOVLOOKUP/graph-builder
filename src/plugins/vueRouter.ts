@@ -5,6 +5,9 @@ const DataSource = () => import('../views/DataSource.vue')
 const GraphBuilder = () => import('../views/GraphBuilder.vue')
 const Project = () => import('../views/Project.vue')
 const TagManage = () => import('../views/TagManage.vue')
+const Auth = () => import('../views/Auth/Auth.vue')
+const Signin = () => import('../views/Auth/Signin.vue')
+const SigninIdentifier = () => import('../views/Auth/SigninIdentifier.vue')
 
 const routes = [
   {
@@ -12,6 +15,35 @@ const routes = [
     name: '首页',
     icon: 'https://gw.alipayobjects.com/zos/antfincdn/0b4HzOcEJY/Graphin.svg',
     component: Home,
+  },
+  {
+    path: '/auth',
+    name: '认证',
+    icon: 'https://gw.alipayobjects.com/zos/antfincdn/0b4HzOcEJY/Graphin.svg',
+    component: Auth,
+    children: [
+      {
+        path: 'signin',
+        component: Signin,
+        children: [
+          {
+            path: 'identifier',
+            name: 'signin',
+            component: SigninIdentifier,
+          },
+          // {
+          //   path: 'password',
+          //   name: 'password',
+          //   component: SigninPassword,
+          // },
+        ],
+      },
+      // {
+      //   path: 'signup',
+      //   component: Signup,
+      //   name: 'signup',
+      // },
+    ],
   },
   {
     path: '/project',
