@@ -3,6 +3,4 @@ node_modules
 dist
 dist-ssr
 *.local
-public/workers
-.parcel-cache
-public/worker.js
+worker

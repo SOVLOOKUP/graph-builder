@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently -n parcel,vite \"parcel watch src/worker.ts --dist-dir public/ --no-source-maps \" \"vite\"",
-    "build": "parcel build src/worker.ts --dist-dir public/ --no-source-maps && vue-tsc --noEmit && vite build",
+    "dev": "concurrently -n worker,vite \"vite build --config vite-lib.config.ts -m dev -w \" \"vite\"",
+    "build": "vue-tsc --noEmit && vite build && vite build --config vite-lib.config.ts",
     "serve": "vite preview"
   },
   "dependencies": {
@@ -20,7 +20,6 @@
     "@vitejs/plugin-vue": "2.0.1",
     "@vuetify/vite-plugin": "1.0.0-alpha.10",
     "concurrently": "7.0.0",
-    "parcel": "2.1.1",
     "sass": "1.47.0",
     "typescript": "4.5.4",
     "vite": "2.7.10",
