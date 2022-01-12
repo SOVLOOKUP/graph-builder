@@ -1,6 +1,7 @@
 <template>
   <v-app>
-    <AppBar />
+    <!-- todo 根据有无登录判断 -->
+    <AppBar :show="true" />
     <v-main>
       <router-view />
     </v-main>

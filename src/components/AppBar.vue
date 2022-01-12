@@ -1,7 +1,8 @@
 <template>
-  <!-- todo 未登录状态下不显示 -->
-  <v-app-bar density="compact" v-if="false">
-    <img :src="routes[0].icon" @click="$router.push(routes[0].path)" />
+  <v-app-bar density="compact" v-if="show">
+    <img
+      src="https://gw.alipayobjects.com/zos/antfincdn/0b4HzOcEJY/Graphin.svg"
+    />
     <v-app-bar-title>GraphIntelligence</v-app-bar-title>
 
     <v-spacer />
@@ -19,7 +20,35 @@
 </template>
 
 <script setup lang="ts">
-import { routes } from '../plugins/vueRouter'
+const btns = [
+  {
+    path: '/project',
+    name: '项目',
+    icon: 'mdi-google-ads',
+  },
+  {
+    path: '/datasource',
+    name: '数据',
+    icon: 'mdi-database',
+  },
+  {
+    path: '/tagmanager',
+    name: '标签',
+    icon: 'mdi-tag',
+  },
+  {
+    path: '/graphbuilder',
+    name: '构建',
+    icon: 'mdi-crane',
+  },
+]
 
-const btns = routes.filter((btn) => btn.name !== '首页')
+withDefaults(
+  defineProps<{
+    show?: boolean
+  }>(),
+  {
+    show: false,
+  }
+)
 </script>

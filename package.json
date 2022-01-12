@@ -10,6 +10,7 @@
   "dependencies": {
     "@antv/x6": "1.29.5",
     "@mdi/font": "6.5.95",
+    "pinia": "^2.0.9",
     "threads": "1.7.0",
     "vue": "3.2.26",
     "vue-router": "4.0.12",

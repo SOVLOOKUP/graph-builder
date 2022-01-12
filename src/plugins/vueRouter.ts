@@ -1,21 +1,17 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 
 const DataSource = () => import('../views/DataSource.vue')
 const GraphBuilder = () => import('../views/GraphBuilder.vue')
 const Project = () => import('../views/Project.vue')
 const TagManage = () => import('../views/TagManage.vue')
-const Auth = () => import('../views/Auth/Auth.vue')
+
+const Auth = () => import('../views/Auth/index.vue')
 const Signin = () => import('../views/Auth/Signin.vue')
-const SigninIdentifier = () => import('../views/Auth/SigninIdentifier.vue')
+const Signup = () => import('../views/Auth/Signup.vue')
 
 const routes = [
-  {
-    path: '/',
-    name: '首页',
-    icon: 'https://gw.alipayobjects.com/zos/antfincdn/0b4HzOcEJY/Graphin.svg',
-    component: Home,
-  },
+  // todo 没有认证就跳转到认证
   {
     path: '/auth',
     name: '认证',
@@ -25,25 +21,19 @@ const routes = [
       {
         path: 'signin',
         component: Signin,
-        children: [
-          {
-            path: 'identifier',
-            name: 'signin',
-            component: SigninIdentifier,
-          },
-          // {
-          //   path: 'password',
-          //   name: 'password',
-          //   component: SigninPassword,
-          // },
-        ],
       },
-      // {
-      //   path: 'signup',
-      //   component: Signup,
-      //   name: 'signup',
-      // },
+      {
+        path: 'signup',
+        component: Signup,
+        name: 'signup',
+      },
     ],
+  },
+  {
+    path: '/',
+    name: '首页',
+    icon: 'https://gw.alipayobjects.com/zos/antfincdn/0b4HzOcEJY/Graphin.svg',
+    component: Home,
   },
   {
     path: '/project',
@@ -72,7 +62,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes,
 })
 export { routes }
