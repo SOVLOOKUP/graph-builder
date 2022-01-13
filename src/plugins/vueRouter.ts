@@ -1,4 +1,9 @@
-import { createRouter, createWebHistory, RouteLocationRaw } from 'vue-router'
+import {
+  createRouter,
+  createWebHistory,
+  RouteLocation,
+  RouteLocationRaw,
+} from 'vue-router'
 import Home from '../views/Home.vue'
 import { store } from '../store'
 
@@ -66,11 +71,18 @@ const router = createRouter({
   routes,
 })
 
-// todo 重定向回来
-router.beforeEach(async (to) => {
+router.beforeEach(async (to, from) => {
   if (!to.path.startsWith('/auth') && store.state.user === null) {
-    const authURL: RouteLocationRaw = {
+    const authURL: RouteLocation = {
       path: '/auth/signin',
+      matched: [],
+      fullPath: '',
+      query: {},
+      hash: '',
+      name: undefined,
+      params: {},
+      redirectedFrom: from,
+      meta: {},
     }
     return authURL
   }

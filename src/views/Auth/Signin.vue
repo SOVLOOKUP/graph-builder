@@ -59,8 +59,12 @@ const next = async () => {
       identifier: identifier.value,
       password: password.value,
     })
-    // 跳转
-    router.push('/')
+    // 跳转到之前的页面或主页
+    router.push(
+      router.currentRoute.value.redirectedFrom === undefined
+        ? '/'
+        : router.currentRoute.value.redirectedFrom
+    )
   } catch (e) {
     // 用户名密码错误
     if ((e as Error).message === 'Request failed with status code 400') {
