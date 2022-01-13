@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
+import config from '../config'
 
 const DataSource = () => import('../views/DataSource.vue')
 const GraphBuilder = () => import('../views/GraphBuilder.vue')
@@ -15,7 +16,7 @@ const routes = [
   {
     path: '/auth',
     name: '认证',
-    icon: 'https://gw.alipayobjects.com/zos/antfincdn/0b4HzOcEJY/Graphin.svg',
+    icon: config.logoURL,
     component: Auth,
     children: [
       {
@@ -32,7 +33,7 @@ const routes = [
   {
     path: '/',
     name: '首页',
-    icon: 'https://gw.alipayobjects.com/zos/antfincdn/0b4HzOcEJY/Graphin.svg',
+    icon: config.logoURL,
     component: Home,
   },
   {

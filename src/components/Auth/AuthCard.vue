@@ -12,7 +12,7 @@
         <div class="text-center mb-4">
           <span class="text-h6 text--secondary">
             <img
-              src="https://gw.alipayobjects.com/zos/antfincdn/0b4HzOcEJY/Graphin.svg"
+              :src="config.logoURL"
               alt="GraphIntelligence"
               width="24"
               style="vertical-align: middle"
@@ -30,6 +30,8 @@
 </template>
 
 <script lang="ts" setup>
+import config from '../../config'
+
 withDefaults(
   defineProps<{
     loading?: boolean

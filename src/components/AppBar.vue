@@ -1,8 +1,6 @@
 <template>
   <v-app-bar density="compact" v-if="show">
-    <img
-      src="https://gw.alipayobjects.com/zos/antfincdn/0b4HzOcEJY/Graphin.svg"
-    />
+    <img :src="config.logoURL" />
     <v-app-bar-title>GraphIntelligence</v-app-bar-title>
 
     <v-spacer />
@@ -20,6 +18,8 @@
 </template>
 
 <script setup lang="ts">
+import config from '../config'
+
 const btns = [
   {
     path: '/project',

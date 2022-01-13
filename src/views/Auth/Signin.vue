@@ -2,7 +2,7 @@
   <div>
     <div class="text-center">
       <h2 class="headline mb-2">登录</h2>
-      <span class="d-inline-block mb-8">输入你的 Starry 帐号密码</span>
+      <span class="d-inline-block mb-8">{{ tips }}</span>
     </div>
 
     <v-form>
@@ -13,7 +13,8 @@
         type="text"
         variant="outlined"
         hide-details="auto"
-        :error-messages="error"
+        :error="error"
+        @focus="resetForm"
       />
       <v-text-field
         v-model="password"
@@ -22,7 +23,8 @@
         type="password"
         variant="outlined"
         hide-details="auto"
-        :error-messages="error"
+        :error="error"
+        @focus="resetForm"
       />
       <div class="d-flex justify-space-between">
         <v-btn flat @click="() => $router.push('signup')">创建帐号</v-btn>
@@ -34,28 +36,48 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useStore } from '../../store'
 
+const defaultTips = '输入你的 Starry 帐号密码'
 const identifier = ref('')
 const password = ref('')
-const error = ref(null)
+const error = ref(false)
+const router = useRouter()
+const store = useStore()
+const tips = ref(defaultTips)
 
 const emit = defineEmits<{
   (e: 'toggleLoading'): void
 }>()
 
-const next = () => {
-  // 登录
+// 登录
+const next = async () => {
   emit('toggleLoading')
-
-  console.log(identifier.value, password.value)
-
-  setTimeout(() => {
-    // 验证密码
-
+  try {
+    await store.dispatch('signin', {
+      identifier: identifier.value,
+      password: password.value,
+    })
+    // 跳转
+    router.push('/')
+  } catch (e) {
+    // 用户名密码错误
+    if ((e as Error).message === 'Request failed with status code 400') {
+      error.value = true
+      // todo 提示
+      tips.value = '帐号或密码错误'
+    } else {
+      throw e
+    }
+  } finally {
     // 关闭 loading
     emit('toggleLoading')
-    // 写入pinia
-    // 跳转
-  }, 1000)
+  }
+}
+
+const resetForm = () => {
+  error.value = false
+  tips.value = defaultTips
 }
 </script>
