@@ -8,7 +8,7 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "@antv/x6": "1.29.5",
+    "@antv/x6": "1.29.6",
     "@mdi/font": "6.5.95",
     "pinia": "^2.0.9",
     "threads": "1.7.0",
