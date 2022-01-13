@@ -38,9 +38,9 @@ import config from '../config'
 
 const btns = [
   {
-    path: '/project',
-    name: '模型',
-    icon: 'mdi-google-ads',
+    path: '/tagmanager',
+    name: '标签',
+    icon: 'mdi-tag',
   },
   {
     path: '/datasource',
@@ -48,9 +48,9 @@ const btns = [
     icon: 'mdi-database',
   },
   {
-    path: '/tagmanager',
-    name: '标签',
-    icon: 'mdi-tag',
+    path: '/model',
+    name: '模型',
+    icon: 'mdi-electron-framework',
   },
   {
     path: '/graphbuilder',

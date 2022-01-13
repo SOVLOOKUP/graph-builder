@@ -4,7 +4,7 @@ import { store } from '../store'
 
 const DataSource = () => import('../views/DataSource.vue')
 const GraphBuilder = () => import('../views/GraphBuilder.vue')
-const Project = () => import('../views/Project.vue')
+const Model = () => import('../views/Model.vue')
 const TagManage = () => import('../views/TagManage.vue')
 
 const Auth = () => import('../views/Auth/index.vue')
@@ -34,9 +34,9 @@ const routes = [
     component: Home,
   },
   {
-    path: '/project',
+    path: '/model',
     name: '模型',
-    component: Project,
+    component: Model,
   },
   {
     path: '/datasource',
