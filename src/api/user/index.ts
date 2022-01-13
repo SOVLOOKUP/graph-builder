@@ -1,4 +1,4 @@
-import base from '..'
+import base from '../base'
 import { UserAuth, UserState } from '../../store/user'
 import config from '../../config'
 
