@@ -1,8 +1,8 @@
-import ky from 'ky'
+import base from '..'
 import { UserAuth, UserState } from '../../store/user'
 import config from '../../config'
 
-const user = ky.create({
+const user = base.extend({
   prefixUrl: `${config.serverBaseUrl}/api/auth/`,
 })
 
