@@ -11,5 +11,3 @@ export default defineConfig({
     outDir: `${process.env.NODE_ENV === 'production' ? 'dist/' : ''}worker`,
   },
 })
-
-console.log()

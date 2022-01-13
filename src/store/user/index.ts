@@ -5,7 +5,7 @@ interface UserAuth {
 
 interface UserState {
   jwt: string
-  info: { email: string; username: string; confirmed: boolean }
+  user: { email: string; username: string; confirmed: boolean }
 }
 
 export { UserAuth, UserState }

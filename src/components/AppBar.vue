@@ -39,7 +39,7 @@ import config from '../config'
 const btns = [
   {
     path: '/project',
-    name: '项目',
+    name: '模型',
     icon: 'mdi-google-ads',
   },
   {

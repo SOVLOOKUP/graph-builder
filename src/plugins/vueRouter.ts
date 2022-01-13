@@ -35,7 +35,7 @@ const routes = [
   },
   {
     path: '/project',
-    name: '项目',
+    name: '模型',
     component: Project,
   },
   {

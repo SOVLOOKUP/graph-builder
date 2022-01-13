@@ -13,8 +13,8 @@ const userLogin = async ({
   await user
     .post('local', {
       json: {
-        identifier: identifier,
-        password: password,
+        identifier,
+        password,
       },
     })
     .json()
