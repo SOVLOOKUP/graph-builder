@@ -2,14 +2,17 @@
   <v-app-bar density="compact" v-if="show">
     <v-app-bar-title>
       <div class="text-center mb-2">
-        <span class="text-h6 text--secondary">
+        <span
+          class="text-h6 text--secondary"
+          style="cursor: pointer"
+          @click="$router.push('/')"
+        >
           <img
             :src="config.logoURL"
             alt="GraphIntelligence"
             width="30"
-            style="vertical-align: middle; cursor: pointer"
+            style="vertical-align: middle"
             class="mr-1"
-            @click="$router.push('/')"
           />
           <span class="font-family-body">GraphIntelligence</span>
         </span>
@@ -53,11 +56,6 @@ const btns = [
     path: '/graphbuilder',
     name: '构建',
     icon: 'mdi-crane',
-  },
-  {
-    path: '/user',
-    name: '用户中心',
-    icon: 'mdi-account',
   },
 ]
 

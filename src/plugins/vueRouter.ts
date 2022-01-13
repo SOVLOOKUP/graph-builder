@@ -1,9 +1,4 @@
-import {
-  createRouter,
-  createWebHistory,
-  RouteLocation,
-  RouteLocationRaw,
-} from 'vue-router'
+import { createRouter, createWebHistory, RouteLocation } from 'vue-router'
 import Home from '../views/Home.vue'
 import { store } from '../store'
 
@@ -11,7 +6,6 @@ const DataSource = () => import('../views/DataSource.vue')
 const GraphBuilder = () => import('../views/GraphBuilder.vue')
 const Project = () => import('../views/Project.vue')
 const TagManage = () => import('../views/TagManage.vue')
-const User = () => import('../views/User.vue')
 
 const Auth = () => import('../views/Auth/index.vue')
 const Signin = () => import('../views/Auth/Signin.vue')
@@ -58,11 +52,6 @@ const routes = [
     path: '/graphbuilder',
     name: '构建',
     component: GraphBuilder,
-  },
-  {
-    path: '/user',
-    name: '用户中心',
-    component: User,
   },
 ]
 
