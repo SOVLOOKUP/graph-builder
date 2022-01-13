@@ -41,6 +41,11 @@ const btns = [
     name: '构建',
     icon: 'mdi-crane',
   },
+  {
+    path: '/user',
+    name: '用户中心',
+    icon: 'mdi-account',
+  },
 ]
 
 withDefaults(

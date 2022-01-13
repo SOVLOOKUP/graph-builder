@@ -65,7 +65,6 @@ const next = async () => {
     // 用户名密码错误
     if ((e as Error).message === 'Request failed with status code 400') {
       error.value = true
-      // todo 提示
       tips.value = '帐号或密码错误'
     } else {
       throw e

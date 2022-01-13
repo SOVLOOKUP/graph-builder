@@ -1,7 +1,8 @@
 import { InjectionKey } from 'vue'
-import { createStore, useStore as baseUseStore, Store } from 'vuex'
+import { createStore, Store, useStore as baseUseStore } from 'vuex'
 import { UserAuth, UserState } from './user'
 import { userLogin } from '../api'
+import VuexPersistence from 'vuex-persist'
 
 interface State {
   user: UserState | null
@@ -10,6 +11,7 @@ interface State {
 export const key: InjectionKey<Store<State>> = Symbol()
 
 export const store = createStore<State>({
+  plugins: [new VuexPersistence<State>().plugin],
   state: {
     user: null,
   },
