@@ -1,7 +1,20 @@
 <template>
   <v-app-bar density="compact" v-if="show">
-    <img :src="config.logoURL" />
-    <v-app-bar-title>GraphIntelligence</v-app-bar-title>
+    <v-app-bar-title>
+      <div class="text-center mb-2">
+        <span class="text-h6 text--secondary">
+          <img
+            :src="config.logoURL"
+            alt="GraphIntelligence"
+            width="30"
+            style="vertical-align: middle; cursor: pointer"
+            class="mr-1"
+            @click="$router.push('/')"
+          />
+          <span class="font-family-body">GraphIntelligence</span>
+        </span>
+      </div>
+    </v-app-bar-title>
 
     <v-spacer />
 
