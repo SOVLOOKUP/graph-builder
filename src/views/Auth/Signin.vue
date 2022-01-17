@@ -25,6 +25,13 @@
         hide-details="auto"
         :error="error"
         @focus="resetForm"
+        @keydown="
+          (e: KeyboardEvent) => {
+            if (e.key === 'Enter') {
+              next()
+            }
+          }
+        "
       />
       <div class="d-flex justify-space-between">
         <v-btn flat @click="() => $router.push('signup')">创建帐号</v-btn>
@@ -85,4 +92,6 @@ const resetForm = () => {
   error.value = false
   tips.value = defaultTips
 }
+
+const log = console.log
 </script>

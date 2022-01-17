@@ -38,11 +38,18 @@
         variant="outlined"
         @focus="resetForm"
         hide-details="auto"
+        @keydown="
+          (e: KeyboardEvent) => {
+            if (e.key === 'Enter') {
+              next()
+            }
+          }
+        "
       />
 
       <div class="d-flex justify-space-between">
         <v-btn flat @click="() => $router.push('signin')">返回登录</v-btn>
-        <v-btn color="primary" @click="next"> 注册 </v-btn>
+        <v-btn color="primary" @click="next">注册</v-btn>
       </div>
     </v-form>
   </div>
