@@ -16,22 +16,16 @@ export const store = createStore<State>({
     user: null,
   },
   mutations: {
-    updateUserState(state, userState: UserState) {
+    // 登录
+    signin(state, userState: UserState) {
       state.user = userState
     },
     // 登出
-    logout(state) {
+    signout(state) {
       state.user = null
     },
   },
-  actions: {
-    // 登录
-    async signin({ commit }, auth: UserAuth) {
-      const res = await userLogin(auth)
-      commit('updateUserState', res)
-      return res
-    },
-  },
+  actions: {},
 })
 
 export function useStore() {

@@ -38,6 +38,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from '../../store'
+import { userLogin } from '../../api'
 
 const defaultTips = '输入你的 Starry 帐号密码'
 const identifier = ref('')
@@ -55,24 +56,25 @@ const emit = defineEmits<{
 const next = async () => {
   emit('toggleLoading')
   try {
-    await store.dispatch('signin', {
+    const res = await userLogin({
       identifier: identifier.value,
       password: password.value,
     })
-    // 跳转到之前的页面或主页
-    router.push(
-      router.currentRoute.value.redirectedFrom === undefined
-        ? '/'
-        : router.currentRoute.value.redirectedFrom
-    )
-  } catch (e) {
-    // 用户名密码错误
-    if ((e as Error).message === 'Request failed with status code 400') {
-      error.value = true
-      tips.value = '帐号或密码错误'
+
+    if (res.status === 200) {
+      store.commit('signin', await res.json())
+      // 跳转到之前的页面或主页
+      router.push(
+        router.currentRoute.value.redirectedFrom === undefined
+          ? '/'
+          : router.currentRoute.value.redirectedFrom
+      )
     } else {
-      throw e
+      error.value = true
+      tips.value = (await res.json())?.error?.message
     }
+  } catch (e) {
+    throw e
   } finally {
     // 关闭 loading
     emit('toggleLoading')

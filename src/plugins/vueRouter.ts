@@ -10,6 +10,7 @@ const TagManage = () => import('../views/TagManage.vue')
 const Auth = () => import('../views/Auth/index.vue')
 const Signin = () => import('../views/Auth/Signin.vue')
 const Signup = () => import('../views/Auth/Signup.vue')
+const Vuetify = () => import('../views/Auth/Verify.vue')
 
 const routes = [
   {
@@ -20,11 +21,17 @@ const routes = [
       {
         path: 'signin',
         component: Signin,
+        name: '登录',
       },
       {
         path: 'signup',
         component: Signup,
-        name: 'signup',
+        name: '注册',
+      },
+      {
+        path: 'verify',
+        component: Vuetify,
+        name: '验证',
       },
     ],
   },

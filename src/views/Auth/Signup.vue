@@ -2,36 +2,43 @@
   <div>
     <div class="text-center">
       <h2 class="headline mb-2">注册</h2>
-      <span class="d-inline-block mb-8">注册一个 Starry 帐户</span>
+      <span class="d-inline-block mb-8">{{ tips }}</span>
     </div>
 
     <v-form>
       <v-text-field
-        v-model="identifier"
+        v-model="email"
         :label="'邮箱'"
         name="login"
         type="text"
+        :error="error"
         variant="outlined"
         hide-details="auto"
-        :error-messages="error"
+        @focus="resetForm"
       />
 
-      <div class="d-flex justify-space-between">
-        <v-text-field
-          v-model="password"
-          :label="'验证码'"
-          name="password"
-          type="password"
-          class="mr-auto"
-          variant="outlined"
-          hide-details="auto"
-          :error-messages="error"
-        />
+      <v-text-field
+        v-model="username"
+        :label="'用户名'"
+        name="login"
+        type="text"
+        variant="outlined"
+        :error="error"
+        hide-details="auto"
+        @focus="resetForm"
+      />
 
-        <div class="ml-4">
-          <v-btn flat class="pa-7"> 发送验证码 </v-btn>
-        </div>
-      </div>
+      <v-text-field
+        v-model="password"
+        :label="'密码'"
+        name="password"
+        type="password"
+        :error="error"
+        class="mr-auto"
+        variant="outlined"
+        @focus="resetForm"
+        hide-details="auto"
+      />
 
       <div class="d-flex justify-space-between">
         <v-btn flat @click="() => $router.push('signin')">返回登录</v-btn>
@@ -43,27 +50,52 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { userRegister, sendEmailConfirmation } from '../../api'
+import { useRouter } from 'vue-router'
 
-const identifier = ref('')
+const defaultTips = '注册一个 Starry 帐户'
+const username = ref('')
+const email = ref('')
 const password = ref('')
-const error = ref(null)
+const error = ref(false)
+const router = useRouter()
+const tips = ref(defaultTips)
 
 const emit = defineEmits<{
   (e: 'toggleLoading'): void
 }>()
 
-const next = () => {
-  // 注册
+const next = async () => {
   emit('toggleLoading')
-
-  console.log(identifier.value, password.value)
-
-  setTimeout(() => {
+  try {
     // 注册账户
+    const res = await userRegister({
+      email: email.value,
+      username: username.value,
+      password: password.value,
+    })
 
+    if (res.status == 200) {
+      // ok
+      // 发送激活邮件
+      await sendEmailConfirmation(email.value)
+      // 跳转
+      router.push('verify')
+    } else {
+      // not ok
+      error.value = true
+      tips.value = (await res.json())?.error?.message
+    }
+  } catch (e) {
+    throw e
+  } finally {
     // 关闭 loading
     emit('toggleLoading')
-    // 跳转
-  }, 1000)
+  }
+}
+
+const resetForm = () => {
+  error.value = false
+  tips.value = defaultTips
 }
 </script>
