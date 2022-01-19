@@ -5,6 +5,7 @@ import { store } from '../store'
 const DataSource = () => import('../views/DataSource.vue')
 const GraphBuilder = () => import('../views/GraphBuilder.vue')
 const Model = () => import('../views/Model.vue')
+const ModelBuilder = () => import('../views/ModelBuilder.vue')
 const TagManage = () => import('../views/TagManage.vue')
 
 const Auth = () => import('../views/Auth/index.vue')
@@ -44,6 +45,11 @@ const routes = [
     path: '/model',
     name: '模型',
     component: Model,
+  },
+  {
+    path: '/model/:id',
+    name: '建模',
+    component: ModelBuilder,
   },
   {
     path: '/datasource',
