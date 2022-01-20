@@ -70,7 +70,7 @@
           <v-row>
             {{ store.state.user?.backendDomain }}
           </v-row>
-          <v-icon
+          <!-- <v-icon
             @click="
               () => {
                 dialog = true
@@ -78,7 +78,7 @@
               }
             "
             icon="mdi-circle-edit-outline "
-          />
+          /> -->
         </v-col>
       </v-row>
     </v-container>
@@ -114,7 +114,5 @@ const editBackendDomain = () => {
   dialog.value = false
   if (newBackendDomain.value !== '')
     store.commit('editBackendDomain', newBackendDomain.value)
-
-  // todo 后端地址修改
 }
 </script>

@@ -69,7 +69,11 @@ const next = async () => {
     })
 
     if (res.status === 200) {
-      store.commit('signin', await res.json())
+      // todo 获取用户组织域名空间，存入第一个域名空间
+      store.commit('signin', {
+        ...(await res.json()),
+        backendDomain: 'localhost',
+      })
       // 跳转到之前的页面或主页
       router.push(
         router.currentRoute.value.redirectedFrom === undefined
