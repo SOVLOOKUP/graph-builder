@@ -1,7 +1,6 @@
 import { InjectionKey } from 'vue'
 import { createStore, Store, useStore as baseUseStore } from 'vuex'
-import { UserAuth, UserState } from './user'
-import { userLogin } from '../api'
+import { UserState } from './user'
 import VuexPersistence from 'vuex-persist'
 
 interface State {
@@ -23,6 +22,9 @@ export const store = createStore<State>({
     // 登出
     signout(state) {
       state.user = null
+    },
+    editBackendURL(state, newBackendURL: string) {
+      state.user && (state.user.user.backendURL = newBackendURL)
     },
   },
   actions: {},
