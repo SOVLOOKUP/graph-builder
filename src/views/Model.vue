@@ -59,7 +59,7 @@
           <td class="text-center" width="300px">
             <v-container class="d-flex justify-space-around">
               <v-btn flat @click="() => openModelBuilder(item.id.toString())">
-                打开<v-icon icon="mdi-open-in-app" />
+                编辑<v-icon icon="mdi-open-in-app" />
               </v-btn>
               <v-btn flat @click="removeTargetModel(item.id)">
                 删除<v-icon icon="mdi-delete" />

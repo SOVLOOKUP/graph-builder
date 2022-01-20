@@ -7,7 +7,6 @@ interface UserRegister {
   email: string
   username: string
   password: string
-  backendURL: string
 }
 
 interface UserState {

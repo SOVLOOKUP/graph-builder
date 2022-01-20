@@ -60,7 +60,7 @@ import { ref } from 'vue'
 import { userRegister, sendEmailConfirmation } from '../../api'
 import { useRouter } from 'vue-router'
 
-const defaultTips = '注册一个 Starry 帐户'
+const defaultTips = '注册一个属于您的帐户'
 const username = ref('')
 const email = ref('')
 const password = ref('')

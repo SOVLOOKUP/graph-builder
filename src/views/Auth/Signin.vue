@@ -47,7 +47,7 @@ import { useRouter } from 'vue-router'
 import { useStore } from '../../store'
 import { userLogin } from '../../api'
 
-const defaultTips = '输入你的 Starry 帐号密码'
+const defaultTips = '输入您的帐号密码'
 const identifier = ref('')
 const password = ref('')
 const error = ref(false)
