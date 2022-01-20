@@ -4,10 +4,10 @@ import vuetify from './plugins/vuetify'
 import router from './plugins/vueRouter'
 import { store, key } from './store'
 
-const MApp = createApp(App)
+const MainApp = createApp(App)
 
-MApp.use(vuetify)
-MApp.use(store, key)
-MApp.use(router)
+MainApp.use(vuetify)
+MainApp.use(store, key)
+MainApp.use(router)
 
-MApp.mount('#app')
+MainApp.mount('#app')

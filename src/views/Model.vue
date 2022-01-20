@@ -58,7 +58,7 @@
           </td>
           <td class="text-center" width="300px">
             <v-container class="d-flex justify-space-around">
-              <v-btn flat @click="$router.push(`/model/${item.id.toString()}`)">
+              <v-btn flat @click="() => openModelBuilder(item.id.toString())">
                 打开<v-icon icon="mdi-open-in-app" />
               </v-btn>
               <v-btn flat @click="removeTargetModel(item.id)">
@@ -75,7 +75,9 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const newModelName = ref('')
 const dialog = ref(false)
 // todo 与数据库接洽
@@ -102,5 +104,9 @@ const addModel = async () => {
   dialog.value = false
   if (newModelName.value !== '')
     models.value.push({ id: 333, name: newModelName.value })
+}
+
+const openModelBuilder = (id: string) => {
+  window.open(router.resolve(`/model/${id}`).href)
 }
 </script>

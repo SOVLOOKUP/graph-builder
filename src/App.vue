@@ -1,6 +1,11 @@
 <template>
   <v-app>
-    <AppBar :show="!(store.state.user === null)" />
+    <AppBar
+      :show="
+        !(store.state.user === null) &&
+        !$router.currentRoute.value.fullPath.startsWith('/model/')
+      "
+    />
     <v-main>
       <router-view />
     </v-main>

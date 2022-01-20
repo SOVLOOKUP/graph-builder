@@ -4,7 +4,8 @@
       <v-progress-linear
         indeterminate
         absolute
-        :color="loading ? '#673AB7' : 'success'"
+        v-show="loading"
+        color="#673AB7"
       />
 
       <!-- logo -->
@@ -30,7 +31,7 @@
 </template>
 
 <script lang="ts" setup>
-import config from '../../config'
+import config from '../config'
 
 withDefaults(
   defineProps<{
