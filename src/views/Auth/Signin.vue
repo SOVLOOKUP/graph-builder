@@ -92,6 +92,4 @@ const resetForm = () => {
   error.value = false
   tips.value = defaultTips
 }
-
-const log = console.log
 </script>

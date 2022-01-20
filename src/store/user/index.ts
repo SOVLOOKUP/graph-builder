@@ -11,11 +11,11 @@ interface UserRegister {
 
 interface UserState {
   jwt: string
+  backendDomain: string
   user: {
     email: string
     username: string
     confirmed: boolean
-    backendURL: string
   }
 }
 
