@@ -29,4 +29,5 @@ const sendEmailConfirmation = async (email: string) =>
       email,
     },
   })
+
 export { userLogin, userRegister, sendEmailConfirmation }

@@ -50,11 +50,9 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in models" :key="item.name">
+        <tr v-for="item in models" :key="item.id">
           <td class="text-center">
-            <span>
-              {{ item.name }}
-            </span>
+            <span> {{ item.attributes.name }} </span>
           </td>
           <td class="text-center" width="300px">
             <v-container class="d-flex justify-space-around">
@@ -74,26 +72,23 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
+import { listModels, deleteModel, createModel } from '../api'
 import { useRouter } from 'vue-router'
+const refreshCache = async () =>
+  (models.value = (await (await listModels()).json()).data)
+
+onBeforeMount(refreshCache)
 
 const router = useRouter()
 const newModelName = ref('')
 const dialog = ref(false)
-// todo 与数据库接洽
-const models = ref([
-  {
-    id: 1,
-    name: 'Frozen Yogurt',
-  },
-  {
-    id: 2,
-    name: 'Ice cream sandwich',
-  },
-])
+const models = ref()
 
-const removeTargetModel = async (id: number) =>
-  (models.value = models.value.filter((item) => item.id !== id))
+const removeTargetModel = async (id: number) => {
+  await deleteModel(id)
+  await refreshCache()
+}
 
 const addNewModel = async () => {
   newModelName.value = ''
@@ -101,9 +96,9 @@ const addNewModel = async () => {
 }
 
 const addModel = async () => {
+  createModel(newModelName.value)
   dialog.value = false
-  if (newModelName.value !== '')
-    models.value.push({ id: 333, name: newModelName.value })
+  await refreshCache()
 }
 
 const openModelBuilder = (id: string) => {

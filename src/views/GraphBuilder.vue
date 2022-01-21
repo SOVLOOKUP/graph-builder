@@ -4,7 +4,7 @@
       <thead>
         <tr>
           <th class="text-center">
-            <h2>构建任务</h2>
+            <h2>任务名称</h2>
           </th>
           <th class="text-center">
             <h2>状态</h2>
@@ -12,15 +12,15 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in models" :key="item.name">
+        <tr v-for="item in tasks" :key="item.id">
           <td class="text-center">
             <span>
-              {{ item.name }}
+              {{ item.attributes.name }}
             </span>
           </td>
           <td class="text-center" width="300px">
             <v-container class="d-flex justify-space-around">
-              构建中
+              {{ item.attributes.status }}
             </v-container>
           </td>
         </tr>
@@ -30,17 +30,12 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
+import { listTasks } from '../api'
 
-// todo 与数据库接洽
-const models = ref([
-  {
-    id: 1,
-    name: 'Frozen Yogurt',
-  },
-  {
-    id: 2,
-    name: 'Ice cream sandwich',
-  },
-])
+onBeforeMount(async () => {
+  tasks.value = (await (await listTasks()).json()).data
+})
+
+const tasks = ref()
 </script>

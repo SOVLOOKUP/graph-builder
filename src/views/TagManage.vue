@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" persistent>
+  <!-- <v-dialog v-model="dialog" persistent>
     <v-card style="transform: translate(0, -150px)">
       <v-card-title>
         <span>新增标签</span>
@@ -36,12 +36,11 @@
         <v-btn color="primary" text @click="addTag"> 确认 </v-btn>
       </v-card-actions>
     </v-card>
-  </v-dialog>
+  </v-dialog> -->
 
   <v-container class="mt-6">
-    <v-btn flat @click="addNewTag">
-      新增标签<v-icon icon="mdi-flag-plus" />
-    </v-btn>
+    <!-- <v-btn flat @click="addNewTag"> -->
+    <v-btn flat @click="openCMS"> 管理标签<v-icon icon="mdi-flag" /> </v-btn>
     <v-table>
       <thead>
         <tr>
@@ -51,30 +50,30 @@
           <th class="text-center">
             <h2>类型</h2>
           </th>
-          <th class="text-center">
+          <!-- <th class="text-center">
             <h2>操作</h2>
-          </th>
+          </th> -->
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in models" :key="item.name">
+        <tr v-for="item in models" :key="item.id">
           <td class="text-center">
             <span>
-              {{ item.name }}
+              {{ item.attributes.name }}
             </span>
           </td>
           <td class="text-center">
             <span>
-              {{ item.type }}
+              {{ item.attributes.type }}
             </span>
           </td>
-          <td class="text-center" width="100px">
+          <!-- <td class="text-center" width="100px">
             <v-container class="d-flex justify-space-around">
               <v-btn flat @click="removeTargetModel(item.id)">
                 删除<v-icon icon="mdi-delete" />
               </v-btn>
             </v-container>
-          </td>
+          </td> -->
         </tr>
       </tbody>
     </v-table>
@@ -82,41 +81,49 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
+import { listTags } from '../api'
+import config from '../config'
 
-const newTagType = ref(1)
-const newTagName = ref('')
-const dialog = ref(false)
-// todo 与数据库接洽
-const models = ref([
-  {
-    id: 1,
-    name: 'Frozen Yogurt',
-    type: 1,
-  },
-  {
-    id: 2,
-    name: 'Ice cream sandwich',
-    type: 2,
-  },
-])
+onBeforeMount(async () => {
+  models.value = (await (await listTags()).json()).data as Tag
+})
 
-const removeTargetModel = async (id: number) =>
-  (models.value = models.value.filter((item) => item.id !== id))
-
-const addNewTag = async () => {
-  newTagName.value = ''
-  newTagType.value = 1
-  dialog.value = true
+interface Tag {
+  id: number
+  attributes: {
+    type: string
+    name: string
+  }
 }
 
-const addTag = async () => {
-  dialog.value = false
-  if (newTagName.value !== '')
-    models.value.push({
-      id: 333,
-      type: newTagType.value,
-      name: newTagName.value,
-    })
+// const newTagType = ref(1)
+// const newTagName = ref('')
+// const dialog = ref(false)
+const models = ref()
+
+// const removeTargetModel = async (id: number) =>
+//   (models.value = models.value.filter((item) => item.id !== id))
+
+// const addNewTag = async () => {
+//   newTagName.value = ''
+//   newTagType.value = 1
+//   dialog.value = true
+// }
+
+// const addTag = async () => {
+//   dialog.value = false
+//   if (newTagName.value !== '')
+//     models.value.push({
+//       id: 333,
+//       type: newTagType.value,
+//       name: newTagName.value,
+//     })
+// }
+
+const openCMS = async () => {
+  window.open(
+    `${config.serverBaseUrl}/admin/content-manager/collectionType/api::gi-tag.gi-tag`
+  )
 }
 </script>

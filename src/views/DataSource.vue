@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" persistent>
+  <!-- <v-dialog v-model="dialog" persistent>
     <v-card style="transform: translate(0, -50px)">
       <v-card-title>
         <span>新增数据源</span>
@@ -32,11 +32,12 @@
         <v-btn color="primary" text @click="addDataSource"> 确认 </v-btn>
       </v-card-actions>
     </v-card>
-  </v-dialog>
+  </v-dialog> -->
 
   <v-container class="mt-6">
-    <v-btn flat @click="addNewDataSource">
-      新增数据源<v-icon icon="mdi-database-plus" />
+    <v-btn flat @click="openCMS">
+      <!-- <v-btn flat @click="addNewDataSource"> -->
+      管理数据源<v-icon icon="mdi-database" />
     </v-btn>
     <v-table>
       <thead>
@@ -45,27 +46,35 @@
             <h2>数据源名称</h2>
           </th>
           <th class="text-center">
-            <h2>操作</h2>
+            <h2>类型</h2>
           </th>
+          <!-- <th class="text-center">
+            <h2>操作</h2>
+          </th> -->
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in dataSources" :key="item.name">
+        <tr v-for="item in dataSources" :key="item.id">
           <td class="text-center">
             <span>
-              {{ item.name }}
+              {{ item.attributes.name }}
             </span>
           </td>
-          <td class="text-center" width="300px">
+          <td class="text-center">
+            <span>
+              {{ item.attributes.type }}
+            </span>
+          </td>
+          <!-- <td class="text-center" width="300px">
             <v-container class="d-flex justify-space-around">
               <v-btn flat @click="">
-                编辑<v-icon icon="mdi-open-in-app" />
+                查看<v-icon icon="mdi-open-in-app" />
               </v-btn>
               <v-btn flat @click="removeTargetDataSource(item.id)">
                 删除<v-icon icon="mdi-delete" />
               </v-btn>
             </v-container>
-          </td>
+          </td> -->
         </tr>
       </tbody>
     </v-table>
@@ -73,33 +82,35 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
+import { listDataSources } from '../api'
+import config from '../config'
 
-const newDataSourceName = ref('')
-const dialog = ref(false)
-// todo 与数据库接洽
-const dataSources = ref([
-  {
-    id: 1,
-    name: 'Frozen Yogurt',
-  },
-  {
-    id: 2,
-    name: 'Ice cream sandwich',
-  },
-])
+onBeforeMount(async () => {
+  dataSources.value = (await (await listDataSources()).json()).data
+})
 
-const removeTargetDataSource = async (id: number) =>
-  (dataSources.value = dataSources.value.filter((item) => item.id !== id))
+// const newDataSourceName = ref('')
+// const dialog = ref(false)
+const dataSources = ref()
 
-const addNewDataSource = async () => {
-  newDataSourceName.value = ''
-  dialog.value = true
-}
+// const removeTargetDataSource = async (id: number) =>
+//   (dataSources.value = dataSources.value.filter((item) => item.id !== id))
 
-const addDataSource = async () => {
-  dialog.value = false
-  if (newDataSourceName.value !== '')
-    dataSources.value.push({ id: 333, name: newDataSourceName.value })
+// const addNewDataSource = async () => {
+//   newDataSourceName.value = ''
+//   dialog.value = true
+// }
+
+// const addDataSource = async () => {
+//   dialog.value = false
+//   if (newDataSourceName.value !== '')
+//     dataSources.value.push({ id: 333, name: newDataSourceName.value })
+// }
+
+const openCMS = async () => {
+  window.open(
+    `${config.serverBaseUrl}/admin/content-manager/collectionType/api::gi-data-source.gi-data-source`
+  )
 }
 </script>
