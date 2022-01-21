@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@types/node": "17.0.10",
-    "@vitejs/plugin-vue": "2.0.1",
+    "@vitejs/plugin-vue": "2.1.0",
     "@vuetify/vite-plugin": "1.0.0-alpha.10",
     "concurrently": "7.0.0",
     "sass": "1.49.0",
