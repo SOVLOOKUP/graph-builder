@@ -7,6 +7,7 @@ const GraphBuilder = () => import('../views/GraphBuilder.vue')
 const Model = () => import('../views/Model.vue')
 const ModelBuilder = () => import('../views/ModelBuilder.vue')
 const TagManage = () => import('../views/TagManage.vue')
+const Concept = () => import('../views/Concept.vue')
 
 const Auth = () => import('../views/Auth/index.vue')
 const Signin = () => import('../views/Auth/Signin.vue')
@@ -60,6 +61,11 @@ const routes = [
     path: '/tagmanager',
     name: '标签',
     component: TagManage,
+  },
+  {
+    path: '/concept',
+    name: '概念',
+    component: Concept,
   },
   {
     path: '/graphbuilder',

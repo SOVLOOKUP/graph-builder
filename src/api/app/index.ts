@@ -7,6 +7,7 @@ const api = AuthedKy.extend({
 
 const listTags = async () => await api.get('gi-tags')
 const listDataSources = async () => await api.get('gi-data-sources')
+const listConcepts = async () => await api.get('gi-concepts')
 const listTasks = async () => await api.get('gi-tasks')
 const listModels = async () => await api.get('gi-models')
 const deleteModel = async (id: number) => await api.delete(`gi-models/${id}`)
@@ -35,4 +36,5 @@ export {
   createModel,
   updateModelJson,
   getModelJson,
+  listConcepts,
 }

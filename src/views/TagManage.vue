@@ -40,7 +40,7 @@
 
   <v-container class="mt-6">
     <!-- <v-btn flat @click="addNewTag"> -->
-    <v-btn flat @click="openCMS"> 管理标签<v-icon icon="mdi-flag" /> </v-btn>
+    <v-btn flat @click="openCMS"> 管理标签<v-icon icon="mdi-tag" /> </v-btn>
     <v-table>
       <thead>
         <tr>

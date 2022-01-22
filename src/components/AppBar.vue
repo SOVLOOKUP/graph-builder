@@ -43,6 +43,11 @@ const btns = [
     icon: 'mdi-tag',
   },
   {
+    path: '/concept',
+    name: '概念',
+    icon: 'mdi-script-text-outline',
+  },
+  {
     path: '/datasource',
     name: '数据',
     icon: 'mdi-database',
