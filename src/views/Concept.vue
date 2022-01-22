@@ -1,0 +1,79 @@
+<template>
+  <v-container class="mt-6">
+    <v-btn flat @click="openCMS">
+      管理概念<v-icon icon="mdi-script-text-outline" />
+    </v-btn>
+    <v-table>
+      <thead>
+        <tr>
+          <th class="text-center">
+            <h2>概念名称</h2>
+          </th>
+
+          <th class="text-center">
+            <h2>操作</h2>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="item in concepts" :key="item.id">
+          <td class="text-center">
+            <span>
+              {{ item.attributes.name }}
+            </span>
+          </td>
+
+          <td class="text-center" width="150px">
+            <v-container class="d-flex justify-space-around">
+              <v-btn flat @click="openConceptItem(item.id)">
+                编辑<v-icon icon="mdi-open-in-app" />
+              </v-btn>
+              <!-- <v-btn flat @click="removeTargetDataSource(item.id)">
+                删除<v-icon icon="mdi-delete" />
+              </v-btn> -->
+            </v-container>
+          </td>
+        </tr>
+      </tbody>
+    </v-table>
+  </v-container>
+</template>
+
+<script lang="ts" setup>
+import { onBeforeMount, ref } from 'vue'
+import { listConcepts } from '../api'
+import config from '../config'
+
+onBeforeMount(async () => {
+  concepts.value = (await (await listConcepts()).json()).data
+})
+
+// const newDataSourceName = ref('')
+// const dialog = ref(false)
+const concepts = ref()
+
+// const removeTargetDataSource = async (id: number) =>
+//   (dataSources.value = dataSources.value.filter((item) => item.id !== id))
+
+// const addNewDataSource = async () => {
+//   newDataSourceName.value = ''
+//   dialog.value = true
+// }
+
+// const addDataSource = async () => {
+//   dialog.value = false
+//   if (newDataSourceName.value !== '')
+//     dataSources.value.push({ id: 333, name: newDataSourceName.value })
+// }
+
+const openCMS = async () => {
+  window.open(
+    `${config.serverBaseUrl}/admin/content-manager/collectionType/api::gi-concept.gi-concept`
+  )
+}
+const openConceptItem = async (id: number) => {
+  window.open(
+    `${config.serverBaseUrl}/admin/content-manager/collectionType/api::gi-concept.gi-concept/${id}`
+  )
+}
+</script>
