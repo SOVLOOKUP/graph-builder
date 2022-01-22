@@ -14,6 +14,17 @@ const createModel = async (name: string) =>
   await api.post(`gi-models`, {
     json: { data: { name, data: {} } },
   })
+const updateModelJson = async (id: string, json: object) =>
+  await api.put(`gi-models/${id}`, {
+    json: {
+      data: {
+        data: json,
+      },
+    },
+  })
+
+const getModelJson = async (id: string) =>
+  await api.get(`gi-models/${id}?fields=data`)
 
 export {
   listTags,
@@ -22,4 +33,6 @@ export {
   listModels,
   deleteModel,
   createModel,
+  updateModelJson,
+  getModelJson,
 }

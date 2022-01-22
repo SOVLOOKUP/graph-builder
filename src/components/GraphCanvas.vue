@@ -8,7 +8,10 @@
 import { Graph } from '@antv/x6'
 import { onMounted, ref } from 'vue'
 import worker from '../lib/workers'
+import { getModelJson, updateModelJson } from '../api'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const r = 60
 const container = ref(undefined)
 let graph: Graph
@@ -27,7 +30,7 @@ onMounted(async () => {
     async: true,
     translating: {
       // 不能超出画布
-      restrict: true,
+      restrict: false,
     },
     connecting: {
       snap: {
@@ -36,6 +39,11 @@ onMounted(async () => {
       allowBlank: false,
     },
   })
+
+  const res = await getModelJson(router.currentRoute.value.params.id as string)
+  const dataInit = (await res.json()).data
+  graph.fromJSON(dataInit.attributes.data)
+  console.log(`${dataInit.id}号本体下载成功`)
 
   // 双击添加节点
   graph.on('blank:dblclick', (e) => addNode(e.x, e.y))
@@ -114,6 +122,25 @@ const addNode = (x: number, y: number) => {
     })
   )
 }
+
+defineExpose({
+  fd() {
+    graph.zoomTo(graph.zoom() + 1)
+  },
+  sx() {
+    graph.zoomTo(graph.zoom() - 1)
+  },
+  rf() {
+    graph.zoomToFit()
+  },
+  async sv() {
+    const res = await updateModelJson(
+      router.currentRoute.value.params.id as string,
+      graph.toJSON()
+    )
+    console.log('保存成功', await res.json())
+  },
+})
 </script>
 
 <style scoped lang="scss">
