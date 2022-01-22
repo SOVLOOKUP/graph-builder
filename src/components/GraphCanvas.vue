@@ -10,6 +10,7 @@ import { onMounted, ref } from 'vue'
 import worker from '../lib/workers'
 import { getModelJson, updateModelJson } from '../api'
 import { useRouter } from 'vue-router'
+import { notify } from '@kyvg/vue3-notification'
 
 const router = useRouter()
 const r = 60
@@ -40,10 +41,23 @@ onMounted(async () => {
     },
   })
 
-  const res = await getModelJson(router.currentRoute.value.params.id as string)
-  const dataInit = (await res.json()).data
-  graph.fromJSON(dataInit.attributes.data)
-  console.log(`${dataInit.id}号本体下载成功`)
+  try {
+    const res = await getModelJson(
+      router.currentRoute.value.params.id as string
+    )
+    const dataInit = (await res.json()).data
+    graph.fromJSON(dataInit.attributes.data)
+
+    notify({
+      type: 'success',
+      title: `${dataInit.id} 号本体已同步`,
+    })
+  } catch (e) {
+    notify({
+      type: 'error',
+      title: String(e),
+    })
+  }
 
   // 双击添加节点
   graph.on('blank:dblclick', (e) => addNode(e.x, e.y))
@@ -134,11 +148,10 @@ defineExpose({
     graph.zoomToFit()
   },
   async sv() {
-    const res = await updateModelJson(
+    return await updateModelJson(
       router.currentRoute.value.params.id as string,
       graph.toJSON()
     )
-    console.log('保存成功', await res.json())
   },
 })
 </script>

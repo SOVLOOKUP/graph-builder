@@ -14,6 +14,7 @@
 
 <script lang="ts" setup>
 import Container from '@/components/GraphCanvas.vue'
+import { notify } from '@kyvg/vue3-notification'
 import { onBeforeMount, onMounted, ref } from 'vue'
 
 const childRef = ref('childRef')
@@ -32,7 +33,21 @@ const sx = () => c.sx()
 // 缩放到全屏
 const rf = () => c.rf()
 // 保存
-const sv = async () => await c.sv()
+const sv = async () => {
+  const res = await c.sv()
+
+  if (res.status === 200) {
+    notify({
+      type: 'success',
+      title: '保存成功',
+    })
+  } else {
+    notify({
+      type: 'error',
+      title: await res.json(),
+    })
+  }
+}
 </script>
 
 <style>
