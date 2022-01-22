@@ -46,6 +46,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from '../../store'
 import { userLogin } from '../../api'
+import config from '../../config'
 
 const defaultTips = '输入您的帐号密码'
 const identifier = ref('')
@@ -71,7 +72,7 @@ const next = async () => {
     if (res.status === 200) {
       store.commit('signin', {
         ...(await res.json()),
-        backendDomain: 'lingthink.com',
+        dbUrl: config.dbUrl,
       })
       // 跳转到之前的页面或主页
       router.push(

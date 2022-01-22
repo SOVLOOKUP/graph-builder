@@ -23,8 +23,8 @@ export const store = createStore<State>({
     signout(state) {
       state.user = null
     },
-    editBackendDomain(state, newBackendDomain: string) {
-      state.user && (state.user.backendDomain = newBackendDomain)
+    editDbUrl(state, newDbUrl: string) {
+      state.user && (state.user.dbUrl = newDbUrl)
     },
   },
   actions: {},

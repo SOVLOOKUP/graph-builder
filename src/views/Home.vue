@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" persistent>
+  <!-- <v-dialog v-model="dialog" persistent>
     <v-card style="transform: translate(0, -50px)">
       <v-card-title>
         <span>修改组织域名空间</span>
@@ -32,7 +32,7 @@
         <v-btn color="primary" text @click="editBackendDomain"> 确认 </v-btn>
       </v-card-actions>
     </v-card>
-  </v-dialog>
+  </v-dialog> -->
 
   <Card :loading="loading">
     <v-divider />
@@ -65,10 +65,10 @@
       </v-row>
 
       <v-row class="mt-2">
-        <v-col><div class="text-subtitle-1">域名空间</div></v-col>
+        <v-col><div class="text-subtitle-1">图数据库地址</div></v-col>
         <v-col class="d-flex align-center">
           <v-row>
-            {{ store.state.user?.backendDomain }}
+            {{ store.state.user?.dbUrl }}
           </v-row>
           <!-- <v-icon
             @click="
@@ -108,11 +108,11 @@ const dialog = ref(false)
 const loading = ref(false)
 const store = useStore()
 const userInfo = store.state.user?.user
-const newBackendDomain = ref('')
+// const newBackendDomain = ref('')
 
-const editBackendDomain = () => {
-  dialog.value = false
-  if (newBackendDomain.value !== '')
-    store.commit('editBackendDomain', newBackendDomain.value)
-}
+// const editBackendDomain = () => {
+//   dialog.value = false
+//   if (newBackendDomain.value !== '')
+//     store.commit('editBackendDomain', newBackendDomain.value)
+// }
 </script>

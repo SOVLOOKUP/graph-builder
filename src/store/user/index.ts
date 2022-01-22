@@ -11,7 +11,7 @@ interface UserRegister {
 
 interface UserState {
   jwt: string
-  backendDomain: string
+  dbUrl: string
   user: {
     email: string
     username: string
