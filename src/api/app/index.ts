@@ -12,7 +12,7 @@ const listModels = async () => await api.get('gi-models')
 const deleteModel = async (id: number) => await api.delete(`gi-models/${id}`)
 const createModel = async (name: string) =>
   await api.post(`gi-models`, {
-    json: { data: { name } },
+    json: { data: { name, data: {} } },
   })
 
 export {
