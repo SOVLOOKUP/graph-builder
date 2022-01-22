@@ -50,9 +50,9 @@
           <th class="text-center">
             <h2>类型</h2>
           </th>
-          <!-- <th class="text-center">
+          <th class="text-center">
             <h2>操作</h2>
-          </th> -->
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -67,13 +67,16 @@
               {{ item.attributes.type }}
             </span>
           </td>
-          <!-- <td class="text-center" width="100px">
+          <td class="text-center" width="100px">
             <v-container class="d-flex justify-space-around">
-              <v-btn flat @click="removeTargetModel(item.id)">
+              <!-- <v-btn flat @click="removeTargetModel(item.id)">
                 删除<v-icon icon="mdi-delete" />
+              </v-btn> -->
+              <v-btn flat @click="openTagItem(item.id)">
+                编辑<v-icon icon="mdi-open-in-app" />
               </v-btn>
             </v-container>
-          </td> -->
+          </td>
         </tr>
       </tbody>
     </v-table>
@@ -124,6 +127,12 @@ const models = ref()
 const openCMS = async () => {
   window.open(
     `${config.serverBaseUrl}/admin/content-manager/collectionType/api::gi-tag.gi-tag`
+  )
+}
+
+const openTagItem = async (id: number) => {
+  window.open(
+    `${config.serverBaseUrl}/admin/content-manager/collectionType/api::gi-tag.gi-tag/${id}`
   )
 }
 </script>

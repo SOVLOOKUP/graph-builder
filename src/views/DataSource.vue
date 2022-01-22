@@ -48,9 +48,9 @@
           <th class="text-center">
             <h2>类型</h2>
           </th>
-          <!-- <th class="text-center">
+          <th class="text-center">
             <h2>操作</h2>
-          </th> -->
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -65,16 +65,16 @@
               {{ item.attributes.type }}
             </span>
           </td>
-          <!-- <td class="text-center" width="300px">
+          <td class="text-center" width="150px">
             <v-container class="d-flex justify-space-around">
-              <v-btn flat @click="">
-                查看<v-icon icon="mdi-open-in-app" />
+              <v-btn flat @click="openDataSourceItem(item.id)">
+                编辑<v-icon icon="mdi-open-in-app" />
               </v-btn>
-              <v-btn flat @click="removeTargetDataSource(item.id)">
+              <!-- <v-btn flat @click="removeTargetDataSource(item.id)">
                 删除<v-icon icon="mdi-delete" />
-              </v-btn>
+              </v-btn> -->
             </v-container>
-          </td> -->
+          </td>
         </tr>
       </tbody>
     </v-table>
@@ -111,6 +111,11 @@ const dataSources = ref()
 const openCMS = async () => {
   window.open(
     `${config.serverBaseUrl}/admin/content-manager/collectionType/api::gi-data-source.gi-data-source`
+  )
+}
+const openDataSourceItem = async (id: number) => {
+  window.open(
+    `${config.serverBaseUrl}/admin/content-manager/collectionType/api::gi-data-source.gi-data-source/${id}`
   )
 }
 </script>
