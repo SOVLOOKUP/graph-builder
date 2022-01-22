@@ -8,7 +8,7 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "@antv/x6": "1.29.6",
+    "@antv/x6": "1.30.0",
     "@kyvg/vue3-notification": "^2.3.4",
     "@mdi/font": "6.5.95",
     "ky": "0.28.7",
@@ -27,6 +27,6 @@
     "sass": "1.49.0",
     "typescript": "4.5.5",
     "vite": "2.7.13",
-    "vue-tsc": "0.30.6"
+    "vue-tsc": "0.31.1"
   }
 }
