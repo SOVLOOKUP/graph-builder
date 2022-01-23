@@ -21,9 +21,11 @@ onMounted(async () => {
   graph = new Graph({
     container: container.value,
     autoResize: true,
+    panning: true,
     selecting: {
+      multiple: false,
       enabled: true,
-      rubberband: true, // 启用框选
+      rubberband: false, // 启用框选
     },
     // 网格
     grid: true,
