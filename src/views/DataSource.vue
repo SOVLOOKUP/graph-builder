@@ -1,6 +1,6 @@
 <template>
-  <!-- <v-dialog v-model="dialog" persistent>
-    <v-card style="transform: translate(0, -50px)">
+  <v-dialog v-model="dialog" persistent>
+    <v-card style="transform: translate(0, -100px)">
       <v-card-title>
         <span>新增数据源</span>
       </v-card-title>
@@ -14,14 +14,18 @@
                 v-model="newDataSourceName"
                 variant="outlined"
                 hide-details="auto"
-                @keydown="
-                  (e: KeyboardEvent) => {
-                    if (e.key === 'Enter') {
-                      addDataSource()
-                    }
-                  }
-                "
               />
+            </v-col>
+            <span>数据类型</span>
+            <v-col cols="12">
+              <v-radio-group v-model="newDSType">
+                <v-radio
+                  v-for="n in DSType"
+                  :key="n"
+                  :label="n"
+                  :value="n"
+                ></v-radio>
+              </v-radio-group>
             </v-col>
           </v-row>
         </v-container>
@@ -32,11 +36,10 @@
         <v-btn color="primary" text @click="addDataSource"> 确认 </v-btn>
       </v-card-actions>
     </v-card>
-  </v-dialog> -->
+  </v-dialog>
 
   <v-container class="mt-6">
-    <v-btn flat @click="openCMS">
-      <!-- <v-btn flat @click="addNewDataSource"> -->
+    <v-btn flat @click="addNewDataSource">
       添加数据源<v-icon icon="mdi-plus" />
     </v-btn>
     <v-table>
@@ -83,7 +86,7 @@
 
 <script lang="ts" setup>
 import { onBeforeMount, ref } from 'vue'
-import { listDataSources, deleteDataSource } from '../api'
+import { listDataSources, deleteDataSource, createDataSource } from '../api'
 import config from '../config'
 
 const refresh = async () => {
@@ -91,34 +94,30 @@ const refresh = async () => {
 }
 onBeforeMount(refresh)
 
-// const newDataSourceName = ref('')
-// const dialog = ref(false)
+const DSType = ['raw', 'nodes', 'edges']
+const newDataSourceName = ref('')
+const newDSType = ref('')
+const dialog = ref(false)
 const dataSources = ref()
 
-// const removeTargetDataSource = async (id: number) =>
-//   (dataSources.value = dataSources.value.filter((item) => item.id !== id))
+const addNewDataSource = async () => {
+  newDataSourceName.value = ''
+  dialog.value = true
+}
 
-// const addNewDataSource = async () => {
-//   newDataSourceName.value = ''
-//   dialog.value = true
-// }
-
-// const addDataSource = async () => {
-//   dialog.value = false
-//   if (newDataSourceName.value !== '')
-//     dataSources.value.push({ id: 333, name: newDataSourceName.value })
-// }
+const addDataSource = async () => {
+  dialog.value = false
+  if (newDataSourceName.value !== '' && newDSType.value !== '') {
+    await createDataSource(newDataSourceName.value, newDSType.value)
+    await refresh()
+  }
+}
 
 const deleteDS = async (id: number) => {
   await deleteDataSource(id)
   await refresh()
 }
 
-const openCMS = async () => {
-  window.open(
-    `${config.serverBaseUrl}/admin/content-manager/collectionType/api::gi-data-source.gi-data-source/create`
-  )
-}
 const openDataSourceItem = async (id: number) => {
   window.open(
     `${config.serverBaseUrl}/admin/content-manager/collectionType/api::gi-data-source.gi-data-source/${id}`

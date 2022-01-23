@@ -29,6 +29,11 @@ const createTag = async (name: string, type: string) =>
     json: { data: { name, type } },
   })
 
+const createDataSource = async (name: string, type: string) =>
+  await api.post(`gi-data-sources`, {
+    json: { data: { name, type } },
+  })
+
 const removeConcepts = async (id: number) =>
   await api.delete(`gi-concepts/${id}`)
 const deleteModel = async (id: number) => await api.delete(`gi-models/${id}`)
@@ -60,4 +65,5 @@ export {
   deleteTag,
   createTag,
   deleteDataSource,
+  createDataSource,
 }
