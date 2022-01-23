@@ -1,7 +1,42 @@
 <template>
+  <v-dialog v-model="dialog" persistent>
+    <v-card style="transform: translate(0, -50px)">
+      <v-card-title>
+        <span>新增概念</span>
+      </v-card-title>
+      <v-card-text>
+        <v-container>
+          <v-row>
+            <v-col cols="12">
+              <v-text-field
+                label="概念名称"
+                type="text"
+                v-model="newConceptName"
+                variant="outlined"
+                hide-details="auto"
+                @keydown="
+                  (e: KeyboardEvent) => {
+                    if (e.key === 'Enter') {
+                      addConcept()
+                    }
+                  }
+                "
+              />
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn text @click="dialog = false"> 取消 </v-btn>
+        <v-btn color="primary" text @click="addConcept"> 确认 </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
   <v-container class="mt-6">
-    <v-btn flat @click="openCMS">
-      管理概念<v-icon icon="mdi-script-text-outline" />
+    <v-btn flat @click="addNewConcept">
+      新增概念<v-icon icon="mdi-plus" />
     </v-btn>
     <v-table>
       <thead>
@@ -23,14 +58,14 @@
             </span>
           </td>
 
-          <td class="text-center" width="150px">
+          <td class="text-center" width="300px">
             <v-container class="d-flex justify-space-around">
               <v-btn flat @click="openConceptItem(item.id)">
                 编辑<v-icon icon="mdi-open-in-app" />
               </v-btn>
-              <!-- <v-btn flat @click="removeTargetDataSource(item.id)">
+              <v-btn flat @click="deleteConcept(item.id)">
                 删除<v-icon icon="mdi-delete" />
-              </v-btn> -->
+              </v-btn>
             </v-container>
           </td>
         </tr>
@@ -41,36 +76,36 @@
 
 <script lang="ts" setup>
 import { onBeforeMount, ref } from 'vue'
-import { listConcepts } from '../api'
+import { listConcepts, removeConcepts, createConcept } from '../api'
 import config from '../config'
 
-onBeforeMount(async () => {
-  concepts.value = (await (await listConcepts()).json()).data
-})
+const refresh = async () =>
+  (concepts.value = (await (await listConcepts()).json()).data)
 
-// const newDataSourceName = ref('')
-// const dialog = ref(false)
+onBeforeMount(refresh)
+
+const newConceptName = ref('')
+const dialog = ref(false)
 const concepts = ref()
 
-// const removeTargetDataSource = async (id: number) =>
-//   (dataSources.value = dataSources.value.filter((item) => item.id !== id))
-
-// const addNewDataSource = async () => {
-//   newDataSourceName.value = ''
-//   dialog.value = true
-// }
-
-// const addDataSource = async () => {
-//   dialog.value = false
-//   if (newDataSourceName.value !== '')
-//     dataSources.value.push({ id: 333, name: newDataSourceName.value })
-// }
-
-const openCMS = async () => {
-  window.open(
-    `${config.serverBaseUrl}/admin/content-manager/collectionType/api::gi-concept.gi-concept`
-  )
+const deleteConcept = async (id: number) => {
+  await removeConcepts(id)
+  await refresh()
 }
+
+const addNewConcept = async () => {
+  newConceptName.value = ''
+  dialog.value = true
+}
+
+const addConcept = async () => {
+  dialog.value = false
+  if (newConceptName.value !== '') {
+    await createConcept(newConceptName.value, [])
+    await refresh()
+  }
+}
+
 const openConceptItem = async (id: number) => {
   window.open(
     `${config.serverBaseUrl}/admin/content-manager/collectionType/api::gi-concept.gi-concept/${id}`

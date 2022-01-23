@@ -37,7 +37,7 @@
   <v-container class="mt-6">
     <v-btn flat @click="openCMS">
       <!-- <v-btn flat @click="addNewDataSource"> -->
-      管理数据源<v-icon icon="mdi-database" />
+      添加数据源<v-icon icon="mdi-plus" />
     </v-btn>
     <v-table>
       <thead>
@@ -65,14 +65,14 @@
               {{ item.attributes.type }}
             </span>
           </td>
-          <td class="text-center" width="150px">
+          <td class="text-center" width="300px">
             <v-container class="d-flex justify-space-around">
               <v-btn flat @click="openDataSourceItem(item.id)">
                 编辑<v-icon icon="mdi-open-in-app" />
               </v-btn>
-              <!-- <v-btn flat @click="removeTargetDataSource(item.id)">
+              <v-btn flat @click="deleteDS(item.id)">
                 删除<v-icon icon="mdi-delete" />
-              </v-btn> -->
+              </v-btn>
             </v-container>
           </td>
         </tr>
@@ -83,12 +83,13 @@
 
 <script lang="ts" setup>
 import { onBeforeMount, ref } from 'vue'
-import { listDataSources } from '../api'
+import { listDataSources, deleteDataSource } from '../api'
 import config from '../config'
 
-onBeforeMount(async () => {
+const refresh = async () => {
   dataSources.value = (await (await listDataSources()).json()).data
-})
+}
+onBeforeMount(refresh)
 
 // const newDataSourceName = ref('')
 // const dialog = ref(false)
@@ -108,9 +109,14 @@ const dataSources = ref()
 //     dataSources.value.push({ id: 333, name: newDataSourceName.value })
 // }
 
+const deleteDS = async (id: number) => {
+  await deleteDataSource(id)
+  await refresh()
+}
+
 const openCMS = async () => {
   window.open(
-    `${config.serverBaseUrl}/admin/content-manager/collectionType/api::gi-data-source.gi-data-source`
+    `${config.serverBaseUrl}/admin/content-manager/collectionType/api::gi-data-source.gi-data-source/create`
   )
 }
 const openDataSourceItem = async (id: number) => {

@@ -36,7 +36,7 @@
 
   <v-container class="mt-6">
     <v-btn flat @click="addNewModel">
-      新增模型<v-icon icon="mdi-layers-plus" />
+      新增模型<v-icon icon="mdi-plus" />
     </v-btn>
     <v-table>
       <thead>
