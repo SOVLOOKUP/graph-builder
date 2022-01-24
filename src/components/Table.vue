@@ -41,7 +41,12 @@
       row-key="name"
     >
       <template v-slot:top>
-        <q-btn color="primary" :label="`新增${itemName}`" @click="addNewBtn" />
+        <q-btn
+          color="primary"
+          :label="`新增${itemName}`"
+          v-if="createItem !== undefined"
+          @click="createItem !== undefined ? addNewBtn() : null"
+        />
         <q-space />
         <q-input
           dense
@@ -59,7 +64,20 @@
 
       <template v-slot:body-cell-action="props">
         <q-td :props="props">
-          <q-btn flat @click="removeItem(props.row.id)"> 删除 </q-btn>
+          <q-btn
+            flat
+            v-if="editItem !== undefined"
+            @click="editItem !== undefined ? editItem(props.row.id) : null"
+          >
+            编辑
+          </q-btn>
+          <q-btn
+            flat
+            v-if="removeItem !== undefined"
+            @click="removeItem !== undefined ? removeItem(props.row.id) : null"
+          >
+            删除
+          </q-btn>
         </q-td>
       </template>
     </q-table>
@@ -76,8 +94,9 @@ const props = withDefaults(
     itemName: string
     columns: any
     getItems: () => Promise<Item[]>
-    deleteItem: (id: number) => Promise<any>
-    createItem: (name: string) => Promise<any>
+    createItem?: (name: string) => Promise<any>
+    deleteItem?: (id: number) => Promise<any>
+    editItem?: (id: number) => Promise<any>
   }>(),
   {
     itemName: 'xx',
@@ -114,7 +133,7 @@ const refresh = async () => {
 }
 
 const removeItem = async (id: number) => {
-  await props.deleteItem(id)
+  props.deleteItem && (await props.deleteItem(id))
   await refresh()
 }
 
@@ -125,7 +144,7 @@ const addNewBtn = async () => {
 
 const addTag = async () => {
   if (newItemName.value !== '') {
-    await props.createItem(newItemName.value)
+    props.createItem && (await props.createItem(newItemName.value))
     await refresh()
   }
 }
