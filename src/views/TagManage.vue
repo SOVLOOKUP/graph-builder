@@ -36,7 +36,6 @@
       :rows="models"
       aligen="center"
       :rows-per-page-options="[15, 10, 5, 0]"
-      title="标签管理"
       separator="vertical"
       :columns="columns"
       row-key="name"
