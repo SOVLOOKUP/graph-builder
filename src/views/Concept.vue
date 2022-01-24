@@ -6,7 +6,6 @@
     :deleteItem="removeConcepts"
     :createItem="createItem"
   >
-    <!-- 多选 -->
     <q-select
       v-model="conceptTags"
       label="概念属性标签"
