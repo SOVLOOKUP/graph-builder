@@ -26,7 +26,7 @@ const columns = [
   {
     align: 'center',
     name: 'id',
-    label: '标签ID',
+    label: '标签 ID',
     field: 'id',
   },
   {

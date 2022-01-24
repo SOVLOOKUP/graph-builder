@@ -41,9 +41,7 @@
       row-key="name"
     >
       <template v-slot:top>
-        <q-btn color="primary" :label="`新增${itemName}`" @click="addNewBtn">
-          <Icon icon="mdi-plus" />
-        </q-btn>
+        <q-btn color="primary" :label="`新增${itemName}`" @click="addNewBtn" />
         <q-space />
         <q-input
           dense
