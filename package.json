@@ -23,7 +23,7 @@
     "threads": "1.7.0",
     "typescript": "4.5.5",
     "vite": "2.7.13",
-    "vue": "3.2.26",
+    "vue": "3.2.29",
     "vue-router": "4.0.12",
     "vue-tsc": "0.31.1",
     "vuetify": "3.0.0-alpha.12",
