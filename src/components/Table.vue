@@ -45,7 +45,7 @@
           color="primary"
           :label="`新增${itemName}`"
           v-if="createItem !== undefined"
-          @click="createItem !== undefined ? addNewBtn() : null"
+          @click="addNewBtn"
         />
         <q-space />
         <q-input
@@ -73,8 +73,8 @@
           </q-btn>
           <q-btn
             flat
-            v-if="removeItem !== undefined"
-            @click="removeItem !== undefined ? removeItem(props.row.id) : null"
+            v-if="deleteItem !== undefined"
+            @click="removeItem(props.row.id)"
           >
             删除
           </q-btn>

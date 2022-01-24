@@ -1,41 +1,44 @@
 <template>
-  <v-container class="mt-6">
-    <v-table>
-      <thead>
-        <tr>
-          <th class="text-center">
-            <h2>任务名称</h2>
-          </th>
-          <th class="text-center">
-            <h2>状态</h2>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="item in tasks" :key="item.id">
-          <td class="text-center">
-            <span>
-              {{ item.attributes.name }}
-            </span>
-          </td>
-          <td class="text-center" width="300px">
-            <v-container class="d-flex justify-space-around">
-              {{ item.attributes.status }}
-            </v-container>
-          </td>
-        </tr>
-      </tbody>
-    </v-table>
-  </v-container>
+  <Table itemName="任务" :columns="columns" :getItems="getItems" />
 </template>
 
 <script lang="ts" setup>
-import { onBeforeMount, ref } from 'vue'
+import Table from '@/components/Table.vue'
 import { listTasks } from '../api'
 
-onBeforeMount(async () => {
-  tasks.value = (await (await listTasks()).json()).data
-})
+const getItems = async () => (await (await listTasks()).json()).data
 
-const tasks = ref()
+const columns = [
+  {
+    align: 'center',
+    name: 'id',
+    label: '任务 ID',
+    field: 'id',
+  },
+  {
+    align: 'center',
+    name: 'name',
+    label: '任务名称',
+    field: (item: any) => item.attributes.name,
+  },
+  {
+    align: 'center',
+    name: 'status',
+    label: '状态',
+    field: (item: any) => {
+      switch (item.attributes.status) {
+        case 'pending':
+          return '等待中'
+        case 'running':
+          return '运行中'
+        case 'success':
+          return '成功'
+        case 'failed':
+          return '失败'
+        default:
+          return '未知'
+      }
+    },
+  },
+]
 </script>
