@@ -8,20 +8,13 @@
         color="#673AB7"
       />
 
-      <!-- logo -->
       <div class="pa-10">
-        <div class="text-center mb-4">
-          <span class="text-h6 text--secondary">
-            <img
-              :src="config.logoURL"
-              alt="GraphIntelligence"
-              width="24"
-              style="vertical-align: middle"
-              class="mr-1"
-            />
-            <span class="font-family-body">GraphIntelligence</span>
-          </span>
-        </div>
+        <q-toolbar-title>
+          <q-avatar>
+            <Icon icon="logos:graphene" width="30" />
+          </q-avatar>
+          <span class="font-family-body">GraphIntelligence</span>
+        </q-toolbar-title>
 
         <!-- form -->
         <slot />
@@ -31,8 +24,7 @@
 </template>
 
 <script lang="ts" setup>
-import config from '../config'
-
+import { Icon } from '@iconify/vue'
 withDefaults(
   defineProps<{
     loading?: boolean
