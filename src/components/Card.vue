@@ -1,26 +1,22 @@
 <template>
-  <v-container class="auth-card">
-    <v-card class="mx-auto" min-width="450" elevation="3">
-      <v-progress-linear
-        indeterminate
-        absolute
-        v-show="loading"
-        color="#673AB7"
-      />
+  <div class="c">
+    <div class="out-card">
+      <q-card class="auth-card">
+        <q-linear-progress indeterminate v-if="loading" />
+        <div class="q-pa-xl">
+          <q-toolbar-title class="q-py-lg">
+            <q-avatar>
+              <Icon icon="logos:graphene" width="30" />
+            </q-avatar>
+            <span class="font-family-body">GraphIntelligence</span>
+          </q-toolbar-title>
 
-      <div class="pa-10">
-        <q-toolbar-title>
-          <q-avatar>
-            <Icon icon="logos:graphene" width="30" />
-          </q-avatar>
-          <span class="font-family-body">GraphIntelligence</span>
-        </q-toolbar-title>
-
-        <!-- form -->
-        <slot />
-      </div>
-    </v-card>
-  </v-container>
+          <!-- form -->
+          <slot />
+        </div>
+      </q-card>
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -36,9 +32,25 @@ withDefaults(
 </script>
 
 <style lang="scss">
-.auth-card {
-  height: 100%;
+.c {
   display: flex;
+  justify-content: center;
   align-items: center;
+  height: 100vh;
+
+  .out-card {
+    width: 400px;
+    margin: auto;
+    text-align: center;
+    padding: auto;
+    vertical-align: middle;
+    left: 0;
+    right: 0;
+    display: flex;
+
+    .auth-card {
+      width: 100%;
+    }
+  }
 }
 </style>

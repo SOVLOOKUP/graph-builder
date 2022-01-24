@@ -35,56 +35,15 @@
   </v-dialog> -->
 
   <Card :loading="loading">
-    <v-divider />
-    <v-container class="mb-4">
-      <v-row class="mt-2">
-        <v-col><div class="text-subtitle-1">用户名</div></v-col>
-        <v-col>
-          <div>{{ userInfo?.username }}</div>
-        </v-col>
+    <q-list bordered>
+      <q-item clickable v-ripple v-for="item in listItems">
+        <q-item-section>{{ item.name }}</q-item-section>
+        <q-item-section> {{ item.value }} </q-item-section>
+      </q-item>
+    </q-list>
 
-        <v-divider class="mx-4"></v-divider>
-      </v-row>
-
-      <v-row class="mt-2">
-        <v-col><div class="text-subtitle-1">邮箱</div></v-col>
-        <v-col class="d-flex align-center">
-          <v-row>
-            <span>
-              {{ userInfo?.email }}
-            </span>
-            <v-icon
-              :icon="
-                userInfo?.confirmed ? 'mdi-shield-check' : 'mdi-shield-alert'
-              "
-            />
-          </v-row>
-        </v-col>
-
-        <v-divider class="mx-4"></v-divider>
-      </v-row>
-
-      <v-row class="mt-2">
-        <v-col><div class="text-subtitle-1">图数据库地址</div></v-col>
-        <v-col class="d-flex align-center">
-          <v-row>
-            {{ store.state.user?.dbUrl }}
-          </v-row>
-          <!-- <v-icon
-            @click="
-              () => {
-                dialog = true
-                newBackendDomain = ''
-              }
-            "
-            icon="mdi-circle-edit-outline "
-          /> -->
-        </v-col>
-      </v-row>
-    </v-container>
-    <v-divider />
-    <v-card-actions class="d-flex justify-end">
-      <v-btn
+    <q-card-actions align="right" class="q-pa-md">
+      <q-btn
         flat
         @click="
           () => {
@@ -94,8 +53,8 @@
         "
       >
         退出登录
-      </v-btn>
-    </v-card-actions>
+      </q-btn>
+    </q-card-actions>
   </Card>
 </template>
 
@@ -104,10 +63,17 @@ import Card from '@/components/Card.vue'
 import { useStore } from '../store'
 import { ref } from 'vue'
 
-const dialog = ref(false)
+// const dialog = ref(false)
 const loading = ref(false)
 const store = useStore()
 const userInfo = store.state.user?.user
+
+const listItems = [
+  { name: '用户名', value: userInfo?.username },
+  { name: '邮箱', value: userInfo?.email },
+  { name: '图数据库地址', value: store.state.user?.dbUrl },
+]
+
 // const newBackendDomain = ref('')
 
 // const editBackendDomain = () => {

@@ -1,14 +1,12 @@
 <template>
   <div>
-    <div class="text-center">
-      <h2 class="headline mb-2">注册成功 ✅</h2>
-      <span class="d-inline-block mb-8">请前往您的邮箱查收验证邮件</span>
-    </div>
+    <q-card-section class="q-pt-none">
+      <h5>注册成功 ✅</h5>
+      <span>请前往您的邮箱查收验证邮件</span>
+    </q-card-section>
 
-    <div class="d-flex justify-center">
-      <v-btn color="primary" @click="() => $router.push('signin')"
-        >已激活? 立即前往登录</v-btn
-      >
-    </div>
+    <q-btn flat color="primary" @click="() => $router.push('signin')">
+      已激活? 立即前往登录
+    </q-btn>
   </div>
 </template>

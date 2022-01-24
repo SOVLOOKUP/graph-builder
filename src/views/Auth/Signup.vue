@@ -1,43 +1,36 @@
 <template>
   <div>
-    <div class="text-center">
-      <h2 class="headline mb-2">注册</h2>
-      <span class="d-inline-block mb-8">{{ tips }}</span>
-    </div>
+    <q-card-section class="q-pt-none">
+      {{ tips }}
+    </q-card-section>
 
-    <v-form>
-      <v-text-field
+    <q-form>
+      <q-input
         v-model="email"
         :label="'邮箱'"
         name="login"
         type="text"
         :error="error"
-        variant="outlined"
-        hide-details="auto"
         @focus="resetForm"
       />
 
-      <v-text-field
+      <q-input
         v-model="username"
         :label="'用户名'"
         name="login"
         type="text"
-        variant="outlined"
         :error="error"
-        hide-details="auto"
         @focus="resetForm"
       />
 
-      <v-text-field
+      <q-input
         v-model="password"
         :label="'密码'"
         name="password"
         type="password"
         :error="error"
         class="mr-auto"
-        variant="outlined"
         @focus="resetForm"
-        hide-details="auto"
         @keydown="
           (e: KeyboardEvent) => {
             if (e.key === 'Enter') {
@@ -46,12 +39,13 @@
           }
         "
       />
-
-      <div class="d-flex justify-space-between">
-        <v-btn flat @click="() => $router.push('signin')">返回登录</v-btn>
-        <v-btn color="primary" @click="next">注册</v-btn>
-      </div>
-    </v-form>
+      <q-card-actions align="center">
+        <q-btn flat @click="() => $router.push('signin')">返回登录</q-btn>
+      </q-card-actions>
+      <q-card-actions align="right">
+        <q-btn color="primary" @click="next"> 注册 </q-btn>
+      </q-card-actions>
+    </q-form>
   </div>
 </template>
 

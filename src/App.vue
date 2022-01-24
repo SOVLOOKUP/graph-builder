@@ -2,15 +2,7 @@
   <notifications position="bottom right" />
 
   <q-layout view="hHh lpR fFf">
-    <q-header
-      elevated
-      class="bg-primary text-white"
-      height-hint="98"
-      :v-if="
-        !(store.state.user === null) &&
-        !$router.currentRoute.value.fullPath.startsWith('/model/')
-      "
-    >
+    <q-header elevated>
       <q-toolbar>
         <q-toolbar-title style="cursor: pointer" @click="$router.push('/')">
           <q-avatar>
@@ -33,6 +25,7 @@
         </q-tabs>
       </q-toolbar>
     </q-header>
+
     <q-page-container>
       <router-view />
     </q-page-container>
@@ -40,10 +33,9 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from './store'
 import { Icon } from '@iconify/vue'
-const store = useStore()
 
+// !$router.currentRoute.value.fullPath.startsWith('/model/')
 const btns = [
   {
     path: '/tagmanager',

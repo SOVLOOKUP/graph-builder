@@ -1,48 +1,63 @@
 import { AuthedKy } from '../base'
 import config from '../../config'
 
-const api = AuthedKy.extend({
-  prefixUrl: `${config.serverBaseUrl}/api/`,
-})
+const api = async () =>
+  (await AuthedKy()).extend({
+    prefixUrl: `${config.serverBaseUrl}/api/`,
+  })
 
-const listTags = async () => await api.get('gi-tags?fields=name,type')
+const listTags = async () => await (await api()).get('gi-tags?fields=name,type')
 const listDataSources = async () =>
-  await api.get('gi-data-sources?fields=name,type')
-const listConcepts = async () => await api.get('gi-concepts?fields=name')
-const listTasks = async () => await api.get('gi-tasks?fields=name,status')
-const listModels = async () => await api.get('gi-models?fields=name')
+  await (await api()).get('gi-data-sources?fields=name,type')
+const listConcepts = async () =>
+  await (await api()).get('gi-concepts?fields=name')
+const listTasks = async () =>
+  await (await api()).get('gi-tasks?fields=name,status')
+const listModels = async () => await (await api()).get('gi-models?fields=name')
 
 const getModelJson = async (id: string) =>
-  await api.get(`gi-models/${id}?fields=data`)
+  await (await api()).get(`gi-models/${id}?fields=data`)
 
 const createConcept = async (name: string, tags: number[]) =>
-  await api.post(`gi-concepts`, {
+  await (
+    await api()
+  ).post(`gi-concepts`, {
     json: { data: { name, tag: tags.map((tag) => ({ tagid: tag })) } },
   })
 const createModel = async (name: string) =>
-  await api.post(`gi-models`, {
+  await (
+    await api()
+  ).post(`gi-models`, {
     json: { data: { name, data: {} } },
   })
 
 const createTag = async (name: string, type: string) =>
-  await api.post(`gi-tags`, {
+  await (
+    await api()
+  ).post(`gi-tags`, {
     json: { data: { name, type } },
   })
 
 const createDataSource = async (name: string, type: string) =>
-  await api.post(`gi-data-sources`, {
+  await (
+    await api()
+  ).post(`gi-data-sources`, {
     json: { data: { name, type } },
   })
 
 const removeConcepts = async (id: number) =>
-  await api.delete(`gi-concepts/${id}`)
-const deleteModel = async (id: number) => await api.delete(`gi-models/${id}`)
-const deleteTag = async (id: number) => await api.delete(`gi-tags/${id}`)
+  await (await api()).delete(`gi-concepts/${id}`)
+const deleteModel = async (id: number) =>
+  await (await api()).delete(`gi-models/${id}`)
+const deleteTag = async (id: number) =>
+  await (await api()).delete(`gi-tags/${id}`)
 const deleteDataSource = async (id: number) =>
-  await api.delete(`gi-data-sources/${id}`)
+  await (await api()).delete(`gi-data-sources/${id}`)
 
 const updateModelJson = async (id: string, json: object) =>
-  await api.put(`gi-models/${id}`, {
+  await (
+    await api()
+  ).put(`gi-models/${id}`, {
     json: {
       data: {
         data: json,

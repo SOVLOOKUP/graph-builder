@@ -1,5 +1,4 @@
 import ky from 'ky'
-import { store } from '../store'
 
 // todo 处理 jwt 续期
 
@@ -10,8 +9,11 @@ const defaultKy = ky.create({
 
 export default defaultKy
 
-export const AuthedKy = defaultKy.extend({
-  headers: {
-    Authorization: `Bearer ${store.state.user?.jwt}`,
-  },
-})
+export const AuthedKy = async () => {
+  const { store } = await import('../store')
+  return defaultKy.extend({
+    headers: {
+      Authorization: `Bearer ${store.state.user?.jwt}`,
+    },
+  })
+}
