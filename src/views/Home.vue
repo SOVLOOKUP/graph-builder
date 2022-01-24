@@ -48,7 +48,9 @@
         @click="
           () => {
             store.commit('signout')
-            $router.push('/auth/signin')
+            $router.push('/auth/signin').then(() => {
+              location.reload()
+            })
           }
         "
       >

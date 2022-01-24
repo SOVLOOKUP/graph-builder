@@ -92,6 +92,7 @@ router.beforeEach(async (to, from) => {
       redirectedFrom: from,
       meta: {},
     }
+    store.commit('toggleBar', false)
     return authURL
   }
   return true

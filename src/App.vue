@@ -2,7 +2,7 @@
   <notifications position="bottom right" />
 
   <q-layout view="hHh lpR fFf">
-    <q-header elevated>
+    <q-header elevated v-model="store.state.showBar">
       <q-toolbar>
         <q-toolbar-title style="cursor: pointer" @click="$router.push('/')">
           <q-avatar>
@@ -34,8 +34,14 @@
 
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
+import { onBeforeMount } from 'vue'
+import { useRouter } from 'vue-router'
+import { useStore } from './store'
 
-// !$router.currentRoute.value.fullPath.startsWith('/model/')
+const router = useRouter()
+const store = useStore()
+onBeforeMount(async () => await store.dispatch('autoHideBar', router))
+
 const btns = [
   {
     path: '/tagmanager',
