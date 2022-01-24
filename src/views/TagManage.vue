@@ -1,93 +1,124 @@
 <template>
-  <v-dialog v-model="dialog" persistent>
-    <v-card style="transform: translate(0, -100px)">
-      <v-card-title>
+  <q-dialog
+    v-model="dialog"
+    persistent
+    transition-show="flip-down"
+    transition-hide="flip-up"
+  >
+    <q-card>
+      <q-bar class="bg-primary text-white">
         <span>新增标签</span>
-      </v-card-title>
-      <v-card-text>
-        <v-container>
-          <v-row>
-            <v-col cols="12">
-              <v-text-field
-                label="标签名称"
-                type="text"
-                v-model="newTagName"
-                variant="outlined"
-                hide-details="auto"
-              />
-            </v-col>
-            <span>标签类型</span>
-            <v-col cols="12">
-              <v-radio-group v-model="newTagType">
-                <v-radio
-                  v-for="n in tagType"
-                  :key="n"
-                  :label="n"
-                  :value="n"
-                ></v-radio>
-              </v-radio-group>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn text @click="dialog = false"> 取消 </v-btn>
-        <v-btn color="primary" text @click="addTag"> 确认 </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
 
-  <v-container class="mt-6">
-    <v-btn flat @click="addNewTag"> 新增标签<v-icon icon="mdi-plus" /> </v-btn>
-    <v-table>
-      <thead>
-        <tr>
-          <th class="text-center">
-            <h2>标签名称</h2>
-          </th>
-          <th class="text-center">
-            <h2>类型</h2>
-          </th>
-          <th class="text-center">
-            <h2>操作</h2>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="item in models" :key="item.id">
-          <td class="text-center">
-            <span>
-              {{ item.attributes.name }}
-            </span>
-          </td>
-          <td class="text-center">
-            <span>
-              {{ item.attributes.type }}
-            </span>
-          </td>
-          <td class="text-center" width="300px">
-            <v-container class="d-flex justify-space-around">
-              <v-btn flat @click="removeTargetModel(item.id)">
-                删除<v-icon icon="mdi-delete" />
-              </v-btn>
-            </v-container>
-          </td>
-        </tr>
-      </tbody>
-    </v-table>
-  </v-container>
+        <q-space />
+      </q-bar>
+
+      <q-card-section class="q-pt-none q-pa-md">
+        <q-input
+          label="标签名称"
+          type="text"
+          v-model="newTagName"
+          variant="outlined"
+          hide-details="auto"
+        />
+        <q-select v-model="newTagType" :options="tagType" label="标签类型" />
+      </q-card-section>
+
+      <q-card-actions align="right">
+        <q-btn flat v-close-popup> 取消 </q-btn>
+        <q-btn color="primary" flat @click="addTag" v-close-popup> 确认 </q-btn>
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
+  <div class="q-pa-md">
+    <q-table
+      :loading="loading"
+      :rows="models"
+      aligen="center"
+      :rows-per-page-options="[15, 10, 5, 0]"
+      title="标签管理"
+      separator="vertical"
+      :columns="columns"
+      row-key="name"
+    >
+      <template v-slot:top>
+        <q-btn color="primary" label="新增标签" @click="addNewTag">
+          <Icon icon="mdi-plus" />
+        </q-btn>
+        <q-space />
+        <q-input
+          dense
+          debounce="300"
+          color="primary"
+          v-model="filter"
+          placeholder="搜索标签名称"
+          @change="search"
+        >
+          <template v-slot:append>
+            <Icon icon="mdi-search" />
+          </template>
+        </q-input>
+      </template>
+
+      <template v-slot:body-cell-action="props">
+        <q-td :props="props">
+          <q-btn flat @click="removeTargetModel(props.row.id)"> 删除 </q-btn>
+        </q-td>
+      </template>
+    </q-table>
+  </div>
 </template>
 
 <script lang="ts" setup>
 import { onBeforeMount, ref } from 'vue'
 import { listTags, deleteTag, createTag } from '../api'
+import { Icon } from '@iconify/vue'
+const columns = [
+  {
+    align: 'center',
+    name: 'id',
+    label: '标签ID',
+    field: 'id',
+  },
+  {
+    align: 'center',
+    name: 'name',
+    label: '标签名称',
+    field: (item: any) => item.attributes.name,
+  },
+  {
+    align: 'center',
+    name: 'type',
+    label: '类型',
+    field: (item: any) => item.attributes.type,
+  },
+  {
+    align: 'center',
+    name: 'action',
+    label: '操作',
+  },
+] as any
+
+let data: Tag[]
 
 const refresh = async () => {
-  models.value = (await (await listTags()).json()).data as Tag
+  loading.value = true
+  data = (await (await listTags()).json()).data
+  models.value = data
+  loading.value = false
 }
 
 onBeforeMount(refresh)
+
+const filter = ref('')
+const loading = ref(true)
+const search = async () => {
+  loading.value = true
+  models.value = data.filter((item: any) => {
+    return item.attributes.name.includes(filter.value)
+  })
+  loading.value = false
+}
 
 interface Tag {
   id: number
@@ -114,7 +145,6 @@ const addNewTag = async () => {
 }
 
 const addTag = async () => {
-  dialog.value = false
   if (newTagName.value !== '' && newTagType.value !== '') {
     // console.log(newTagName.value, newTagType.value)
     await createTag(newTagName.value, newTagType.value)

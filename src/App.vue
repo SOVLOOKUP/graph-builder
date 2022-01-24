@@ -1,50 +1,74 @@
 <template>
-  <v-app>
-    <notifications position="bottom right" />
-    <AppBar
-      :show="
+  <notifications position="bottom right" />
+
+  <q-layout view="hHh lpR fFf">
+    <q-header
+      elevated
+      class="bg-primary text-white"
+      height-hint="98"
+      :v-if="
         !(store.state.user === null) &&
         !$router.currentRoute.value.fullPath.startsWith('/model/')
       "
-    />
-    <v-main>
+    >
+      <q-toolbar>
+        <q-toolbar-title style="cursor: pointer" @click="$router.push('/')">
+          <q-avatar>
+            <Icon icon="logos:graphene" width="30" />
+          </q-avatar>
+          <span class="font-family-body">GraphIntelligence</span>
+        </q-toolbar-title>
+        <q-space />
+
+        <q-tabs shrink stretch>
+          <q-route-tab
+            style="width: 100px"
+            :to="btn.path"
+            v-for="btn in btns"
+            :key="btn.name"
+          >
+            <Icon :icon="btn.icon" height="25" />
+            {{ btn.name }}
+          </q-route-tab>
+        </q-tabs>
+      </q-toolbar>
+    </q-header>
+    <q-page-container>
       <router-view />
-    </v-main>
-  </v-app>
+    </q-page-container>
+  </q-layout>
 </template>
 
 <script setup lang="ts">
-import AppBar from '@/components/AppBar.vue'
 import { useStore } from './store'
+import { Icon } from '@iconify/vue'
 const store = useStore()
+
+const btns = [
+  {
+    path: '/tagmanager',
+    name: '标签',
+    icon: 'mdi-tag',
+  },
+  {
+    path: '/concept',
+    name: '概念',
+    icon: 'mdi-script-text-outline',
+  },
+  {
+    path: '/datasource',
+    name: '数据',
+    icon: 'mdi-database',
+  },
+  {
+    path: '/model',
+    name: '模型',
+    icon: 'mdi-electron-framework',
+  },
+  {
+    path: '/graphbuilder',
+    name: '构建',
+    icon: 'mdi-crane',
+  },
+]
 </script>
-
-<style lang="scss">
-.vue-notification {
-  // // styling
-  // margin: 0 5px 5px;
-  // padding: 10px;
-  // font-size: 12px;
-  // color: #ffffff;
-
-  // default (blue)
-  background: #44a4fc;
-  border-left: 5px solid #187fe7;
-
-  // types (green, amber, red)
-  &.success {
-    background: #68cd86;
-    border-left-color: #42a85f;
-  }
-
-  &.warn {
-    background: #ffb648;
-    border-left-color: #f48a06;
-  }
-
-  &.error {
-    background: #e54d42;
-    border-left-color: #b82e24;
-  }
-}
-</style>

@@ -12,7 +12,7 @@ const Concept = () => import('../views/Concept.vue')
 const Auth = () => import('../views/Auth/index.vue')
 const Signin = () => import('../views/Auth/Signin.vue')
 const Signup = () => import('../views/Auth/Signup.vue')
-const Vuetify = () => import('../views/Auth/Verify.vue')
+const Verify = () => import('../views/Auth/Verify.vue')
 
 const routes = [
   {
@@ -32,7 +32,7 @@ const routes = [
       },
       {
         path: 'verify',
-        component: Vuetify,
+        component: Verify,
         name: '验证',
       },
     ],
