@@ -88,7 +88,6 @@
 <script lang="ts" setup>
 import { onBeforeMount, ref } from 'vue'
 import { Icon } from '@iconify/vue'
-import { notify } from '@kyvg/vue3-notification'
 
 const props = withDefaults(
   defineProps<{
@@ -121,14 +120,7 @@ let cache: Item[] = []
 
 const refresh = async () => {
   loading.value = true
-  try {
-    cache = await props.getItems()
-  } catch (err) {
-    notify({
-      type: 'error',
-      title: String(err),
-    })
-  }
+  cache = await props.getItems()
   items.value = cache
   loading.value = false
 }

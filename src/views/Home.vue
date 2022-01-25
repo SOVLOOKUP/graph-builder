@@ -1,61 +1,24 @@
 <template>
-  <!-- <v-dialog v-model="dialog" persistent>
-    <v-card style="transform: translate(0, -50px)">
-      <v-card-title>
-        <span>修改组织域名空间</span>
-      </v-card-title>
-      <v-card-text>
-        <v-container>
-          <v-row>
-            <v-col cols="12">
-              <v-text-field
-                label="组织域名"
-                type="text"
-                v-model="newBackendDomain"
-                variant="outlined"
-                hide-details="auto"
-                @keydown="
-                  (e: KeyboardEvent) => {
-                    if (e.key === 'Enter') {
-                      editBackendDomain()
-                    }
-                  }
-                "
-              />
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn text @click="dialog = false"> 取消 </v-btn>
-        <v-btn color="primary" text @click="editBackendDomain"> 确认 </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog> -->
-
   <Card :loading="loading">
     <q-list bordered>
       <q-item clickable v-ripple v-for="item in listItems">
         <q-item-section>{{ item.name }}</q-item-section>
-        <q-item-section> {{ item.value }} </q-item-section>
+        <q-item-section>
+          {{ item.value }}
+          <q-popup-edit
+            v-if="item.editable"
+            v-model="item.value"
+            v-slot="scope"
+            @change="(e) => editItem(e, item.name)"
+          >
+            <q-input v-model="scope.value" dense autofocus counter />
+          </q-popup-edit>
+        </q-item-section>
       </q-item>
     </q-list>
 
     <q-card-actions align="right" class="q-pa-md">
-      <q-btn
-        flat
-        @click="
-          () => {
-            store.commit('signout')
-            $router.push('/auth/signin').then(() => {
-              location.reload()
-            })
-          }
-        "
-      >
-        退出登录
-      </q-btn>
+      <q-btn flat @click="signout"> 退出登录 </q-btn>
     </q-card-actions>
   </Card>
 </template>
@@ -63,24 +26,75 @@
 <script lang="ts" setup>
 import Card from '@/components/Card.vue'
 import { useStore } from '../store'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
+import { getDBAdress, updateDBAdress } from '../api'
+import { useRouter } from 'vue-router'
 
-// const dialog = ref(false)
 const loading = ref(false)
 const store = useStore()
 const userInfo = store.state.user?.user
+const router = useRouter()
 
-const listItems = [
-  { name: '用户名', value: userInfo?.username },
-  { name: '邮箱', value: userInfo?.email },
-  { name: '图数据库地址', value: store.state.user?.dbUrl },
+const listItems = ref([
+  {
+    name: '用户名',
+    value: userInfo?.username,
+    editable: false,
+  },
+  {
+    name: '邮箱',
+    value: userInfo?.email + ' ' + (userInfo?.confirmed === true ? '✅' : '❔'),
+    editable: false,
+  },
+])
+
+const signout = async () => {
+  store.commit('signout')
+  await router.push('/auth/signin')
+}
+
+const config = [
+  {
+    name: '图数据库地址',
+    editable: true,
+    valueFn: async () =>
+      (await (await getDBAdress()).json()).data.attributes.domain,
+  },
 ]
 
-// const newBackendDomain = ref('')
+// 更新配置项
+const updateItem = async ({
+  name,
+  valueFn,
+  editable,
+}: {
+  name: string
+  valueFn: () => Promise<any>
+  editable: boolean
+}) => {
+  listItems.value = listItems.value.filter((item) => item.name !== name)
+  const value = await valueFn()
+  listItems.value.push({ name, value, editable })
+}
 
-// const editBackendDomain = () => {
-//   dialog.value = false
-//   if (newBackendDomain.value !== '')
-//     store.commit('editBackendDomain', newBackendDomain.value)
-// }
+// 根据名称指定更新或全部更新配置项
+const refreshConfig = async (itemName?: string) => {
+  if (itemName !== undefined) {
+    const item = config.find((item) => item.name === itemName)
+    if (item !== undefined) {
+      await updateItem(item)
+    }
+  } else {
+    for (const item of config) {
+      await updateItem(item)
+    }
+  }
+}
+
+onMounted(refreshConfig)
+
+const editItem = async (p: Event, itemName: string) => {
+  await updateDBAdress((p?.target as HTMLInputElement).value)
+  await refreshConfig(itemName)
+}
 </script>

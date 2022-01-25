@@ -48,11 +48,6 @@ const sv = async () => {
       type: 'success',
       title: '保存成功',
     })
-  } else {
-    notify({
-      type: 'error',
-      title: await res.json(),
-    })
   }
 }
 </script>

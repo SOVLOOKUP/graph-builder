@@ -1,10 +1,11 @@
 import { AuthedKy } from '../base'
-import config from '../../config'
 
-const api = async () =>
-  (await AuthedKy()).extend({
-    prefixUrl: `${config.serverBaseUrl}/api/`,
+const api = async () => {
+  const { store } = await import('../../store')
+  return (await AuthedKy()).extend({
+    prefixUrl: `${store.state.serverBaseUrl}/api/`,
   })
+}
 
 const listTags = async () => await (await api()).get('gi-tags?fields=name,type')
 const listDataSources = async () =>
@@ -14,6 +15,7 @@ const listConcepts = async () =>
 const listTasks = async () =>
   await (await api()).get('gi-tasks?fields=name,status')
 const listModels = async () => await (await api()).get('gi-models?fields=name')
+const getDBAdress = async () => await (await api()).get('db-address')
 
 const getModelJson = async (id: string) =>
   await (await api()).get(`gi-models/${id}?fields=data`)
@@ -65,6 +67,17 @@ const updateModelJson = async (id: string, json: object) =>
     },
   })
 
+const updateDBAdress = async (domain: string) =>
+  await (
+    await api()
+  ).put('db-address', {
+    json: {
+      data: {
+        domain,
+      },
+    },
+  })
+
 export {
   listTags,
   listDataSources,
@@ -81,4 +94,6 @@ export {
   createTag,
   deleteDataSource,
   createDataSource,
+  getDBAdress,
+  updateDBAdress,
 }

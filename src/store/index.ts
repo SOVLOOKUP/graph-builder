@@ -7,6 +7,7 @@ import type { Router } from 'vue-router'
 interface State {
   user: UserState | null
   showBar: boolean
+  serverBaseUrl: string
 }
 
 const AutoHideAppBarAtPath = ['/model/', '/auth']
@@ -17,6 +18,7 @@ export const store = createStore<State>({
   state: {
     user: null,
     showBar: false,
+    serverBaseUrl: 'https://api.lingthink.com:4443',
   },
   mutations: {
     // 登录
@@ -28,9 +30,6 @@ export const store = createStore<State>({
     signout(state) {
       state.user = null
       state.showBar = false
-    },
-    editDbUrl(state, newDbUrl: string) {
-      state.user && (state.user.dbUrl = newDbUrl)
     },
     toggleBar(state, showBar: boolean) {
       state.showBar = showBar

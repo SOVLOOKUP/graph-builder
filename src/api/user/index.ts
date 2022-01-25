@@ -1,13 +1,17 @@
 import base from '../base'
 import { UserAuth, UserRegister } from '../../store/user'
-import config from '../../config'
 
-const user = base.extend({
-  prefixUrl: `${config.serverBaseUrl}/api/auth/`,
-})
+const user = async () => {
+  const { store } = await import('../../store')
+  return base.extend({
+    prefixUrl: `${store.state.serverBaseUrl}/api/auth/`,
+  })
+}
 
 const userLogin = async ({ identifier, password }: UserAuth) =>
-  await user.post('local', {
+  await (
+    await user()
+  ).post('local', {
     json: {
       identifier,
       password,
@@ -15,7 +19,9 @@ const userLogin = async ({ identifier, password }: UserAuth) =>
   })
 
 const userRegister = async ({ email, username, password }: UserRegister) =>
-  await user.post('local/register', {
+  await (
+    await user()
+  ).post('local/register', {
     json: {
       email,
       username,
@@ -24,7 +30,9 @@ const userRegister = async ({ email, username, password }: UserRegister) =>
   })
 
 const sendEmailConfirmation = async (email: string) =>
-  await user.post('send-email-confirmation', {
+  await (
+    await user()
+  ).post('send-email-confirmation', {
     json: {
       email,
     },

@@ -3,7 +3,7 @@ import App from './App.vue'
 // import vuetify from './plugins/vuetify'
 import router from './plugins/vueRouter'
 import { store, key } from './store'
-import Notifications from '@kyvg/vue3-notification'
+import Notifications, { notify } from '@kyvg/vue3-notification'
 import { Quasar } from 'quasar'
 
 import quasarLang from 'quasar/lang/zh-CN'
@@ -23,5 +23,13 @@ MainApp.use(Quasar, {
 MainApp.use(store, key)
 MainApp.use(router)
 MainApp.use(Notifications)
+
+MainApp.config.errorHandler = async (err, _vm, info) => {
+  notify({
+    type: 'error',
+    title: (err as Error).message,
+    text: info,
+  })
+}
 
 MainApp.mount('#app')
