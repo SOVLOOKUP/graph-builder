@@ -2,14 +2,14 @@ import { InjectionKey } from 'vue'
 import { createStore, Store, useStore as baseUseStore } from 'vuex'
 import { UserState } from './user'
 import VuexPersistence from 'vuex-persist'
-import { Router } from 'vue-router'
-import config from '../config'
+import type { Router } from 'vue-router'
 
 interface State {
   user: UserState | null
   showBar: boolean
 }
 
+const AutoHideAppBarAtPath = ['/model/', '/auth']
 export const key: InjectionKey<Store<State>> = Symbol()
 
 export const store = createStore<State>({
@@ -40,7 +40,7 @@ export const store = createStore<State>({
     async autoHideBar(state, router: Router) {
       await router.isReady()
       if (
-        config.autoHideAppBarAtPath.some((p) =>
+        AutoHideAppBarAtPath.some((p) =>
           router.currentRoute.value.fullPath.startsWith(p)
         )
       ) {
