@@ -6,6 +6,7 @@
   <Card :loading="loading">
     <router-view @toggleLoading="toggleLoading" />
   </Card>
+  <!-- todo 关于反馈页面 -->
   <q-btn flat round class="setting" @click="dialog = true">
     <Icon icon="icon-park-outline:setting-two" height="30" color="grey" />
   </q-btn>
