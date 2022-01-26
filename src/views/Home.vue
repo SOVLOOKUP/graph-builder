@@ -35,15 +35,26 @@ const store = useStore()
 const userInfo = store.state.user?.user
 const router = useRouter()
 
+// 动态config
+const config = [
+  {
+    name: '邮箱',
+    value: async () =>
+      userInfo?.email + ' ' + (userInfo?.confirmed === true ? '✅' : '❔'),
+    editable: false,
+  },
+  {
+    name: '图数据库地址',
+    value: async () =>
+      (await (await getDBAdress()).json()).data.attributes.domain,
+    editable: true,
+  },
+]
+
 const listItems = ref([
   {
     name: '用户名',
     value: userInfo?.username,
-    editable: false,
-  },
-  {
-    name: '邮箱',
-    value: userInfo?.email + ' ' + (userInfo?.confirmed === true ? '✅' : '❔'),
     editable: false,
   },
 ])
@@ -53,32 +64,40 @@ const signout = async () => {
   await router.push('/auth/signin')
 }
 
-const config = [
-  {
-    name: '图数据库地址',
-    editable: true,
-    valueFn: async () =>
-      (await (await getDBAdress()).json()).data.attributes.domain,
-  },
-]
-
 // 更新配置项
 const updateItem = async ({
   name,
-  valueFn,
+  value,
   editable,
 }: {
   name: string
-  valueFn: () => Promise<any>
+  value: () => Promise<any> | any
   editable: boolean
 }) => {
-  listItems.value = listItems.value.filter((item) => item.name !== name)
-  const value = await valueFn()
-  listItems.value.push({ name, value, editable })
+  const itemIndex = listItems.value.indexOf(
+    listItems.value.filter((item: { name: string }) => item.name === name)[0]
+  )
+
+  let itemValue: any = value
+
+  if (typeof value === 'function') {
+    itemValue = await value()
+  }
+
+  if (itemIndex === -1) {
+    listItems.value.push({
+      name,
+      value: itemValue,
+      editable,
+    })
+  } else {
+    listItems.value[itemIndex].value = itemValue
+  }
 }
 
 // 根据名称指定更新或全部更新配置项
 const refreshConfig = async (itemName?: string) => {
+  loading.value = true
   if (itemName !== undefined) {
     const item = config.find((item) => item.name === itemName)
     if (item !== undefined) {
@@ -89,6 +108,7 @@ const refreshConfig = async (itemName?: string) => {
       await updateItem(item)
     }
   }
+  loading.value = false
 }
 
 onMounted(refreshConfig)
