@@ -78,6 +78,18 @@ const updateDBAdress = async (domain: string) =>
     },
   })
 
+const updateTag = async (id: number, name?: string, type?: string) =>
+  await (
+    await api()
+  ).put(`gi-tags/${id}`, {
+    json: {
+      data: {
+        name,
+        type,
+      },
+    },
+  })
+
 export {
   listTags,
   listDataSources,
@@ -96,4 +108,5 @@ export {
   createDataSource,
   getDBAdress,
   updateDBAdress,
+  updateTag,
 }

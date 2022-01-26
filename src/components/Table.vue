@@ -65,9 +65,9 @@
             @click="
               openDialog({
                 title: `编辑${itemName}`,
-                ok: async (id: number) => {
+                ok: async () => {
                   if (newItemName !== '') {
-                    editItem && (await editItem(id))
+                    editItem && (await editItem(props.row.id, newItemName))
                     await refresh()
                   }
                 },
@@ -101,7 +101,7 @@ const props = withDefaults(
     getItems: () => Promise<Item[]>
     createItem?: (name: string) => Promise<any>
     deleteItem?: (id: number) => Promise<any>
-    editItem?: (id: number) => Promise<any>
+    editItem?: (id: number, name: string) => Promise<any>
   }>(),
   {
     itemName: 'xx',
