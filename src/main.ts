@@ -9,8 +9,6 @@ import 'vue-toastification/dist/index.css'
 
 import quasarLang from 'quasar/lang/zh-CN'
 import quasarIconSet from 'quasar/icon-set/svg-material-icons'
-
-// Import Quasar css
 import 'quasar/src/css/index.sass'
 
 const MainApp = createApp(App)

@@ -14,7 +14,7 @@
           <q-route-tab
             style="width: 100px"
             :to="btn.path"
-            v-for="btn in btns"
+            v-for="btn in modeTab[store.state.mode]"
             :key="btn.name"
           >
             <Icon :icon="btn.icon" height="25" />
@@ -40,31 +40,36 @@ const router = useRouter()
 const store = useStore()
 onBeforeMount(async () => await store.dispatch('autoHideBar', router))
 
-const btns = [
-  {
-    path: '/tagmanager',
-    name: '标签',
-    icon: 'mdi-tag',
-  },
-  {
-    path: '/concept',
-    name: '概念',
-    icon: 'mdi-script-text-outline',
-  },
-  {
-    path: '/datasource',
-    name: '数据',
-    icon: 'mdi-database',
-  },
-  {
-    path: '/model',
-    name: '模型',
-    icon: 'mdi-electron-framework',
-  },
-  {
-    path: '/graphbuilder',
-    name: '构建',
-    icon: 'mdi-crane',
-  },
-]
+const modeTab: {
+  [ModeName: string]: { name: string; path: string; icon: string }[]
+} = {
+  build: [
+    {
+      path: '/tagmanager',
+      name: '标签',
+      icon: 'mdi-tag',
+    },
+    {
+      path: '/concept',
+      name: '概念',
+      icon: 'mdi-script-text-outline',
+    },
+    {
+      path: '/datasource',
+      name: '数据',
+      icon: 'mdi-database',
+    },
+    {
+      path: '/model',
+      name: '模型',
+      icon: 'mdi-electron-framework',
+    },
+    {
+      path: '/graphbuilder',
+      name: '构建',
+      icon: 'mdi-crane',
+    },
+  ],
+  app: [],
+}
 </script>

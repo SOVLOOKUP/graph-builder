@@ -4,10 +4,13 @@ import { UserState } from './user'
 import VuexPersistence from 'vuex-persist'
 import type { Router } from 'vue-router'
 
+type ModeType = 'build' | 'app'
+
 interface State {
   user: UserState | null
   showBar: boolean
   serverBaseUrl: string
+  mode: ModeType
 }
 
 const AutoHideAppBarAtPath = ['/model/', '/auth']
@@ -19,6 +22,7 @@ export const store = createStore<State>({
     user: null,
     showBar: false,
     serverBaseUrl: 'https://api.lingthink.com:4443',
+    mode: 'build',
   },
   mutations: {
     // 登录
@@ -31,21 +35,30 @@ export const store = createStore<State>({
       state.user = null
       state.showBar = false
     },
+    // 显示/隐藏应用栏
     toggleBar(state, showBar: boolean) {
       state.showBar = showBar
     },
+    // 切换模式
+    switchMode(state, mode: ModeType) {
+      state.mode = mode
+    },
+    // 更新后端地址
+    updateServerBaseUrl(state, url: string) {
+      state.serverBaseUrl = url
+    },
   },
   actions: {
-    async autoHideBar(state, router: Router) {
+    async autoHideBar(ctx, router: Router) {
       await router.isReady()
       if (
         AutoHideAppBarAtPath.some((p) =>
           router.currentRoute.value.fullPath.startsWith(p)
         )
       ) {
-        state.commit('toggleBar', false)
+        ctx.commit('toggleBar', false)
       } else {
-        state.commit('toggleBar', true)
+        ctx.commit('toggleBar', true)
       }
     },
   },

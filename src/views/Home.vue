@@ -1,6 +1,23 @@
 <template>
   <Card :loading="loading">
-    <q-list bordered>
+    <q-list bordered class="q-my-md">
+      <q-item clickable v-ripple>
+        <q-item-section>模式</q-item-section>
+        <q-item-section>
+          <span>
+            <q-btn-toggle
+              v-model="mode"
+              toggle-color="primary"
+              :options="[
+                { label: '应用', value: 'app' },
+                { label: '构建', value: 'build' },
+              ]"
+              @update:model-value="changeMode"
+            />
+          </span>
+        </q-item-section>
+      </q-item>
+
       <q-item clickable v-ripple v-for="item in listItems">
         <q-item-section>{{ item.name }}</q-item-section>
         <q-item-section>
@@ -17,7 +34,7 @@
       </q-item>
     </q-list>
 
-    <q-card-actions align="right" class="q-pa-md">
+    <q-card-actions align="right">
       <q-btn flat @click="signout"> 退出登录 </q-btn>
     </q-card-actions>
   </Card>
@@ -34,6 +51,9 @@ const loading = ref(false)
 const store = useStore()
 const userInfo = store.state.user?.user
 const router = useRouter()
+const mode = ref(store.state.mode)
+
+const changeMode = async (e: string) => store.commit('switchMode', e)
 
 // 动态config
 const config = [

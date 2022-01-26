@@ -16,7 +16,7 @@
         <q-input
           :label="'后端地址'"
           type="text"
-          v-model="store.state.serverBaseUrl"
+          v-model="serverBaseUrl"
           variant="outlined"
           hide-details="auto"
         />
@@ -24,8 +24,10 @@
       </q-card-section>
 
       <q-card-actions align="right">
-        <!-- <q-btn flat v-close-popup> 取消 </q-btn> -->
-        <q-btn color="primary" flat v-close-popup> 确认 </q-btn>
+        <q-btn flat v-close-popup> 取消 </q-btn>
+        <q-btn color="primary" flat v-close-popup @click="commitConfig">
+          确认
+        </q-btn>
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -47,10 +49,14 @@ import { useStore } from '../../store'
 const store = useStore()
 const loading = ref(false)
 const dialog = ref(false)
+const serverBaseUrl = ref(store.state.serverBaseUrl)
 
 const toggleLoading = () => {
   loading.value = !loading.value
 }
+
+const commitConfig = () =>
+  store.commit('updateServerBaseUrl', serverBaseUrl.value)
 </script>
 
 <style>
