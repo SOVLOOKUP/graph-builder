@@ -10,7 +10,8 @@ import { onMounted, ref } from 'vue'
 import worker from '../lib/workers'
 import { getModelJson, updateModelJson } from '../api'
 import { useRouter } from 'vue-router'
-import { notify } from '@kyvg/vue3-notification'
+import { useToast } from 'vue-toastification'
+const toast = useToast()
 
 const router = useRouter()
 const r = 60
@@ -46,11 +47,7 @@ onMounted(async () => {
   const res = await getModelJson(router.currentRoute.value.params.id as string)
   const dataInit = (await res.json()).data
   graph.fromJSON(dataInit.attributes.data)
-
-  notify({
-    type: 'success',
-    title: `${dataInit.id} 号本体已同步`,
-  })
+  toast.success(`${dataInit.id} 号本体已同步`)
 
   // 双击添加节点
   graph.on('blank:dblclick', (e) => addNode(e.x, e.y))

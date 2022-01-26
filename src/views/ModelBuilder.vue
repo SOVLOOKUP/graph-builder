@@ -20,10 +20,11 @@
 
 <script lang="ts" setup>
 import Container from '@/components/GraphCanvas.vue'
-import { notify } from '@kyvg/vue3-notification'
+import { useToast } from 'vue-toastification'
 import { onBeforeMount, onMounted, ref } from 'vue'
 import { Icon } from '@iconify/vue'
 
+const toast = useToast()
 const childRef = ref('childRef')
 let c: any
 
@@ -42,13 +43,7 @@ const rf = () => c.rf()
 // 保存
 const sv = async () => {
   const res = await c.sv()
-
-  if (res.status === 200) {
-    notify({
-      type: 'success',
-      title: '保存成功',
-    })
-  }
+  if (res.status === 200) toast.success('保存成功')
 }
 </script>
 

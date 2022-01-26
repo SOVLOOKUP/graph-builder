@@ -1,6 +1,4 @@
 <template>
-  <notifications position="bottom right" />
-
   <q-layout view="hHh lpR fFf">
     <q-header elevated v-model="store.state.showBar">
       <q-toolbar>
