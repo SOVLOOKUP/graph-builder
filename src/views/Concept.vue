@@ -7,12 +7,29 @@
     :createItem="createItem"
     :editItem="updateItem"
     @fillContent="fillContent"
-    @clearContent="conceptTags = []"
+    @clearContent="
+      () => {
+        conceptTags = []
+        newItemJsonldurl = undefined
+      }
+    "
   >
+    <q-input
+      label="JSON-LD引用"
+      type="text"
+      v-model="newItemJsonldurl"
+      variant="outlined"
+      hide-details="auto"
+    />
     <q-select
       v-model="conceptTags"
       label="概念属性标签"
+      hint="键入以筛选标签"
       multiple
+      use-input
+      use-chips
+      stack-label
+      @input-value="fillter"
       :options="options"
       :option-label="(opt) => opt.attributes.name"
       :loading="loading"
@@ -21,6 +38,15 @@
         <q-item v-bind="itemProps">
           <q-item-section>
             <q-item-label v-html="opt.attributes.name" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label v-html="opt.attributes.type" />
+          </q-item-section>
+          <q-item-section side>
+            <q-toggle
+              :model-value="selected"
+              @update:model-value="toggleOption(opt)"
+            />
           </q-item-section>
         </q-item>
       </template>
@@ -45,19 +71,45 @@ import {
   listTags,
   updateConcept,
 } from '../api'
+let cache: Tag[] = []
+
+interface TagID {
+  id: number
+  tagid: number
+}
+
+interface Tag {
+  id: number
+  attributes: {
+    name: string
+    type: string
+  }
+}
+
+interface Concept {
+  id: number
+  attributes: {
+    name: string
+    jsonldurl: string
+    tag: TagID[]
+  }
+}
 
 onMounted(async () => {
-  options.value = (await (await listTags()).json()).data
+  cache = (await (await listTags()).json()).data
+  options.value = cache
   loading.value = false
 })
 
-const conceptTags = ref()
-const options = ref()
+const conceptTags = ref<Tag[]>([])
+const options = ref<Tag[]>()
 const loading = ref(true)
+const newItemJsonldurl = ref<undefined | string>(undefined)
 const createItem = async (name: string) => {
   await createConcept(
     name,
-    (conceptTags.value as unknown as Array<any>).map((tag) => tag.id)
+    conceptTags.value.map((tag) => tag.id),
+    newItemJsonldurl.value
   )
   conceptTags.value = []
 }
@@ -66,14 +118,22 @@ const updateItem = async (id: number, name: string) =>
   updateConcept(
     id,
     name,
-    (conceptTags.value as unknown as Array<any>).map((tag) => tag.id)
+    conceptTags.value.map((tag) => tag.id),
+    newItemJsonldurl.value
   )
 
 // 根据 ID 从概念标签中提取标签信息
-const fillContent = (e: { attributes: { tag: { tagid: number }[] } }) =>
-  (conceptTags.value = e.attributes.tag.map((i: { tagid: number }) =>
-    options.value.find((tag: { id: number }) => tag.id === i.tagid)
-  ))
+const fillContent = (e: Concept) => {
+  // todo 查看为什么没有赋值
+  newItemJsonldurl.value = e.attributes.jsonldurl
+  return (conceptTags.value = e.attributes.tag.map((i: TagID) =>
+    cache.find((tag: Tag) => tag.id === i.tagid)
+  ) as Tag[])
+}
+
+// 筛选
+const fillter = (v: string) =>
+  (options.value = cache.filter((tag: Tag) => tag.attributes.name.includes(v)))
 
 const columns = [
   {
@@ -86,7 +146,14 @@ const columns = [
     align: 'center',
     name: 'name',
     label: '概念名称',
-    field: (item: any) => item.attributes.name,
+    field: (item: Concept) => item.attributes.name,
+  },
+  {
+    align: 'center',
+    name: 'tags',
+    label: '概念属性',
+    field: async (item: Concept) =>
+      JSON.stringify(fillContent(item).map((i) => i?.attributes.name)),
   },
   {
     align: 'center',

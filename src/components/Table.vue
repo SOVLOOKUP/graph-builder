@@ -57,6 +57,18 @@
         </q-input>
       </template>
 
+      <template v-slot:body-cell-tags="props">
+        <q-td :props="props">
+          <suspense>
+            <template #default>
+              <TagID
+                :tags="props.row.attributes.tag.map((tag:any) => tag.tagid)"
+              />
+            </template>
+            <template #fallback> loading... </template>
+          </suspense>
+        </q-td>
+      </template>
       <template v-slot:body-cell-action="props">
         <q-td :props="props">
           <slot name="edit" :item="props.row" />
@@ -96,6 +108,8 @@ import Dialog from './Dialog.vue'
 import { onBeforeMount, ref } from 'vue'
 import { Icon } from '@iconify/vue'
 import { useToast } from 'vue-toastification'
+import TagID from './TagID.vue'
+
 const toast = useToast()
 
 const props = withDefaults(

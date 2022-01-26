@@ -15,8 +15,8 @@
 
 <script lang="ts" setup>
 import Table from '@/components/Table.vue'
-import { ref } from 'vue'
-import { listTags, deleteTag, createTag, updateTag } from '../api'
+import { onMounted, Ref, ref } from 'vue'
+import { listTags, deleteTag, createTag, updateTag, getTagType } from '../api'
 
 const getItems = async () => (await (await listTags()).json()).data
 const createItem = async (name: string) => {
@@ -26,7 +26,13 @@ const createItem = async (name: string) => {
 const updateItem = async (id: number, name: string) =>
   updateTag(id, name, newTagType.value)
 
-const tagType = ['string', 'number', 'bool', 'timestamp']
+onMounted(async () => {
+  tagType.value = (
+    await (await getTagType()).json()
+  ).data.schema.attributes.type.enum
+})
+
+const tagType: Ref<string[]> = ref([])
 const newTagType = ref('')
 
 const columns = [

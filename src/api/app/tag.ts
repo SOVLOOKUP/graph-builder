@@ -15,5 +15,9 @@ const updateTag = async (id: number, name: string, type: string) =>
       },
     },
   })
+const getTag = async (id: number) =>
+  await api().get(`gi-tags/${id}?fields=name,type`)
+const getTagType = async () =>
+  await api().get(`content-type-builder/content-types/api::gi-tag.gi-tag`)
 
-export { createTag, deleteTag, listTags, updateTag }
+export { createTag, deleteTag, listTags, updateTag, getTag, getTagType }
