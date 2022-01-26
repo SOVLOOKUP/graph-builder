@@ -56,7 +56,7 @@ const modeTab: {
     },
     {
       path: '/datasource',
-      name: '数据',
+      name: '数据源',
       icon: 'mdi-database',
     },
     {
