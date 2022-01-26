@@ -6,7 +6,8 @@ const createConcept = async (name: string, tags: number[]) =>
   })
 const deleteConcept = async (id: number) =>
   await api().delete(`gi-concepts/${id}`)
-const listConcepts = async () => await api().get('gi-concepts?fields=name')
+const listConcepts = async () =>
+  await api().get('gi-concepts?fields=name&populate=tag')
 const updateConcept = async (id: number, name: string, tags: number[]) =>
   await api().put(`gi-concepts/${id}`, {
     json: {

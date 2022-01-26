@@ -30,15 +30,16 @@
           :label="`新增${itemName}`"
           v-if="createItem !== undefined"
           @click="
-            openDialog({
-              title: `新增${itemName}`,
-              ok: async () => {
-                if (newItemName !== '') {
-                  createItem && (await createItem(newItemName))
-                  await refresh()
-                }
-              },
-            })
+            () => {
+              // 清空属性
+              newItemName = ''
+              $emit('clearContent')
+              // 打开对话框
+              openDialog({
+                title: `新增${itemName}`,
+                ok: async () => createItem && (await createItem(newItemName)),
+              })
+            }
           "
         />
         <q-space />
@@ -63,15 +64,16 @@
             flat
             v-if="editItem !== undefined"
             @click="
-              openDialog({
-                title: `编辑${itemName}`,
-                ok: async () => {
-                  if (newItemName !== '') {
-                    editItem && (await editItem(props.row.id, newItemName))
-                    await refresh()
-                  }
-                },
-              })
+              () => {
+                // 填入属性
+                newItemName = props.row.attributes.name
+                $emit('fillContent', props.row)
+                openDialog({
+                  title: `编辑${itemName}`,
+                  ok: async () =>
+                    editItem && (await editItem(props.row.id, newItemName)),
+                })
+              }
             "
           >
             编辑
@@ -93,6 +95,8 @@
 import Dialog from './Dialog.vue'
 import { onBeforeMount, ref } from 'vue'
 import { Icon } from '@iconify/vue'
+import { useToast } from 'vue-toastification'
+const toast = useToast()
 
 const props = withDefaults(
   defineProps<{
@@ -108,6 +112,11 @@ const props = withDefaults(
     columns: [],
   }
 )
+
+defineEmits<{
+  (e: 'clearContent'): void
+  (e: 'fillContent', item: Item): void
+}>()
 
 interface Item extends Object {
   id: number
@@ -136,12 +145,21 @@ const removeItem = async (id: number) => {
   await refresh()
 }
 
-const openDialog = (content: {
-  title: string
-  ok: (evt: any, navigateFn: () => void) => void
-}) => {
-  newItemName.value = ''
-  dialogContent.value = content
+const openDialog = (content: { title: string; ok: () => Promise<void> }) => {
+  dialogContent.value = {
+    title: content.title,
+    // 点击确定按钮
+    ok: async () => {
+      // 验证通过就运行 ok
+      if (newItemName.value !== '') {
+        await content.ok()
+        dialog.value = false
+        await refresh()
+      } else {
+        toast.info('请输入名称')
+      }
+    },
+  }
   dialog.value = true
 }
 

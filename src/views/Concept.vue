@@ -6,6 +6,8 @@
     :deleteItem="deleteConcept"
     :createItem="createItem"
     :editItem="updateItem"
+    @fillContent="fillContent"
+    @clearContent="conceptTags = []"
   >
     <q-select
       v-model="conceptTags"
@@ -66,6 +68,12 @@ const updateItem = async (id: number, name: string) =>
     name,
     (conceptTags.value as unknown as Array<any>).map((tag) => tag.id)
   )
+
+// 根据 ID 从概念标签中提取标签信息
+const fillContent = (e: { attributes: { tag: { tagid: number }[] } }) =>
+  (conceptTags.value = e.attributes.tag.map((i: { tagid: number }) =>
+    options.value.find((tag: { id: number }) => tag.id === i.tagid)
+  ))
 
 const columns = [
   {

@@ -6,6 +6,8 @@
     :deleteItem="deleteTag"
     :createItem="createItem"
     :editItem="updateItem"
+    @fillContent="(e:{ attributes: { type: string } }) => (newTagType = e.attributes.type)"
+    @clearContent="newTagType = ''"
   >
     <q-select v-model="newTagType" :options="tagType" label="标签类型" />
   </Table>

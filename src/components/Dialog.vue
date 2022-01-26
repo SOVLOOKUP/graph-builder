@@ -12,7 +12,7 @@
 
       <q-card-actions align="right">
         <q-btn flat v-close-popup> 取消 </q-btn>
-        <q-btn color="primary" flat @click="ok" v-close-popup> 确认 </q-btn>
+        <q-btn color="primary" flat @click="ok"> 确认 </q-btn>
       </q-card-actions>
     </q-card>
   </q-dialog>
