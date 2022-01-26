@@ -1,36 +1,7 @@
 <template>
-  <q-dialog
-    v-model="dialog"
-    persistent
-    transition-show="flip-down"
-    transition-hide="flip-up"
-  >
-    <q-card>
-      <q-bar class="bg-primary text-white">
-        <span>设置</span>
-
-        <q-space />
-      </q-bar>
-
-      <q-card-section class="q-pt-none q-pa-md">
-        <q-input
-          :label="'后端地址'"
-          type="text"
-          v-model="serverBaseUrl"
-          variant="outlined"
-          hide-details="auto"
-        />
-        <slot />
-      </q-card-section>
-
-      <q-card-actions align="right">
-        <q-btn flat v-close-popup> 取消 </q-btn>
-        <q-btn color="primary" flat v-close-popup @click="commitConfig">
-          确认
-        </q-btn>
-      </q-card-actions>
-    </q-card>
-  </q-dialog>
+  <Dialog v-model="dialog" title="设置" :ok="commitConfig">
+    <q-input :label="'后端地址'" type="text" v-model="serverBaseUrl" />
+  </Dialog>
 
   <Card :loading="loading">
     <router-view @toggleLoading="toggleLoading" />
@@ -45,6 +16,7 @@ import Card from '@/components/Card.vue'
 import { ref } from 'vue'
 import { Icon } from '@iconify/vue'
 import { useStore } from '../../store'
+import Dialog from '@/components/Dialog.vue'
 
 const store = useStore()
 const loading = ref(false)

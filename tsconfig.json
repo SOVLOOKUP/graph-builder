@@ -13,6 +13,7 @@
     "importHelpers": true,
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
+    "suppressImplicitAnyIndexErrors": true,
     "baseUrl": "."
   },
   "paths": {

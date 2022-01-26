@@ -5,8 +5,11 @@
     :getItems="getItems"
     :deleteItem="deleteModel"
     :createItem="createItem"
-    :editItem="editItem"
-  />
+  >
+    <template #edit="props">
+      <q-btn flat @click="openModel(props.item.id)" label="本体编辑器" />
+    </template>
+  </Table>
 </template>
 
 <script lang="ts" setup>
@@ -18,7 +21,7 @@ const router = useRouter()
 const getItems = async () => (await (await listModels()).json()).data
 const createItem = async (name: string) => await createModel(name)
 
-const editItem = (id: string) => {
+const openModel = (id: string) => {
   window.open(router.resolve(`/model/${id}`).href)
 }
 

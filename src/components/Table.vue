@@ -1,34 +1,18 @@
 <template>
-  <q-dialog
+  <Dialog
     v-model="dialog"
-    persistent
-    transition-show="flip-down"
-    transition-hide="flip-up"
+    :title="dialogContent?.title"
+    :ok="dialogContent?.ok"
   >
-    <q-card>
-      <q-bar class="bg-primary text-white">
-        <span>新增{{ itemName }}</span>
-
-        <q-space />
-      </q-bar>
-
-      <q-card-section class="q-pt-none q-pa-md">
-        <q-input
-          :label="`${itemName}名称`"
-          type="text"
-          v-model="newItemName"
-          variant="outlined"
-          hide-details="auto"
-        />
-        <slot />
-      </q-card-section>
-
-      <q-card-actions align="right">
-        <q-btn flat v-close-popup> 取消 </q-btn>
-        <q-btn color="primary" flat @click="addTag" v-close-popup> 确认 </q-btn>
-      </q-card-actions>
-    </q-card>
-  </q-dialog>
+    <q-input
+      :label="`${itemName}名称`"
+      type="text"
+      v-model="newItemName"
+      variant="outlined"
+      hide-details="auto"
+    />
+    <slot name="default" />
+  </Dialog>
 
   <div class="q-pa-md">
     <q-table
@@ -45,7 +29,17 @@
           color="primary"
           :label="`新增${itemName}`"
           v-if="createItem !== undefined"
-          @click="addNewBtn"
+          @click="
+            openDialog({
+              title: `新增${itemName}`,
+              ok: async () => {
+                if (newItemName !== '') {
+                  createItem && (await createItem(newItemName))
+                  await refresh()
+                }
+              },
+            })
+          "
         />
         <q-space />
         <q-input
@@ -63,12 +57,22 @@
       </template>
 
       <template v-slot:body-cell-action="props">
-        <!-- todo 编辑 -->
         <q-td :props="props">
+          <slot name="edit" :item="props.row" />
           <q-btn
             flat
             v-if="editItem !== undefined"
-            @click="editItem !== undefined ? editItem(props.row.id) : null"
+            @click="
+              openDialog({
+                title: `编辑${itemName}`,
+                ok: async (id: number) => {
+                  if (newItemName !== '') {
+                    editItem && (await editItem(id))
+                    await refresh()
+                  }
+                },
+              })
+            "
           >
             编辑
           </q-btn>
@@ -86,6 +90,7 @@
 </template>
 
 <script lang="ts" setup>
+import Dialog from './Dialog.vue'
 import { onBeforeMount, ref } from 'vue'
 import { Icon } from '@iconify/vue'
 
@@ -111,11 +116,12 @@ interface Item extends Object {
   }
 }
 
+const dialog = ref(false)
 const filter = ref('')
 const newItemName = ref('')
 const loading = ref(true)
-const dialog = ref(false)
 const items = ref()
+const dialogContent = ref()
 let cache: Item[] = []
 
 const refresh = async () => {
@@ -130,16 +136,13 @@ const removeItem = async (id: number) => {
   await refresh()
 }
 
-const addNewBtn = async () => {
+const openDialog = (content: {
+  title: string
+  ok: (evt: any, navigateFn: () => void) => void
+}) => {
   newItemName.value = ''
+  dialogContent.value = content
   dialog.value = true
-}
-
-const addTag = async () => {
-  if (newItemName.value !== '') {
-    props.createItem && (await props.createItem(newItemName.value))
-    await refresh()
-  }
 }
 
 const search = async () => {
