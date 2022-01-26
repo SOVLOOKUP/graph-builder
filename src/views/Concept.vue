@@ -3,7 +3,7 @@
     itemName="概念"
     :columns="columns"
     :getItems="getItems"
-    :deleteItem="removeConcepts"
+    :deleteItem="deleteConcept"
     :createItem="createItem"
   >
     <q-select
@@ -35,7 +35,7 @@
 <script lang="ts" setup>
 import Table from '@/components/Table.vue'
 import { onMounted, ref } from 'vue'
-import { listConcepts, removeConcepts, createConcept, listTags } from '../api'
+import { listConcepts, deleteConcept, createConcept, listTags } from '../api'
 
 onMounted(async () => {
   options.value = (await (await listTags()).json()).data

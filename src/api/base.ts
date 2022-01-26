@@ -1,18 +1,11 @@
 import ky from 'ky'
+import { store } from '../store'
 
-// todo 处理 jwt 续期
-const base = ky.create({
-  mode: 'cors',
-  throwHttpErrors: false,
-})
-
-export default base
-
-export const AuthedKy = async () => {
-  const { store } = await import('../store')
-  return base.extend({
-    headers: {
-      Authorization: `Bearer ${store.state.user?.jwt}`,
-    },
+const API = () =>
+  ky.create({
+    mode: 'cors',
+    throwHttpErrors: false,
+    prefixUrl: `${store.state.serverBaseUrl}/api/`,
   })
-}
+
+export default API

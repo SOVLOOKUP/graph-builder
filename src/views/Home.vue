@@ -44,7 +44,7 @@
 import Card from '@/components/Card.vue'
 import { useStore } from '../store'
 import { onMounted, ref } from 'vue'
-import { getDBAdress, updateDBAdress } from '../api'
+import { getDBAddress, updateDBAddress } from '../api'
 import { useRouter } from 'vue-router'
 
 const loading = ref(false)
@@ -66,7 +66,7 @@ const config = [
   {
     name: '图数据库地址',
     value: async () =>
-      (await (await getDBAdress()).json()).data.attributes.domain,
+      (await (await getDBAddress()).json()).data.attributes.domain,
     editable: true,
   },
 ]
@@ -134,7 +134,7 @@ const refreshConfig = async (itemName?: string) => {
 onMounted(refreshConfig)
 
 const editItem = async (p: Event, itemName: string) => {
-  await updateDBAdress((p?.target as HTMLInputElement).value)
+  await updateDBAddress((p?.target as HTMLInputElement).value)
   await refreshConfig(itemName)
 }
 </script>
