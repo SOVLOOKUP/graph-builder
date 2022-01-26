@@ -8,17 +8,18 @@ const props = defineProps<{
   tags: number[]
 }>()
 
-const refreshData = async () =>
+const getTagsInfo = async (tags: number[]) =>
   await Promise.all(
-    props.tags.map(
+    tags.map(
       async (id: number) => (await (await getTag(id)).json()).data.attributes
     )
   )
 
 watch(
   () => props.tags,
-  async () => (info.value = await refreshData())
+  async (tags) => (info.value = await getTagsInfo(tags))
 )
 
-const info = ref(await refreshData())
+const defaultInfo = await getTagsInfo(props.tags)
+const info = ref<any[]>(defaultInfo)
 </script>
