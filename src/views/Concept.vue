@@ -5,6 +5,7 @@
     :getItems="getItems"
     :deleteItem="deleteConcept"
     :createItem="createItem"
+    :editItem="updateItem"
   >
     <q-select
       v-model="conceptTags"
@@ -35,7 +36,13 @@
 <script lang="ts" setup>
 import Table from '@/components/Table.vue'
 import { onMounted, ref } from 'vue'
-import { listConcepts, deleteConcept, createConcept, listTags } from '../api'
+import {
+  listConcepts,
+  deleteConcept,
+  createConcept,
+  listTags,
+  updateConcept,
+} from '../api'
 
 onMounted(async () => {
   options.value = (await (await listTags()).json()).data
@@ -50,8 +57,15 @@ const createItem = async (name: string) => {
     name,
     (conceptTags.value as unknown as Array<any>).map((tag) => tag.id)
   )
+  conceptTags.value = []
 }
 const getItems = async () => (await (await listConcepts()).json()).data
+const updateItem = async (id: number, name: string) =>
+  updateConcept(
+    id,
+    name,
+    (conceptTags.value as unknown as Array<any>).map((tag) => tag.id)
+  )
 
 const columns = [
   {

@@ -5,16 +5,17 @@
     :getItems="getItems"
     :deleteItem="deleteModel"
     :createItem="createItem"
+    :editItem="updateModel"
   >
     <template #edit="props">
-      <q-btn flat @click="openModel(props.item.id)" label="本体编辑器" />
+      <q-btn flat @click="openModel(props.item.id)" label="建模" />
     </template>
   </Table>
 </template>
 
 <script lang="ts" setup>
 import Table from '@/components/Table.vue'
-import { listModels, deleteModel, createModel } from '../api'
+import { listModels, deleteModel, createModel, updateModel } from '../api'
 import { useRouter } from 'vue-router'
 const router = useRouter()
 

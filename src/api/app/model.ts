@@ -16,5 +16,20 @@ const updateModelJson = async (id: string, json: object) =>
       },
     },
   })
+const updateModel = async (id: number, name: string) =>
+  await api().put(`gi-models/${id}`, {
+    json: {
+      data: {
+        name,
+      },
+    },
+  })
 
-export { createModel, deleteModel, listModels, getModelJson, updateModelJson }
+export {
+  createModel,
+  deleteModel,
+  listModels,
+  getModelJson,
+  updateModelJson,
+  updateModel,
+}

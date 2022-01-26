@@ -1,6 +1,6 @@
 <template>
   <q-dialog transition-show="flip-down" transition-hide="flip-up">
-    <q-card>
+    <q-card style="min-width: 400px">
       <q-bar class="bg-primary text-white">
         <span>{{ title }}</span>
         <q-space />

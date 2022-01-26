@@ -17,8 +17,10 @@ import { ref } from 'vue'
 import { listTags, deleteTag, createTag, updateTag } from '../api'
 
 const getItems = async () => (await (await listTags()).json()).data
-const createItem = async (name: string) =>
+const createItem = async (name: string) => {
   await createTag(name, newTagType.value)
+  newTagType.value = ''
+}
 const updateItem = async (id: number, name: string) =>
   updateTag(id, name, newTagType.value)
 

@@ -17,8 +17,10 @@ import { ref } from 'vue'
 
 const getItems = async () => (await (await listDataSources()).json()).data
 // todo: meta,json
-const createItem = async (name: string) =>
+const createItem = async (name: string) => {
   await createDataSource(name, newDSType.value)
+  newDSType.value = ''
+}
 
 const tagType = ['raw', 'nodes', 'edges']
 const newDSType = ref('')
