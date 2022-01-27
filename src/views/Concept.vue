@@ -124,7 +124,6 @@ const updateItem = async (id: number, name: string) =>
 
 // 根据 ID 从概念标签中提取标签信息
 const fillContent = (e: Concept) => {
-  // todo 查看为什么没有赋值
   newItemJsonldurl.value = e.attributes.jsonldurl
   return (conceptTags.value = e.attributes.tag.map((i: TagID) =>
     cache.find((tag: Tag) => tag.id === i.tagid)
