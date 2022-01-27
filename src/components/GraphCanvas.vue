@@ -47,7 +47,7 @@ onMounted(async () => {
   const res = await getModelJson(router.currentRoute.value.params.id as string)
   const dataInit = (await res.json()).data
   graph.fromJSON(dataInit.attributes.data)
-  toast.success(`${dataInit.id} 号本体已同步`)
+  toast.success(`${dataInit.id} 号本体数据已同步`)
 
   // 双击添加节点
   graph.on('blank:dblclick', (e) => addNode(e.x, e.y))
