@@ -1,19 +1,4 @@
 <template>
-  <Dialog
-    v-model="dialog"
-    :title="dialogContent?.title"
-    :ok="dialogContent?.ok"
-  >
-    <q-input
-      :label="`${itemName}名称`"
-      type="text"
-      v-model="newItemName"
-      variant="outlined"
-      hide-details="auto"
-    />
-    <slot name="default" />
-  </Dialog>
-
   <div class="q-pa-md">
     <q-table
       :loading="loading"
@@ -100,6 +85,21 @@
         </q-td>
       </template>
     </q-table>
+
+    <Dialog
+      v-model="dialog"
+      :title="dialogContent?.title"
+      :ok="dialogContent?.ok"
+    >
+      <q-input
+        :label="`${itemName}名称`"
+        type="text"
+        v-model="newItemName"
+        variant="outlined"
+        hide-details="auto"
+      />
+      <slot name="default" />
+    </Dialog>
   </div>
 </template>
 
