@@ -21,7 +21,8 @@ export const store = createStore<State>({
   state: {
     user: null,
     showBar: false,
-    serverBaseUrl: 'https://api.lingthink.com:4443',
+    serverBaseUrl:
+      process.env.SERVER_BASE_URL ?? 'https://api.lingthink.com:4443',
     mode: 'build',
   },
   mutations: {

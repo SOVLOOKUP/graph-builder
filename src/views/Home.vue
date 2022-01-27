@@ -9,8 +9,8 @@
               v-model="mode"
               toggle-color="primary"
               :options="[
-                { label: '应用', value: 'app' },
                 { label: '构建', value: 'build' },
+                { label: '应用', value: 'app' },
               ]"
               @update:model-value="changeMode"
             />

@@ -13,7 +13,9 @@ export default defineConfig({
       sassVariables: 'src/quasar-variables.sass',
     }),
   ],
-  define: { 'process.env': {} },
+  define: {
+    'process.env': { ...process.env },
+  },
   build: {
     target: 'esnext',
   },
