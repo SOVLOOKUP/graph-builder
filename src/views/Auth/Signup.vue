@@ -79,7 +79,6 @@ const next = async () => {
     if (res.status == 200) {
       // ok
       // 发送激活邮件
-      // TODO 部署后魔法链接回来
       await sendEmailConfirmation(email.value)
       // 跳转
       router.push('verify')
