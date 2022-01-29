@@ -1,5 +1,5 @@
 import API from '../base'
-import { UserAuth, UserRegister } from '../../store/user'
+import { UserAuth, UserRegister } from '../../store'
 
 const userLogin = async ({ identifier, password }: UserAuth) =>
   await API().post('auth/local', {

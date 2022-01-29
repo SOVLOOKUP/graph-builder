@@ -32,8 +32,8 @@ onMounted(async () => {
   ).data.schema.attributes.type.enum
 })
 
-const tagType: Ref<string[]> = ref([])
-const newTagType = ref('')
+let tagType: Ref<string[]> = ref([])
+let newTagType = ref('')
 
 const columns = [
   {

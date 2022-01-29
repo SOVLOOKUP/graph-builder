@@ -6,13 +6,13 @@
         <q-item-section>
           <span>
             <q-btn-toggle
-              v-model="mode"
+              v-model="configStore.mode"
               toggle-color="primary"
               :options="[
                 { label: '构建', value: 'build' },
                 { label: '应用', value: 'app' },
               ]"
-              @update:model-value="changeMode"
+              @update:model-value="(e: ModeType) => (configStore.mode = e)"
             />
           </span>
         </q-item-section>
@@ -42,18 +42,17 @@
 
 <script lang="ts" setup>
 import Card from '@/components/Card.vue'
-import { useStore } from '../store'
 import { onMounted, ref } from 'vue'
 import { getDBAddress, updateDBAddress } from '../api'
 import { useRouter } from 'vue-router'
+import { useConfigStore, useUserStore } from '../store'
+import type { ModeType } from '../store'
 
 const loading = ref(false)
-const store = useStore()
-const userInfo = store.state.user?.user
+const configStore = useConfigStore()
+const userStore = useUserStore()
+const userInfo = userStore.user
 const router = useRouter()
-const mode = ref(store.state.mode)
-
-const changeMode = async (e: string) => store.commit('switchMode', e)
 
 // 动态config
 const config = [
@@ -80,7 +79,7 @@ const listItems = ref([
 ])
 
 const signout = async () => {
-  store.commit('signout')
+  userStore.signout()
   await router.push('/auth/signin')
 }
 

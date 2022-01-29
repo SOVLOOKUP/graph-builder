@@ -1,8 +1,8 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './plugins/vueRouter'
-import { store, key } from './store'
 import { Quasar } from 'quasar'
+import pinia from './plugins/pinia'
 
 import Toast, { useToast } from 'vue-toastification'
 import 'vue-toastification/dist/index.css'
@@ -19,7 +19,7 @@ MainApp.use(Quasar, {
   iconSet: quasarIconSet,
   plugins: {}, // import Quasar plugins and add here
 })
-MainApp.use(store, key)
+MainApp.use(pinia)
 MainApp.use(router)
 MainApp.use(Toast, {
   transition: 'Vue-Toastification__fade',

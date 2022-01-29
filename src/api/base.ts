@@ -1,11 +1,13 @@
 import ky from 'ky'
-import { store } from '../store'
+import { useConfigStore } from '../store'
 
-const API = () =>
-  ky.create({
+const API = () => {
+  const configStore = useConfigStore()
+  return ky.create({
     mode: 'cors',
     // throwHttpErrors: false,
-    prefixUrl: `${store.state.serverBaseUrl}/api/`,
+    prefixUrl: `${configStore.serverBaseUrl}/api/`,
   })
+}
 
 export default API

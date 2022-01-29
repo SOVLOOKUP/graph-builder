@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory, RouteLocation } from 'vue-router'
 import Home from '../views/Home.vue'
-import { store } from '../store'
+import { useUserStore } from '../store'
 
 const DataSource = () => import('../views/DataSource.vue')
 const GraphBuilder = () => import('../views/GraphBuilder.vue')
@@ -80,7 +80,8 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from) => {
-  if (!to.path.startsWith('/auth') && store.state.user === null) {
+  const userStore = useUserStore()
+  if (!to.path.startsWith('/auth') && userStore.logintime === undefined) {
     const authURL: RouteLocation = {
       path: '/auth/signin',
       matched: [],
@@ -92,7 +93,6 @@ router.beforeEach(async (to, from) => {
       redirectedFrom: from,
       meta: {},
     }
-    store.commit('toggleBar', false)
     return authURL
   }
   return true

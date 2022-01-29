@@ -1,14 +1,16 @@
 import API from '../base'
-import { store } from '../../store'
+import { useUserStore } from '../../store'
 
 // todo 处理 jwt 续期
 // 记录时间戳 超过3天续期 超过7天重新登录
-const AuthedAPI = () =>
-  API().extend({
+const AuthedAPI = () => {
+  const userStore = useUserStore()
+  return API().extend({
     headers: {
-      Authorization: `Bearer ${store.state.user?.jwt}`,
+      Authorization: `Bearer ${userStore.jwt}`,
     },
   })
+}
 
 export default AuthedAPI
 

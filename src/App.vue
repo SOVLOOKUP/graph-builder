@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh lpR fFf">
-    <q-header elevated v-model="store.state.showBar">
+    <q-header elevated v-model="configStore.showBar">
       <q-toolbar>
         <q-toolbar-title style="cursor: pointer" @click="$router.push('/')">
           <q-avatar>
@@ -14,7 +14,7 @@
           <q-route-tab
             style="width: 100px"
             :to="btn.path"
-            v-for="btn in modeTab[store.state.mode]"
+            v-for="btn in modeTab[configStore.mode]"
             :key="btn.name"
           >
             <Icon :icon="btn.icon" height="25" />
@@ -25,7 +25,12 @@
     </q-header>
 
     <q-page-container>
-      <router-view />
+      <suspense>
+        <template #default>
+          <router-view />
+        </template>
+        <template #fallback> loading... </template>
+      </suspense>
     </q-page-container>
   </q-layout>
 </template>
@@ -34,11 +39,12 @@
 import { Icon } from '@iconify/vue'
 import { onBeforeMount } from 'vue'
 import { useRouter } from 'vue-router'
-import { useStore } from './store'
+import { useConfigStore } from './store'
 
 const router = useRouter()
-const store = useStore()
-onBeforeMount(async () => await store.dispatch('autoHideBar', router))
+const configStore = useConfigStore()
+
+onBeforeMount(async () => await configStore.autoHideBar(router))
 
 const modeTab: {
   [ModeName: string]: { name: string; path: string; icon: string }[]

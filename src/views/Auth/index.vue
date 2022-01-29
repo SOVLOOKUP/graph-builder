@@ -1,6 +1,10 @@
 <template>
-  <Dialog v-model="dialog" title="设置" :ok="commitConfig">
-    <q-input :label="'后端地址'" type="text" v-model="serverBaseUrl" />
+  <Dialog v-model="dialog" title="设置" :ok="() => (dialog = false)">
+    <q-input
+      :label="'后端地址'"
+      type="text"
+      v-model="configStore.serverBaseUrl"
+    />
   </Dialog>
 
   <Card :loading="loading">
@@ -21,20 +25,20 @@
 import Card from '@/components/Card.vue'
 import { ref } from 'vue'
 import { Icon } from '@iconify/vue'
-import { useStore } from '../../store'
 import Dialog from '@/components/Dialog.vue'
+import { useConfigStore } from '../../store'
 
-const store = useStore()
+const configStore = useConfigStore()
 const loading = ref(false)
 const dialog = ref(false)
-const serverBaseUrl = ref(store.state.serverBaseUrl)
 
-const toggleLoading = () => {
-  loading.value = !loading.value
+const toggleLoading = (to?: boolean) => {
+  if (to !== undefined) {
+    loading.value = to
+  } else {
+    loading.value = !loading.value
+  }
 }
-
-const commitConfig = () =>
-  store.commit('updateServerBaseUrl', serverBaseUrl.value)
 </script>
 
 <style>
