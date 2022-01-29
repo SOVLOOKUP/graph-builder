@@ -20,7 +20,7 @@
 
       <q-item clickable v-ripple v-for="item in listItems">
         <q-item-section>{{ item.name }}</q-item-section>
-        <q-item-section>
+        <q-item-section style="white-space: nowrap">
           {{ item.value }}
           <q-popup-edit
             v-if="item.editable"
