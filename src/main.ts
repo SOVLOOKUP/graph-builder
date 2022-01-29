@@ -10,6 +10,7 @@ import 'vue-toastification/dist/index.css'
 import quasarLang from 'quasar/lang/zh-CN'
 import quasarIconSet from 'quasar/icon-set/svg-material-icons'
 import 'quasar/src/css/index.sass'
+import posthog from 'posthog-js'
 
 const MainApp = createApp(App)
 const toast = useToast()
@@ -42,5 +43,9 @@ MainApp.use(Toast, {
 MainApp.config.errorHandler = async (err, _vm, info) => {
   toast.error((err as Error).message + '\n' + info)
 }
+
+posthog.init('phc_wzpudJnq92BwkTvWftGfbefRtIHgyKdtbKlMrR8H8iT', {
+  api_host: 'https://app.posthog.com',
+})
 
 MainApp.mount('#app')
