@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory, RouteLocation } from 'vue-router'
 import Home from '../views/Home.vue'
 import { useUserStore } from '../store'
+import { useToast } from 'vue-toastification'
+const toast = useToast()
 
 const DataSource = () => import('../views/DataSource.vue')
 const GraphBuilder = () => import('../views/GraphBuilder.vue')
@@ -81,21 +83,30 @@ const router = createRouter({
 
 router.beforeEach(async (to, from) => {
   const userStore = useUserStore()
-  if (!to.path.startsWith('/auth') && userStore.logintime === undefined) {
-    const authURL: RouteLocation = {
-      path: '/auth/signin',
-      matched: [],
-      fullPath: '',
-      query: {},
-      hash: '',
-      name: undefined,
-      params: {},
-      redirectedFrom: from,
-      meta: {},
-    }
-    return authURL
+  const authURL: RouteLocation = {
+    path: '/auth/signin',
+    matched: [],
+    fullPath: '',
+    query: {},
+    hash: '',
+    name: undefined,
+    params: {},
+    redirectedFrom: from,
+    meta: {},
   }
-  return true
+  if (!to.path.startsWith('/auth') && userStore.logintime === undefined) {
+    return authURL
+  } else {
+    // jwt 超过 7 天重新登录
+    if (
+      (Date.now() - (userStore.logintime as number)) / 1000 / 60 / 60 / 24 >=
+      7
+    ) {
+      toast.info('身份认证超期，请重新登录')
+      return authURL
+    }
+    return true
+  }
 })
 
 export { routes }
