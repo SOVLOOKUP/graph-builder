@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hHh lpR fFf" ref="root">
+  <q-layout view="hHh lpR fFf">
     <q-header elevated v-model="configStore.showBar">
       <q-toolbar>
         <q-toolbar-title style="cursor: pointer" @click="$router.push('/')">
@@ -24,7 +24,7 @@
       </q-toolbar>
     </q-header>
 
-    <q-page-container class="container">
+    <q-page-container class="page">
       <router-view v-slot="{ Component }">
         <template v-if="Component">
           <!-- <transition> -->
@@ -44,22 +44,24 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount, onMounted, ref } from 'vue'
+import { onBeforeMount, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useConfigStore } from './store'
 import Loading from '@/components/Loading.vue'
 
 const router = useRouter()
 const configStore = useConfigStore()
-const root = ref('root')
 
+// 自动隐藏/显示导航栏
 onBeforeMount(async () => await configStore.autoHideBar(router))
 
+// 根据环境变量设置加载字体
 onMounted(async () => {
-  try {
-    await new FontFace('OPPOSans-M', `url('/OPPOSans-M.ttf')`).load()
-  } catch (e) {
-    console.error(e)
+  const fontName = import.meta.env.VITE_APP_FONT as string
+  if (fontName) {
+    const font = await new FontFace(fontName, `url('/${fontName}.ttf')`).load()
+    ;(document.fonts as any).add(font)
+    document.body.style.fontFamily = fontName
   }
 })
 
@@ -98,7 +100,7 @@ const modeTab: {
 </script>
 
 <style lang="scss" scoped>
-.container {
+.page {
   display: flex;
   justify-content: center;
   align-items: center;
