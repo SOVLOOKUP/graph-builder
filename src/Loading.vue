@@ -28,8 +28,7 @@ const done = inject('ok') as (font: FontFace) => void
 onMounted(async () => {
   const res = await ky.get(`/${fontName}.ttf`, {
     onDownloadProgress: (e) => {
-      value.value = e.percent * 100
-      console.log(e.percent)
+      value.value = (e.transferredBytes * 100) / 10080628
     },
   })
   const fontBuffer = await res.arrayBuffer()
