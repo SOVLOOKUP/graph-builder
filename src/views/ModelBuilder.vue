@@ -43,7 +43,6 @@
           @input-value="fillter"
           :options="options"
           :option-label="(opt) => opt.attributes.name"
-          :loading="loading"
         >
           <template v-slot:option="{ itemProps, opt }">
             <q-item v-bind="itemProps">
@@ -66,7 +65,7 @@
 
 <script lang="ts" setup>
 import { useToast } from 'vue-toastification'
-import { onMounted, Ref, ref } from 'vue'
+import { nextTick, onMounted, Ref, ref } from 'vue'
 import { defineAsyncComponent } from 'vue'
 import { listConcepts } from '../api'
 const Container = defineAsyncComponent(
@@ -95,17 +94,14 @@ const toast = useToast()
 const cardPosition = ref<'start' | 'end'>('end')
 const childRef = ref('childRef')
 const options = ref<Ref<Concept[]>>([] as any)
-const loading = ref(false)
 
 let builder: any
 let cache: Concept[] = []
+cache = (await (await listConcepts()).json()).data
+options.value = cache
 
 onMounted(async () => {
   builder = childRef.value
-
-  cache = (await (await listConcepts()).json()).data
-  options.value = cache
-  loading.value = false
 })
 
 // 筛选

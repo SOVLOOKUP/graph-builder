@@ -44,26 +44,9 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { useConfigStore } from './store'
 import Loading from '@/components/Loading.vue'
-
-const router = useRouter()
 const configStore = useConfigStore()
-
-// 自动隐藏/显示导航栏
-onBeforeMount(async () => await configStore.autoHideBar(router))
-
-// 根据环境变量设置加载字体
-onMounted(async () => {
-  const fontName = import.meta.env.VITE_APP_FONT as string
-  if (fontName) {
-    const font = await new FontFace(fontName, `url('/${fontName}.ttf')`).load()
-    ;(document.fonts as any).add(font)
-    document.body.style.fontFamily = fontName
-  }
-})
 
 const modeTab: {
   [ModeName: string]: { name: string; path: string; icon: string }[]

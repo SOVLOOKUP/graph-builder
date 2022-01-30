@@ -41,7 +41,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import { getDBAddress, updateDBAddress } from '../api'
 import { useRouter } from 'vue-router'
 import { useConfigStore, useUserStore } from '../store'
@@ -131,10 +131,10 @@ const refreshConfig = async (itemName?: string) => {
   loading.value = false
 }
 
-onMounted(refreshConfig)
-
 const editItem = async (p: Event, itemName: string) => {
   await updateDBAddress((p?.target as HTMLInputElement).value)
   await refreshConfig(itemName)
 }
+
+await refreshConfig()
 </script>

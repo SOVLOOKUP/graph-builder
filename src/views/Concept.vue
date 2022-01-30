@@ -32,7 +32,6 @@
       @input-value="fillter"
       :options="options"
       :option-label="(opt) => opt.attributes.name"
-      :loading="loading"
     >
       <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
         <q-item v-bind="itemProps">
@@ -63,7 +62,7 @@
 
 <script lang="ts" setup>
 import { defineAsyncComponent } from 'vue'
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import {
   listConcepts,
   deleteConcept,
@@ -97,15 +96,8 @@ interface Concept {
   }
 }
 
-onMounted(async () => {
-  cache = (await (await listTags()).json()).data
-  options.value = cache
-  loading.value = false
-})
-
 const conceptTags = ref<Tag[]>([])
 const options = ref<Tag[]>()
-const loading = ref(true)
 const newItemJsonldurl = ref<undefined | string>(undefined)
 const createItem = async (name: string) => {
   await createConcept(
@@ -162,4 +154,7 @@ const columns = [
     label: '操作',
   },
 ]
+
+cache = (await (await listTags()).json()).data
+options.value = cache
 </script>

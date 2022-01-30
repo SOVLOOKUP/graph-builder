@@ -1,6 +1,8 @@
 import { useUserStore } from '../../store'
 import { useToast } from 'vue-toastification'
 import { RouteLocation, RouteLocationNormalized } from 'vue-router'
+import { useConfigStore } from '../../store'
+
 const toast = useToast()
 
 const authGuard = async (
@@ -34,4 +36,10 @@ const authGuard = async (
   }
 }
 
-export { authGuard }
+// 自动隐藏/显示导航栏
+const autoHideBarGuard = async (to: RouteLocationNormalized) => {
+  await useConfigStore().autoHideBar(to.fullPath)
+  return true
+}
+
+export { authGuard, autoHideBarGuard }

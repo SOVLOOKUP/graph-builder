@@ -41,14 +41,23 @@ MainApp.use(Toast, {
   rtl: false,
 })
 
-// MainApp.config.errorHandler = async (err, _vm, info) => {
-//   toast.error((err as Error).message + '\n' + info)
-// }
+MainApp.config.errorHandler = async (err, _vm, info) => {
+  toast.error((err as Error).message + '\n' + info)
+}
 
 MainApp.component('Icon', Icon)
 
+MainApp.mount('#app')
+
+// posthog 分析
 posthog.init('phc_wzpudJnq92BwkTvWftGfbefRtIHgyKdtbKlMrR8H8iT', {
   api_host: 'https://app.posthog.com',
 })
 
-MainApp.mount('#app')
+// 根据环境变量设置加载字体
+const fontName = import.meta.env.VITE_APP_FONT as string
+if (fontName) {
+  const font = await new FontFace(fontName, `url('/${fontName}.ttf')`).load()
+  ;(document.fonts as any).add(font)
+  document.body.style.fontFamily = fontName
+}
