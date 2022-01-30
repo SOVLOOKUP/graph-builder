@@ -41,9 +41,9 @@ MainApp.use(Toast, {
   rtl: false,
 })
 
-MainApp.config.errorHandler = async (err, _vm, info) => {
-  toast.error((err as Error).message + '\n' + info)
-}
+// MainApp.config.errorHandler = async (err, _vm, info) => {
+//   toast.error((err as Error).message + '\n' + info)
+// }
 
 MainApp.component('Icon', Icon)
 

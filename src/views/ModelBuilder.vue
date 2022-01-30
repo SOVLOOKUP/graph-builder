@@ -1,71 +1,164 @@
 <template>
-  <div class="container">
-    <Container ref="childRef" />
-  </div>
-  <div class="toolbar" align="center">
-    <q-btn class="q-pa-md q-mx-xs" round @click="fd">
-      <Icon icon="mdi-plus"
-    /></q-btn>
-    <q-btn class="q-pa-md q-mx-xs" round @click="sx">
-      <Icon icon="mdi-minus"
-    /></q-btn>
-    <q-btn class="q-pa-md q-mx-xs" round @click="rf">
-      <Icon icon="mdi-scan-helper"
-    /></q-btn>
-    <q-btn class="q-pa-md q-mx-xs" round @click="sv">
-      <Icon icon="mdi-content-save"
-    /></q-btn>
+  <div class="builder">
+    <div class="container">
+      <Container ref="childRef" />
+    </div>
+    <div class="toolbar" align="center">
+      <q-btn class="q-pa-md q-mx-xs" round @click="fd">
+        <Icon icon="mdi-plus"
+      /></q-btn>
+      <q-btn class="q-pa-md q-mx-xs" round @click="sx">
+        <Icon icon="mdi-minus"
+      /></q-btn>
+      <q-btn class="q-pa-md q-mx-xs" round @click="rf">
+        <Icon icon="mdi-scan-helper"
+      /></q-btn>
+      <q-btn class="q-pa-md q-mx-xs" round @click="sv">
+        <Icon icon="mdi-content-save"
+      /></q-btn>
+    </div>
+
+    <q-card class="setting-card" v-show="true">
+      <q-bar class="bg-primary text-white">
+        <q-toolbar-title>
+          <span class="font-family-body">实体/边编辑</span>
+        </q-toolbar-title>
+
+        <q-space />
+        <Icon icon="logos:graphene" />
+      </q-bar>
+      <div class="q-px-xl q-py-lg">
+        <q-input
+          label="名称"
+          type="text"
+          v-model="newNodeName"
+          variant="outlined"
+          hide-details="auto"
+        />
+        <q-select
+          v-model="concept"
+          label="概念"
+          hint="键入以筛选概念"
+          use-input
+          @input-value="fillter"
+          :options="options"
+          :option-label="(opt) => opt.attributes.name"
+          :loading="loading"
+        >
+          <template v-slot:option="{ itemProps, opt }">
+            <q-item v-bind="itemProps">
+              <q-item-section>
+                <q-item-label v-html="opt.attributes.name" />
+              </q-item-section>
+            </q-item>
+          </template>
+
+          <template v-slot:no-option>
+            <q-item>
+              <q-item-section class="text-grey"> 无可用概念 </q-item-section>
+            </q-item>
+          </template>
+        </q-select>
+      </div>
+    </q-card>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { useToast } from 'vue-toastification'
-import { onBeforeMount, onMounted, ref } from 'vue'
+import { onMounted, Ref, ref } from 'vue'
 import { defineAsyncComponent } from 'vue'
+import { listConcepts } from '../api'
 const Container = defineAsyncComponent(
   () => import('@/components/GraphCanvas.vue')
 )
 
+interface TagID {
+  id: number
+  tagid: number
+}
+interface Concept {
+  id: number
+  attributes: {
+    name: string
+    jsonldurl: string
+    tag: TagID[]
+  }
+}
+
+// todo 选中显示并加载 取消选中关闭
+// todo 点击确定保存到云端
+const newNodeName = ref('')
+const concept = ref<Ref<Concept>>()
+
 const toast = useToast()
+const cardPosition = ref<'start' | 'end'>('end')
 const childRef = ref('childRef')
-let c: any
+const options = ref<Ref<Concept[]>>([] as any)
+const loading = ref(false)
 
-onBeforeMount(async () => {})
+let builder: any
+let cache: Concept[] = []
 
-onMounted(() => {
-  c = childRef.value
+onMounted(async () => {
+  builder = childRef.value
+
+  cache = (await (await listConcepts()).json()).data
+  options.value = cache
+  loading.value = false
 })
 
+// 筛选
+const fillter = (v: string) =>
+  (options.value = cache.filter((concept: Concept) =>
+    concept.attributes.name.includes(v)
+  ))
+
 // 放大
-const fd = () => c.fd()
+const fd = () => builder.fd()
 // 缩小
-const sx = () => c.sx()
+const sx = () => builder.sx()
 // 缩放到全屏
-const rf = () => c.rf()
+const rf = () => builder.rf()
 // 保存
 const sv = async () => {
-  const res = await c.sv()
+  const res = await builder.sv()
   if (res.status === 200) toast.success('保存成功')
 }
 </script>
 
-<style>
-.toolbar {
-  position: fixed;
-  bottom: 6px;
-  left: 10px;
-  right: 10px;
-  height: 50px;
-  border-radius: 10px;
-  border: 1px solid rgba(175, 175, 175, 0.767);
-  background-color: rgb(243, 243, 243);
-}
+<style lang="scss">
+.builder {
+  display: flex;
+  justify-content: v-bind(cardPosition);
+  align-items: center;
+  width: 100%;
+  height: 100%;
 
-.container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  .setting-card {
+    transform: translateY(-2vh);
+    margin: 40px;
+    height: 90vh;
+    width: 500px;
+  }
+
+  .toolbar {
+    position: fixed;
+    bottom: 6px;
+    left: 10px;
+    right: 10px;
+    height: 50px;
+    border-radius: 10px;
+    border: 1px solid rgba(175, 175, 175, 0.767);
+    background-color: rgb(243, 243, 243);
+  }
+
+  .container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
 }
 </style>
