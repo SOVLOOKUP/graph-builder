@@ -62,7 +62,7 @@
 >
 
 <script lang="ts" setup>
-import Table from '@/components/Table.vue'
+import { defineAsyncComponent } from 'vue'
 import { onMounted, ref } from 'vue'
 import {
   listConcepts,
@@ -71,6 +71,8 @@ import {
   listTags,
   updateConcept,
 } from '../api'
+const Table = defineAsyncComponent(() => import('@/components/Table.vue'))
+
 let cache: Tag[] = []
 
 interface TagID {

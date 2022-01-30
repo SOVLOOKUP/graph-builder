@@ -3,8 +3,9 @@
 </template>
 
 <script lang="ts" setup>
-import Table from '@/components/Table.vue'
+import { defineAsyncComponent } from 'vue'
 import { listTasks } from '../api'
+const Table = defineAsyncComponent(() => import('@/components/Table.vue'))
 
 const getItems = async () => (await (await listTasks()).json()).data
 

@@ -19,10 +19,12 @@
 </template>
 
 <script lang="ts" setup>
-import Container from '@/components/GraphCanvas.vue'
 import { useToast } from 'vue-toastification'
 import { onBeforeMount, onMounted, ref } from 'vue'
-import { Icon } from '@iconify/vue'
+import { defineAsyncComponent } from 'vue'
+const Container = defineAsyncComponent(
+  () => import('@/components/GraphCanvas.vue')
+)
 
 const toast = useToast()
 const childRef = ref('childRef')

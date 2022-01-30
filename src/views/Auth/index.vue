@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="auth">
     <Dialog v-model="dialog" title="设置" :ok="() => (dialog = false)">
       <q-input
         :label="'后端地址'"
@@ -26,7 +26,6 @@
 <script lang="ts" setup>
 import Card from '@/components/Card.vue'
 import { ref } from 'vue'
-import { Icon } from '@iconify/vue'
 import Dialog from '@/components/Dialog.vue'
 import { useConfigStore } from '../../store'
 
@@ -43,10 +42,17 @@ const toggleLoading = (to?: boolean) => {
 }
 </script>
 
-<style>
-.setting {
-  position: fixed;
-  right: 10px;
-  bottom: 10px;
+<style lang="scss" scoped>
+.auth {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  .setting {
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+  }
 }
 </style>

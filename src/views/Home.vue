@@ -41,12 +41,13 @@
 </template>
 
 <script lang="ts" setup>
-import Card from '@/components/Card.vue'
 import { onMounted, ref } from 'vue'
 import { getDBAddress, updateDBAddress } from '../api'
 import { useRouter } from 'vue-router'
 import { useConfigStore, useUserStore } from '../store'
 import type { ModeType } from '../store'
+import { defineAsyncComponent } from 'vue'
+const Card = defineAsyncComponent(() => import('@/components/Card.vue'))
 
 const loading = ref(false)
 const configStore = useConfigStore()

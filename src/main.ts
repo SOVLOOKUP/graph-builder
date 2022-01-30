@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './plugins/router'
 import { Quasar } from 'quasar'
 import pinia from './plugins/pinia'
+import { Icon } from '@iconify/vue'
 
 import Toast, { useToast } from 'vue-toastification'
 import 'vue-toastification/dist/index.css'
@@ -43,6 +44,8 @@ MainApp.use(Toast, {
 MainApp.config.errorHandler = async (err, _vm, info) => {
   toast.error((err as Error).message + '\n' + info)
 }
+
+MainApp.component('Icon', Icon)
 
 posthog.init('phc_wzpudJnq92BwkTvWftGfbefRtIHgyKdtbKlMrR8H8iT', {
   api_host: 'https://app.posthog.com',

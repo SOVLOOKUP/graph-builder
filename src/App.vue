@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hHh lpR fFf">
+  <q-layout view="hHh lpR fFf" ref="root">
     <q-header elevated v-model="configStore.showBar">
       <q-toolbar>
         <q-toolbar-title style="cursor: pointer" @click="$router.push('/')">
@@ -24,26 +24,44 @@
       </q-toolbar>
     </q-header>
 
-    <q-page-container>
+    <q-page-container class="container">
       <router-view v-slot="{ Component }">
-        <keep-alive>
-          <component :is="Component" />
-        </keep-alive>
+        <template v-if="Component">
+          <!-- <transition> -->
+          <keep-alive>
+            <suspense timeout="0">
+              <component :is="Component" />
+              <template #fallback>
+                <Loading />
+              </template>
+            </suspense>
+          </keep-alive>
+          <!-- </transition> -->
+        </template>
       </router-view>
     </q-page-container>
   </q-layout>
 </template>
 
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
-import { onBeforeMount } from 'vue'
+import { onBeforeMount, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useConfigStore } from './store'
+import Loading from '@/components/Loading.vue'
 
 const router = useRouter()
 const configStore = useConfigStore()
+const root = ref('root')
 
 onBeforeMount(async () => await configStore.autoHideBar(router))
+
+onMounted(async () => {
+  try {
+    await new FontFace('OPPOSans-M', `url('/OPPOSans-M.ttf')`).load()
+  } catch (e) {
+    console.error(e)
+  }
+})
 
 const modeTab: {
   [ModeName: string]: { name: string; path: string; icon: string }[]
@@ -78,3 +96,13 @@ const modeTab: {
   app: [],
 }
 </script>
+
+<style lang="scss" scoped>
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+</style>

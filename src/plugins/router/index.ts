@@ -1,20 +1,19 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { authGuard } from './guard'
-import lazyLoadView from './lazyLoad'
-const lazyLoad = lazyLoadView()
 
-const Home = () => lazyLoad(import('../../views/Home.vue'))
-const DataSource = () => lazyLoad(import('../../views/DataSource.vue'))
-const GraphBuilder = () => lazyLoad(import('../../views/GraphBuilder.vue'))
-const Model = () => lazyLoad(import('../../views/Model.vue'))
-const ModelBuilder = () => lazyLoad(import('../../views/ModelBuilder.vue'))
-const TagManage = () => lazyLoad(import('../../views/TagManage.vue'))
-const Concept = () => lazyLoad(import('../../views/Concept.vue'))
+const Home = () => import('../../views/Home.vue')
 
-const Auth = () => lazyLoad(import('../../views/Auth/index.vue'))
-const Signin = () => lazyLoad(import('../../views/Auth/Signin.vue'))
-const Signup = () => lazyLoad(import('../../views/Auth/Signup.vue'))
-const Verify = () => lazyLoad(import('../../views/Auth/Verify.vue'))
+const DataSource = () => import('../../views/DataSource.vue')
+const GraphBuilder = () => import('../../views/GraphBuilder.vue')
+const Model = () => import('../../views/Model.vue')
+const ModelBuilder = () => import('../../views/ModelBuilder.vue')
+const TagManage = () => import('../../views/TagManage.vue')
+const Concept = () => import('../../views/Concept.vue')
+
+const Auth = () => import('../../views/Auth/index.vue')
+const Signin = () => import('../../views/Auth/Signin.vue')
+const Signup = () => import('../../views/Auth/Signup.vue')
+const Verify = () => import('../../views/Auth/Verify.vue')
 
 const routes = [
   {

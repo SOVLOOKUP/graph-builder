@@ -11,9 +11,10 @@
 </template>
 
 <script lang="ts" setup>
-import Table from '@/components/Table.vue'
+import { defineAsyncComponent } from 'vue'
 import { listDataSources, deleteDataSource, createDataSource } from '../api'
 import { ref } from 'vue'
+const Table = defineAsyncComponent(() => import('@/components/Table.vue'))
 
 const getItems = async () => (await (await listDataSources()).json()).data
 const createItem = async (name: string) => {

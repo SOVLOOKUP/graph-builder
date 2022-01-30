@@ -14,9 +14,10 @@
 </template>
 
 <script lang="ts" setup>
-import Table from '@/components/Table.vue'
+import { defineAsyncComponent } from 'vue'
 import { listModels, deleteModel, createModel, updateModel } from '../api'
 import { useRouter } from 'vue-router'
+const Table = defineAsyncComponent(() => import('@/components/Table.vue'))
 const router = useRouter()
 
 const getItems = async () => (await (await listModels()).json()).data

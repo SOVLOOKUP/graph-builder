@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pa-md">
+  <div class="q-pa-md tb">
     <q-table
       :loading="loading"
       :rows="items"
@@ -106,7 +106,6 @@
 <script lang="ts" setup>
 import Dialog from './Dialog.vue'
 import { onBeforeMount, ref } from 'vue'
-import { Icon } from '@iconify/vue'
 import { useToast } from 'vue-toastification'
 import TagID from './TagID.vue'
 
@@ -187,3 +186,10 @@ const search = async () => {
 
 onBeforeMount(refresh)
 </script>
+
+<style lang="scss" scoped>
+.tb {
+  width: 100%;
+  height: 100%;
+}
+</style>

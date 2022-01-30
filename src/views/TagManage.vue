@@ -19,9 +19,10 @@
 </template>
 
 <script lang="ts" setup>
-import Table from '@/components/Table.vue'
 import { ref } from 'vue'
 import { listTags, deleteTag, createTag, updateTag } from '../api'
+import { defineAsyncComponent } from 'vue'
+const Table = defineAsyncComponent(() => import('@/components/Table.vue'))
 
 const getItems = async () => (await (await listTags()).json()).data
 const createItem = async (name: string) => {

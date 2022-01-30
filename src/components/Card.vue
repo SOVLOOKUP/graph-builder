@@ -22,7 +22,6 @@
 </template>
 
 <script lang="ts" setup>
-import { Icon } from '@iconify/vue'
 withDefaults(
   defineProps<{
     loading?: boolean
@@ -33,7 +32,7 @@ withDefaults(
 )
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s ease;
@@ -48,7 +47,6 @@ withDefaults(
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
 
   .out-card {
     width: 400px;
