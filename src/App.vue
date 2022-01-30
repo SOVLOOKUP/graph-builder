@@ -29,7 +29,7 @@
         <template v-if="Component">
           <!-- <transition> -->
           <keep-alive>
-            <suspense>
+            <suspense timeout="0">
               <component :is="Component" />
               <template #fallback>
                 <Loading />
