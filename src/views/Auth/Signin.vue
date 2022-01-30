@@ -86,14 +86,4 @@ const resetForm = () => {
   error.value = false
   tips.value = defaultTips
 }
-
-defineComponent({
-  setup() {
-    const userStore = useUserStore()
-    // call the action as a method of the store
-    console.log(userStore)
-
-    return {}
-  },
-})
 </script>

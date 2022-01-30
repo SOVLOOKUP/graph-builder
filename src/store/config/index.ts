@@ -3,7 +3,6 @@ import { ConfigStore } from './types'
 import { Router } from 'vue-router'
 
 const AutoHideAppBarAtPath = ['/model/', '/auth']
-console.log(import.meta.env)
 
 export const useConfigStore = defineStore('config', {
   state: (): ConfigStore => ({

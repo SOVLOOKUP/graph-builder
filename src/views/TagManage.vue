@@ -6,34 +6,32 @@
     :deleteItem="deleteTag"
     :createItem="createItem"
     :editItem="updateItem"
-    @fillContent="(e:{ attributes: { type: string } }) => (newTagType = e.attributes.type)"
-    @clearContent="newTagType = ''"
+    @fillContent="(e:{ attributes: { description: string } }) => (newTagDescription = e.attributes.description)"
+    @clearContent="newTagDescription = ''"
   >
-    <q-select v-model="newTagType" :options="tagType" label="标签类型" />
+    <q-input
+      color="primary"
+      v-model="newTagDescription"
+      label="描述"
+      autogrow
+    />
   </Table>
 </template>
 
 <script lang="ts" setup>
 import Table from '@/components/Table.vue'
-import { onMounted, Ref, ref } from 'vue'
-import { listTags, deleteTag, createTag, updateTag, getTagType } from '../api'
+import { ref } from 'vue'
+import { listTags, deleteTag, createTag, updateTag } from '../api'
 
 const getItems = async () => (await (await listTags()).json()).data
 const createItem = async (name: string) => {
-  await createTag(name, newTagType.value)
-  newTagType.value = ''
+  await createTag(name, newTagDescription.value)
+  newTagDescription.value = ''
 }
 const updateItem = async (id: number, name: string) =>
-  updateTag(id, name, newTagType.value)
+  updateTag(id, name, newTagDescription.value)
 
-onMounted(async () => {
-  tagType.value = (
-    await (await getTagType()).json()
-  ).data.schema.attributes.type.enum
-})
-
-let tagType: Ref<string[]> = ref([])
-let newTagType = ref('')
+let newTagDescription = ref('')
 
 const columns = [
   {
@@ -50,9 +48,9 @@ const columns = [
   },
   {
     align: 'center',
-    name: 'type',
-    label: '类型',
-    field: (item: any) => item.attributes.type,
+    name: 'description',
+    label: '描述',
+    field: (item: any) => item.attributes.description,
   },
   {
     align: 'center',

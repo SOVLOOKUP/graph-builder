@@ -40,7 +40,7 @@
             <q-item-label v-html="opt.attributes.name" />
           </q-item-section>
           <q-item-section>
-            <q-item-label v-html="opt.attributes.type" />
+            <q-item-label v-html="opt.attributes.description" />
           </q-item-section>
           <q-item-section side>
             <q-toggle
@@ -82,7 +82,7 @@ interface Tag {
   id: number
   attributes: {
     name: string
-    type: string
+    description: string
   }
 }
 
