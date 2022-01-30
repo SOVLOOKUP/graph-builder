@@ -41,3 +41,8 @@
 ## 构建时环境变量
 
 VITE_STRAPI_URL: 后端地址
+
+## 已知依赖问题
+
+1. [ ] keep-alive 调试问题 https://github.com/vuejs/core/pull/5165
+2. [ ] suspense 与动态组件配合调试问题 https://github.com/vuejs/core/issues/5110
