@@ -2,7 +2,9 @@
   <div class="c">
     <div class="out-card">
       <q-card class="auth-card">
-        <q-linear-progress indeterminate v-if="loading" />
+        <transition name="fade">
+          <q-linear-progress indeterminate v-if="loading" />
+        </transition>
         <div class="q-pa-xl">
           <q-toolbar-title class="q-py-lg">
             <q-avatar>
@@ -32,6 +34,16 @@ withDefaults(
 </script>
 
 <style lang="scss">
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
 .c {
   display: flex;
   justify-content: center;

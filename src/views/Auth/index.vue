@@ -1,23 +1,25 @@
 <template>
-  <Dialog v-model="dialog" title="设置" :ok="() => (dialog = false)">
-    <q-input
-      :label="'后端地址'"
-      type="text"
-      v-model="configStore.serverBaseUrl"
-    />
-  </Dialog>
+  <div>
+    <Dialog v-model="dialog" title="设置" :ok="() => (dialog = false)">
+      <q-input
+        :label="'后端地址'"
+        type="text"
+        v-model="configStore.serverBaseUrl"
+      />
+    </Dialog>
 
-  <Card :loading="loading">
-    <router-view @toggleLoading="toggleLoading" />
-  </Card>
-  <div class="setting">
-    <q-btn flat round @click="dialog = true">
-      <Icon icon="icon-park-outline:setting-two" height="30" color="grey" />
-    </q-btn>
-    <q-btn flat round>
-      <q-tooltip> 微信: xiafanGO-NORTH </q-tooltip>
-      <Icon icon="topcoat:question" height="30" color="grey"> </Icon>
-    </q-btn>
+    <Card :loading="loading">
+      <router-view @toggleLoading="toggleLoading" />
+    </Card>
+    <div class="setting">
+      <q-btn flat round @click="dialog = true">
+        <Icon icon="icon-park-outline:setting-two" height="30" color="grey" />
+      </q-btn>
+      <q-btn flat round>
+        <q-tooltip> 微信: xiafanGO-NORTH </q-tooltip>
+        <Icon icon="topcoat:question" height="30" color="grey"> </Icon>
+      </q-btn>
+    </div>
   </div>
 </template>
 

@@ -25,12 +25,12 @@
     </q-header>
 
     <q-page-container>
-      <suspense>
+      <Suspense>
         <template #default>
-          <router-view />
+          <keep-alive><router-view /></keep-alive>
         </template>
-        <template #fallback> loading... </template>
-      </suspense>
+        <template #fallback> Loading... </template>
+      </Suspense>
     </q-page-container>
   </q-layout>
 </template>

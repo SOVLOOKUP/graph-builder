@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory, RouteLocation } from 'vue-router'
-import Home from '../views/Home.vue'
 import { useUserStore } from '../store'
 import { useToast } from 'vue-toastification'
 const toast = useToast()
 
+const Home = () => import('../views/Home.vue')
 const DataSource = () => import('../views/DataSource.vue')
 const GraphBuilder = () => import('../views/GraphBuilder.vue')
 const Model = () => import('../views/Model.vue')
