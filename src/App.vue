@@ -25,12 +25,11 @@
     </q-header>
 
     <q-page-container>
-      <Suspense>
-        <template #default>
-          <keep-alive><router-view /></keep-alive>
-        </template>
-        <template #fallback> Loading... </template>
-      </Suspense>
+      <router-view v-slot="{ Component }">
+        <keep-alive>
+          <component :is="Component" />
+        </keep-alive>
+      </router-view>
     </q-page-container>
   </q-layout>
 </template>
