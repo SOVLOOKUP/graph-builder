@@ -23,18 +23,19 @@ import ky from 'ky'
 const fontName = import.meta.env.VITE_APP_FONT as string
 const value = ref(0)
 const ok = ref(false)
-const done = inject('ok') as (font: Promise<FontFace>) => Promise<void>
+const done = inject('ok') as (font: FontFace) => void
 
 onMounted(async () => {
   const res = await ky.get(`/${fontName}.ttf`, {
     onDownloadProgress: (e) => {
       value.value = e.percent * 100
+      console.log(e.percent)
     },
   })
   const fontBuffer = await res.arrayBuffer()
-  const font = new FontFace(fontName, fontBuffer).load()
+  const font = await new FontFace(fontName, fontBuffer).load()
   ok.value = true
-  await done(font)
+  done(font)
 })
 </script>
 

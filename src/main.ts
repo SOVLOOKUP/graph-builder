@@ -58,8 +58,8 @@ const fontName = import.meta.env.VITE_APP_FONT as string | undefined
 if (fontName) {
   const LoadingApp = createApp(Loading)
   LoadingApp.use(Quasar)
-  LoadingApp.provide('ok', async (font: Promise<FontFace>) => {
-    ;(document.fonts as any).add(await font)
+  LoadingApp.provide('ok', async (font: FontFace) => {
+    ;(document.fonts as any).add(font)
     document.body.style.fontFamily = fontName
     LoadingApp.unmount()
     MainApp.mount('#app')
