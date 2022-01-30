@@ -26,7 +26,7 @@
             v-if="item.editable"
             v-model="item.value"
             v-slot="scope"
-            @change="(e) => editItem(e, item.name)"
+            @change="(e:Event) => editItem(e, item.name)"
           >
             <q-input v-model="scope.value" dense autofocus counter />
           </q-popup-edit>
