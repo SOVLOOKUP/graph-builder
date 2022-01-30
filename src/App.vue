@@ -12,7 +12,7 @@
 
         <q-tabs shrink stretch>
           <q-route-tab
-            style="width: 100px"
+            style="width: 100px; height: 60px"
             :to="btn.path"
             v-for="btn in modeTab[configStore.mode]"
             :key="btn.name"
@@ -95,7 +95,13 @@ const modeTab: {
       icon: 'mdi-crane',
     },
   ],
-  app: [],
+  app: [
+    {
+      path: '/plugincenter',
+      name: '插件市场',
+      icon: 'mdi-chemical-weapon',
+    },
+  ],
 }
 </script>
 
