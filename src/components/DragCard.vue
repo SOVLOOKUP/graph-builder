@@ -83,6 +83,7 @@ const start = (x: number, y: number) => {
   up.value = () => {
     draggableEvent.endDragging()
     showDragger.value = false
+    document.body.style.overflow = 'auto'
     move.value = undefined
     up.value = undefined
   }
@@ -96,6 +97,7 @@ const startDrag = (e: MouseEvent) => {
 }
 
 const startDragMobile = (e: TouchEvent) => {
+  document.body.style.overflow = 'hidden'
   start(e.changedTouches[0].clientX, e.changedTouches[0].clientY)
 }
 
@@ -111,7 +113,7 @@ onUnmounted(() => {
 })
 </script>
 
-<style lang="scss" setup>
+<style lang="scss" scoped>
 .full {
   display: flex;
   justify-content: center;

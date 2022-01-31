@@ -6,7 +6,7 @@
 
 <script lang="ts" setup>
 import { Graph } from '@antv/x6'
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { getModelJson, updateModelJson } from '../api'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
@@ -133,12 +133,19 @@ defineExpose({
     )
   },
 })
+
+// 禁止移动端拖拽刷新
+onMounted(() => {
+  document.body.style.overflow = 'hidden'
+})
+onUnmounted(() => {
+  document.body.style.overflow = 'auto'
+})
 </script>
 
 <style scoped lang="scss">
 .layout {
   display: flex;
-  // box-sizing: border-box;
   width: 100%;
   height: 100%;
   padding: 10px;
