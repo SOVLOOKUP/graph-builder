@@ -12,7 +12,6 @@ import quasarLang from 'quasar/lang/zh-CN'
 import quasarIconSet from 'quasar/icon-set/svg-material-icons'
 import 'quasar/src/css/index.sass'
 import posthog from 'posthog-js'
-import { openDB, deleteDB, wrap, unwrap } from 'idb'
 
 const MainApp = createApp(App)
 const toast = useToast()
