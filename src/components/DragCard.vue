@@ -4,15 +4,15 @@
       class="dragger"
       v-show="showDragger"
       @mousemove="(e) => move && move(e)"
-      @touchmove="(e) => move && move(e)"
       @mouseup="() => up && up()"
-      @touchend="() => up && up()"
     />
     <div ref="win" v-show="show">
       <q-card class="win">
         <q-bar
           @mousedown="startDrag"
           @touchstart="startDragMobile"
+          @touchmove="(e) => move && move(e)"
+          @touchend="() => up && up()"
           class="bg-primary text-white"
         >
           <Icon
@@ -86,13 +86,12 @@ const start = (x: number, y: number) => {
     move.value = undefined
     up.value = undefined
   }
-
-  showDragger.value = true
 }
 
 const startDrag = (e: MouseEvent) => {
   if (e.button === 0) {
     start(e.clientX, e.clientY)
+    showDragger.value = true
   }
 }
 

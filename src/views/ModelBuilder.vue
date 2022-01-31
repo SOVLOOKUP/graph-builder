@@ -115,6 +115,10 @@ const sv = async () => {
 </script>
 
 <style lang="scss">
+body {
+  overflow-y: hidden;
+}
+
 .builder {
   display: flex;
   justify-content: center;
