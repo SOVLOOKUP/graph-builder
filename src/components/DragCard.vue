@@ -53,6 +53,7 @@ let draggableEvent: Draggable
 const win = ref()
 const showDragger = ref(false)
 const id = 'win'
+const defaultOverflow = document.body.style.overflow
 
 const start = (x: number, y: number) => {
   draggableEvent = new Draggable(id, { x, y })
@@ -83,7 +84,7 @@ const start = (x: number, y: number) => {
   up.value = () => {
     draggableEvent.endDragging()
     showDragger.value = false
-    document.body.style.overflow = 'auto'
+    document.body.style.overflow = defaultOverflow
     move.value = undefined
     up.value = undefined
   }
