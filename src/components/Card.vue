@@ -3,7 +3,7 @@
     <div class="out-card">
       <q-card class="auth-card">
         <transition name="fade">
-          <q-linear-progress indeterminate v-if="loading" />
+          <q-linear-progress indeterminate v-show="loading" />
         </transition>
         <div class="q-pa-xl">
           <q-toolbar-title class="q-py-lg">
