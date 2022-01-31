@@ -18,56 +18,48 @@
       /></q-btn>
     </div>
 
-    <q-card class="setting-card" v-show="true">
-      <q-bar class="bg-primary text-white">
-        <q-toolbar-title>
-          <span class="font-family-body">实体/边编辑</span>
-        </q-toolbar-title>
+    <DragCard title="实体/边编辑" :show="true">
+      <template #top><Icon icon="logos:graphene" /></template>
+      <q-input
+        label="名称"
+        type="text"
+        v-model="newNodeName"
+        variant="outlined"
+        hide-details="auto"
+      />
+      <q-select
+        v-model="concept"
+        label="概念"
+        hint="键入以筛选概念"
+        use-input
+        @input-value="fillter"
+        :options="options"
+        :option-label="(opt) => opt.attributes.name"
+      >
+        <template v-slot:option="{ itemProps, opt }">
+          <q-item v-bind="itemProps">
+            <q-item-section>
+              <q-item-label v-html="opt.attributes.name" />
+            </q-item-section>
+          </q-item>
+        </template>
 
-        <q-space />
-        <Icon icon="logos:graphene" />
-      </q-bar>
-      <div class="q-px-xl q-py-lg">
-        <q-input
-          label="名称"
-          type="text"
-          v-model="newNodeName"
-          variant="outlined"
-          hide-details="auto"
-        />
-        <q-select
-          v-model="concept"
-          label="概念"
-          hint="键入以筛选概念"
-          use-input
-          @input-value="fillter"
-          :options="options"
-          :option-label="(opt) => opt.attributes.name"
-        >
-          <template v-slot:option="{ itemProps, opt }">
-            <q-item v-bind="itemProps">
-              <q-item-section>
-                <q-item-label v-html="opt.attributes.name" />
-              </q-item-section>
-            </q-item>
-          </template>
-
-          <template v-slot:no-option>
-            <q-item>
-              <q-item-section class="text-grey"> 无可用概念 </q-item-section>
-            </q-item>
-          </template>
-        </q-select>
-      </div>
-    </q-card>
+        <template v-slot:no-option>
+          <q-item>
+            <q-item-section class="text-grey"> 无可用概念 </q-item-section>
+          </q-item>
+        </template>
+      </q-select>
+    </DragCard>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { useToast } from 'vue-toastification'
-import { nextTick, onMounted, Ref, ref } from 'vue'
+import { onMounted, Ref, ref } from 'vue'
 import { defineAsyncComponent } from 'vue'
 import { listConcepts } from '../api'
+const DragCard = defineAsyncComponent(() => import('@/components/DragCard.vue'))
 const Container = defineAsyncComponent(
   () => import('@/components/GraphCanvas.vue')
 )
@@ -126,17 +118,10 @@ const sv = async () => {
 <style lang="scss">
 .builder {
   display: flex;
-  justify-content: v-bind(cardPosition);
+  justify-content: center;
   align-items: center;
   width: 100%;
   height: 100%;
-
-  .setting-card {
-    transform: translateY(-2vh);
-    margin: 40px;
-    height: 90vh;
-    width: 500px;
-  }
 
   .toolbar {
     position: fixed;
