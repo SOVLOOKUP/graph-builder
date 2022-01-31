@@ -4,11 +4,17 @@
       class="dragger"
       v-show="showDragger"
       @mousemove="(e) => move && move(e)"
+      @touchmove="(e) => move && move(e)"
       @mouseup="() => up && up()"
+      @touchend="() => up && up()"
     />
     <div ref="win" v-show="show">
       <q-card class="win">
-        <q-bar @mousedown="startDrag" class="bg-primary text-white">
+        <q-bar
+          @mousedown="startDrag"
+          @touchstart="startDragMobile"
+          class="bg-primary text-white"
+        >
           <Icon
             :icon="move === undefined ? 'entypo:pin' : 'mdi:drag-variant'"
           />
@@ -40,34 +46,58 @@ const props = withDefaults(
   }
 )
 
-let move: Ref<((e: MouseEvent) => void) | undefined> = ref(undefined)
+let move: Ref<((e: MouseEvent | TouchEvent) => void) | undefined> =
+  ref(undefined)
 let up: Ref<(() => void) | undefined> = ref(undefined)
 let draggableEvent: Draggable
 const win = ref()
 const showDragger = ref(false)
 const id = 'win'
 
+const start = (x: number, y: number) => {
+  draggableEvent = new Draggable(id, { x, y })
+
+  // 设置初始位置
+  props.initPosition &&
+    draggableEvent.dragAt(props.initPosition.x, props.initPosition.y)
+
+  move.value = (e: MouseEvent | TouchEvent) => {
+    e.type === 'mousemove'
+    switch (e.type) {
+      case 'mousemove':
+        e = e as MouseEvent
+        draggableEvent.dragAt(e.clientX, e.clientY)
+        break
+      case 'touchmove':
+        e = e as TouchEvent
+        draggableEvent.dragAt(
+          e.changedTouches[0].clientX,
+          e.changedTouches[0].clientY
+        )
+        break
+      default:
+        throw new Error('unexpected device type')
+    }
+  }
+
+  up.value = () => {
+    draggableEvent.endDragging()
+    showDragger.value = false
+    move.value = undefined
+    up.value = undefined
+  }
+
+  showDragger.value = true
+}
+
 const startDrag = (e: MouseEvent) => {
   if (e.button === 0) {
-    draggableEvent = new Draggable(id, { x: e.clientX, y: e.clientY })
-
-    // 设置初始位置
-    props.initPosition &&
-      draggableEvent.dragAt(props.initPosition.x, props.initPosition.y)
-
-    move.value = (e: MouseEvent) => {
-      draggableEvent.dragAt(e.clientX, e.clientY)
-    }
-
-    up.value = () => {
-      draggableEvent.endDragging()
-      showDragger.value = false
-      move.value = undefined
-      up.value = undefined
-    }
-
-    showDragger.value = true
+    start(e.clientX, e.clientY)
   }
+}
+
+const startDragMobile = (e: TouchEvent) => {
+  start(e.changedTouches[0].clientX, e.changedTouches[0].clientY)
 }
 
 onMounted(() => {
