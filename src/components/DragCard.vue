@@ -50,10 +50,10 @@ let move: Ref<((e: MouseEvent | TouchEvent) => void) | undefined> =
   ref(undefined)
 let up: Ref<(() => void) | undefined> = ref(undefined)
 let draggableEvent: Draggable
+let defaultOverflow = ''
 const win = ref()
 const showDragger = ref(false)
 const id = 'win'
-const defaultOverflow = document.body.style.overflow
 
 const start = (x: number, y: number) => {
   draggableEvent = new Draggable(id, { x, y })
@@ -98,6 +98,7 @@ const startDrag = (e: MouseEvent) => {
 }
 
 const startDragMobile = (e: TouchEvent) => {
+  defaultOverflow = document.body.style.overflow
   document.body.style.overflow = 'hidden'
   start(e.changedTouches[0].clientX, e.changedTouches[0].clientY)
 }
