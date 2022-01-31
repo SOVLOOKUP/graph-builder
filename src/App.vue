@@ -40,13 +40,34 @@
         </template>
       </router-view>
     </q-page-container>
+
+    <FirstLoading :show="show" @ok="show = false" />
   </q-layout>
 </template>
 
 <script setup lang="ts">
 import { useConfigStore } from './store'
 import Loading from '@/components/Loading.vue'
+import FirstLoading from './views/FirstLoading.vue'
+import { get } from 'idb-keyval'
+import { onBeforeMount, ref } from 'vue'
+
 const configStore = useConfigStore()
+const show = ref(false)
+
+// 这里检测 indexeddb 资源是否存在，如果不存在，则启动首屏加载
+onBeforeMount(async () => {
+  const fontName = import.meta.env.VUE_APP_FONT as string
+  const fontBuffer = await get('font')
+  if (fontBuffer === undefined) {
+    show.value = true
+  } else {
+    // 加载字体
+    const font = await new FontFace(fontName, fontBuffer).load()
+    ;(document.fonts as any).add(font)
+    document.body.style.fontFamily = fontName
+  }
+})
 
 const modeTab: {
   [ModeName: string]: { name: string; path: string; icon: string }[]

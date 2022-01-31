@@ -1,5 +1,4 @@
 import { createApp } from 'vue'
-import Loading from './Loading.vue'
 import App from './App.vue'
 import router from './plugins/router'
 import { Quasar } from 'quasar'
@@ -13,6 +12,7 @@ import quasarLang from 'quasar/lang/zh-CN'
 import quasarIconSet from 'quasar/icon-set/svg-material-icons'
 import 'quasar/src/css/index.sass'
 import posthog from 'posthog-js'
+import { openDB, deleteDB, wrap, unwrap } from 'idb'
 
 const MainApp = createApp(App)
 const toast = useToast()
@@ -53,18 +53,4 @@ posthog.init('phc_wzpudJnq92BwkTvWftGfbefRtIHgyKdtbKlMrR8H8iT', {
   api_host: 'https://app.posthog.com',
 })
 
-// 根据环境变量设置加载字体 todo 这里阻塞时间太久
-const fontName = import.meta.env.VITE_APP_FONT as string | undefined
-if (fontName) {
-  const LoadingApp = createApp(Loading)
-  LoadingApp.use(Quasar)
-  LoadingApp.provide('ok', async (font: FontFace) => {
-    ;(document.fonts as any).add(font)
-    document.body.style.fontFamily = fontName
-    LoadingApp.unmount()
-    MainApp.mount('#app')
-  })
-  LoadingApp.mount('#app')
-} else {
-  MainApp.mount('#app')
-}
+MainApp.mount('#app')
