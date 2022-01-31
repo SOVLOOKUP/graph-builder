@@ -48,7 +48,7 @@
 <script setup lang="ts">
 import { useConfigStore } from './store'
 import Loading from '@/components/Loading.vue'
-import FirstLoading from './views/FirstLoading.vue'
+import FirstLoading from '@/components/FirstLoading.vue'
 import { get } from 'idb-keyval'
 import { onBeforeMount, ref } from 'vue'
 const fontName = import.meta.env.VITE_APP_FONT as string

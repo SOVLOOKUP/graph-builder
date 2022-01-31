@@ -9,6 +9,7 @@ const Model = () => import('../../views/Model.vue')
 const ModelBuilder = () => import('../../views/ModelBuilder.vue')
 const TagManage = () => import('../../views/TagManage.vue')
 const Concept = () => import('../../views/Concept.vue')
+const PluginCenter = () => import('../../views/PluginCenter.vue')
 
 const Auth = () => import('../../views/Auth/index.vue')
 const Signin = () => import('../../views/Auth/Signin.vue')
@@ -72,6 +73,11 @@ const routes = [
     path: '/graphbuilder',
     name: '构建',
     component: GraphBuilder,
+  },
+  {
+    path: '/plugincenter',
+    name: '插件中心',
+    component: PluginCenter,
   },
 ]
 
