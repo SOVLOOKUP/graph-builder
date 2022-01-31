@@ -83,7 +83,6 @@ const newNodeName = ref('')
 const concept = ref<Ref<Concept>>()
 
 const toast = useToast()
-const cardPosition = ref<'start' | 'end'>('end')
 const childRef = ref('childRef')
 const options = ref<Ref<Concept[]>>([] as any)
 
