@@ -41,7 +41,7 @@
       </router-view>
     </q-page-container>
 
-    <FirstLoading :show="show" @ok="show = false" />
+    <FirstLoading :show="show" @ok="ok" />
   </q-layout>
 </template>
 
@@ -51,23 +51,29 @@ import Loading from '@/components/Loading.vue'
 import FirstLoading from './views/FirstLoading.vue'
 import { get } from 'idb-keyval'
 import { onBeforeMount, ref } from 'vue'
+const fontName = import.meta.env.VITE_APP_FONT as string
 
 const configStore = useConfigStore()
 const show = ref(false)
 
 // 这里检测 indexeddb 资源是否存在，如果不存在，则启动首屏加载
 onBeforeMount(async () => {
-  const fontName = import.meta.env.VUE_APP_FONT as string
-  const fontBuffer = await get('font')
+  const fontBuffer = await get(fontName)
   if (fontBuffer === undefined) {
     show.value = true
   } else {
-    // 加载字体
-    const font = await new FontFace(fontName, fontBuffer).load()
-    ;(document.fonts as any).add(font)
-    document.body.style.fontFamily = fontName
+    await ok()
   }
 })
+
+const ok = async () => {
+  // 加载字体
+  const fontBuffer = await get(fontName)
+  const font = await new FontFace(fontName, fontBuffer).load()
+  ;(document.fonts as any).add(font)
+  document.body.style.fontFamily = fontName
+  show.value = false
+}
 
 const modeTab: {
   [ModeName: string]: { name: string; path: string; icon: string }[]

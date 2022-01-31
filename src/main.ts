@@ -43,6 +43,7 @@ MainApp.use(Toast, {
 
 MainApp.config.errorHandler = async (err, _vm, info) => {
   toast.error((err as Error).message + '\n' + info)
+  throw err
 }
 
 MainApp.component('Icon', Icon)

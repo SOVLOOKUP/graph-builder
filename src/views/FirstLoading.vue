@@ -35,7 +35,7 @@ withDefaults(
 )
 
 const emits = defineEmits<{
-  (e: 'ok'): void
+  (e: 'ok'): Promise<void>
 }>()
 
 const loadFont = async () => {
@@ -45,16 +45,13 @@ const loadFont = async () => {
     },
   })
   const fontBuffer = await res.arrayBuffer()
-  const font = await new FontFace(fontName, fontBuffer).load()
-  ;(document.fonts as any).add(font)
-  document.body.style.fontFamily = fontName
-  await set('font', fontBuffer)
+  await set(fontName, fontBuffer)
 }
 
 onMounted(async () => {
   await loadFont()
   ok.value = true
-  emits('ok')
+  await emits('ok')
 })
 </script>
 
