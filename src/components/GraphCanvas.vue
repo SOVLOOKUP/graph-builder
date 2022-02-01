@@ -1,21 +1,120 @@
 <template>
   <div class="layout">
     <div ref="container" class="cavs" style="flex: 1" />
+    <DragWindow
+      title="编辑"
+      :show="show"
+      :initPositionX="initPosition.x + 60"
+      :initPositionY="initPosition.y - 100"
+      :ok="editCell"
+    >
+      <template #top><Icon icon="logos:graphene" /></template>
+
+      <q-select
+        v-model="concept"
+        label="概念"
+        hint="键入以筛选概念"
+        use-input
+        @input-value="fillter"
+        :options="options"
+        :option-label="(opt) => opt.attributes.name"
+      >
+        <template v-slot:option="{ itemProps, opt }">
+          <q-item v-bind="itemProps">
+            <q-item-section>
+              <q-item-label v-html="opt.attributes.name" />
+            </q-item-section>
+          </q-item>
+        </template>
+
+        <template v-slot:no-option>
+          <q-item>
+            <q-item-section class="text-grey"> 无可用概念 </q-item-section>
+          </q-item>
+        </template>
+      </q-select>
+      <slot />
+    </DragWindow>
+
+    <div class="toolbar" align="center">
+      <q-btn class="q-pa-md q-mx-xs" round @click="fd">
+        <Icon icon="mdi-plus"
+      /></q-btn>
+      <q-btn class="q-pa-md q-mx-xs" round @click="sx">
+        <Icon icon="mdi-minus"
+      /></q-btn>
+      <q-btn class="q-pa-md q-mx-xs" round @click="rf">
+        <Icon icon="mdi-scan-helper"
+      /></q-btn>
+      <q-btn class="q-pa-md q-mx-xs" round @click="sv">
+        <Icon icon="mdi-content-save"
+      /></q-btn>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { Graph } from '@antv/x6'
-import { onMounted, onUnmounted, ref } from 'vue'
+import { Edge, Graph } from '@antv/x6'
+import { onMounted, onUnmounted, Ref, ref } from 'vue'
 import { getModelJson, updateModelJson } from '../api'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
+import DragWindow from '@/components/DragCard.vue'
+import { listConcepts } from '../api'
 const toast = useToast()
 
+interface TagID {
+  id: number
+  tagid: number
+}
+interface Concept {
+  id: number
+  attributes: {
+    name: string
+    jsonldurl: string
+    tag: TagID[]
+  }
+}
+
+const options = ref<Ref<Concept[]>>([] as any)
+let cache: Concept[] = []
+cache = (await (await listConcepts()).json()).data
+options.value = cache
 const router = useRouter()
+const initPosition = ref({ x: 0, y: 0 })
+const show = ref(false)
 const r = 60
 const container = ref(undefined)
 let graph: Graph
+const concept = ref<Concept>()
+
+const editCell = () => {
+  const cell = graph.getSelectedCells()[0]
+  const newText = concept.value?.attributes?.name
+
+  if (newText === '' || newText === undefined) {
+    toast.info('请选择概念')
+  } else {
+    cell.setData({
+      concept: concept.value,
+    })
+
+    if (cell.shape === 'edge') {
+      // edge
+      ;(cell as Edge).setLabels([newText])
+    } else {
+      // node
+      cell.setAttrs({
+        text: {
+          text: newText,
+        },
+      })
+    }
+
+    show.value = false
+    graph.unselect(cell)
+  }
+}
 
 onMounted(async () => {
   graph = new Graph({
@@ -70,6 +169,14 @@ onMounted(async () => {
     cell.removeTool('button-remove')
   })
 
+  graph.on('cell:click', (a) => {
+    graph.select(a.cell)
+    initPosition.value = { x: a.e.clientX, y: a.e.clientY }
+    // 载入节点概念
+    concept.value = a.cell.getData()?.concept
+    show.value = true
+  })
+
   graph.on('cell:selected', ({ cell }) => {
     cell.addTools([
       {
@@ -88,6 +195,7 @@ onMounted(async () => {
 
   graph.on('cell:unselected', ({ cell }) => {
     cell.removeTool('boundary')
+    show.value = false
   })
 })
 
@@ -116,23 +224,28 @@ const addNode = (x: number, y: number) => {
   )
 }
 
-defineExpose({
-  fd() {
-    graph.zoomTo(graph.zoom() + 1)
-  },
-  sx() {
-    graph.zoomTo(graph.zoom() - 1)
-  },
-  rf() {
-    graph.zoomToFit()
-  },
-  async sv() {
-    return await updateModelJson(
-      router.currentRoute.value.params.id as string,
-      graph.toJSON()
-    )
-  },
-})
+// 筛选
+const fillter = (v: string) =>
+  (options.value = cache.filter((concept: Concept) =>
+    concept.attributes.name.includes(v)
+  ))
+
+const fd = () => {
+  graph.zoomTo(graph.zoom() + 1)
+}
+const sx = () => {
+  graph.zoomTo(graph.zoom() - 1)
+}
+const rf = () => {
+  graph.zoomToFit()
+}
+const sv = async () => {
+  const res = await updateModelJson(
+    router.currentRoute.value.params.id as string,
+    graph.toJSON()
+  )
+  if (res.status === 200) toast.success('保存成功')
+}
 
 // 禁止移动端拖拽刷新
 onMounted(() => {
@@ -153,6 +266,17 @@ onUnmounted(() => {
     width: 100%;
     height: 100%;
     border: 1px solid rgba(175, 175, 175, 0.767);
+  }
+
+  .toolbar {
+    position: fixed;
+    bottom: 6px;
+    left: 10px;
+    right: 10px;
+    height: 50px;
+    border-radius: 10px;
+    border: 1px solid rgba(175, 175, 175, 0.767);
+    background-color: rgb(243, 243, 243);
   }
 }
 </style>

@@ -6,8 +6,8 @@
       @mousemove="(e) => move && move(e)"
       @mouseup="() => up && up()"
     />
-    <div ref="win" v-show="show">
-      <q-card class="win">
+    <div ref="win" v-show="show" class="win">
+      <q-card>
         <q-bar
           @mousedown="startDrag"
           @touchstart="startDragMobile"
@@ -26,6 +26,10 @@
         <div class="q-pa-lg">
           <slot />
         </div>
+        <q-card-actions align="right">
+          <q-btn flat @click="show = false"> 取消 </q-btn>
+          <q-btn color="primary" flat @click="ok"> 确认 </q-btn>
+        </q-card-actions>
       </q-card>
     </div>
   </div>
@@ -35,14 +39,17 @@
 import { onMounted, onUnmounted, Ref, ref } from 'vue'
 import { store, Draggable } from '@dflex/draggable'
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     title?: string
     show?: boolean
-    initPosition?: { x: number; y: number }
+    initPositionX: number
+    initPositionY: number
+    ok: () => void
   }>(),
   {
     show: false,
+    ok: () => {},
   }
 )
 
@@ -58,12 +65,7 @@ const id = 'win'
 const start = (x: number, y: number) => {
   draggableEvent = new Draggable(id, { x, y })
 
-  // 设置初始位置
-  props.initPosition &&
-    draggableEvent.dragAt(props.initPosition.x, props.initPosition.y)
-
   move.value = (e: MouseEvent | TouchEvent) => {
-    e.type === 'mousemove'
     switch (e.type) {
       case 'mousemove':
         e = e as MouseEvent
@@ -117,11 +119,7 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 .full {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
+  position: fixed;
 
   .dragger {
     position: fixed;
@@ -130,12 +128,15 @@ onUnmounted(() => {
     right: 0;
     left: 0;
     bottom: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     pointer-events: auto;
   }
 
   .win {
+    position: fixed;
+    top: v-bind(initPositionY);
+    left: v-bind(initPositionX);
     width: auto;
     height: auto;
   }
