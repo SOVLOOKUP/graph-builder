@@ -16,18 +16,10 @@
         label="from"
         hint="关系引出字段标签"
         use-input
-        @input-value="fillterTag"
+        @input-value="filterFromTag"
         :options="fromOptions"
         :option-label="(opt) => opt.attributes.name"
       >
-        <!-- <template v-slot:option="{ itemProps, opt }">
-          <q-item v-bind="itemProps">
-            <q-item-section>
-              <q-item-label v-html="opt.attributes.name" />
-            </q-item-section>
-          </q-item>
-        </template> -->
-
         <template v-slot:no-option>
           <q-item>
             <q-item-section class="text-grey"> 无可用标签 </q-item-section>
@@ -41,18 +33,10 @@
         label="to"
         hint="关系到达字段标签"
         use-input
-        @input-value="fillterTag"
+        @input-value="filterToTag"
         :options="toOptions"
         :option-label="(opt) => opt.attributes.name"
       >
-        <!-- <template v-slot:option="{ itemProps, opt }">
-          <q-item v-bind="itemProps">
-            <q-item-section>
-              <q-item-label v-html="opt.attributes.name" />
-            </q-item-section>
-          </q-item>
-        </template> -->
-
         <template v-slot:no-option>
           <q-item>
             <q-item-section class="text-grey"> 无可用标签 </q-item-section>
@@ -65,7 +49,7 @@
         label="概念"
         hint="键入以筛选概念"
         use-input
-        @input-value="fillter"
+        @input-value="filter"
         :options="options"
         :option-label="(opt) => opt.attributes.name"
       >
@@ -106,30 +90,51 @@
 <script lang="ts" setup>
 import { Edge, Graph } from '@antv/x6'
 import { onMounted, onUnmounted, Ref, ref } from 'vue'
-import { getModelJson, updateModelJson } from '../api'
+import { getModelJson, getTag, updateModelJson, listConcepts } from '../api'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import DragWindow from '@/components/DragCard.vue'
-import { listConcepts } from '../api'
 const toast = useToast()
 
 interface TagID {
   id: number
   tagid: number
 }
+
+interface Tag {
+  id: number
+  attributes: {
+    name: string
+    description: string
+  }
+}
+
 interface Concept {
   id: number
   attributes: {
     name: string
     jsonldurl: string
-    tag: TagID[]
+    tag: Tag[]
   }
 }
 
-const options = ref<Ref<Concept[]>>([] as any)
-let cache: Concept[] = []
-cache = (await (await listConcepts()).json()).data
-options.value = cache
+const options = ref<Concept[]>([] as any)
+const fromOptions = ref<Tag[]>([] as any)
+const toOptions = ref<Tag[]>([] as any)
+let concepts: Concept[] = (await (await listConcepts()).json()).data
+
+const getTagsInfo = async (tags: number[]) =>
+  await Promise.all(
+    tags.map(async (id: number) => (await (await getTag(id)).json()).data)
+  )
+
+for (const concept of concepts) {
+  concept.attributes.tag = await getTagsInfo(
+    concept.attributes.tag.map((tag: any) => (tag as TagID).tagid)
+  )
+}
+
+options.value = concepts
 const router = useRouter()
 const initPosition = ref({ x: 0, y: 0 })
 const isEditEdge = ref(false)
@@ -138,15 +143,17 @@ const r = 60
 const container = ref(undefined)
 let graph: Graph
 const concept = ref<Concept>()
-const fromTag = ref<TagID>()
-const toTag = ref<TagID>()
+const fromTag = ref<Tag>()
+const toTag = ref<Tag>()
+let fromTagCache: Tag[] = []
+let toTagCache: Tag[] = []
 
 const editCell = () => {
   // 取得当前选中的节点和其属性
   const cell = graph.getSelectedCells()[0]
   const newText = concept.value?.attributes?.name
-  const newFromTag = fromTag.value?.tagid
-  const newToTag = toTag.value?.tagid
+  const newFromTag = fromTag.value
+  const newToTag = toTag.value
 
   const isEditEdge = cell.shape === 'edge'
 
@@ -175,8 +182,8 @@ const editCell = () => {
 
     // 设置边属性
     ;(cell as Edge).setData({
-      from: fromTag.value?.tagid,
-      to: toTag.value?.tagid,
+      from: fromTag.value,
+      to: toTag.value,
     })
     // 设置边名称
     ;(cell as Edge).setLabels([newText])
@@ -260,7 +267,18 @@ onMounted(async () => {
       fromTag.value = a.cell.getData()?.from
       toTag.value = a.cell.getData()?.to
 
-      // todo 载入边引出/目标标签选项
+      // 载入边的引出标签选项
+      const sourceNode = graph
+        .getCellById(((a.cell as Edge).source as { cell: string }).cell)
+        .getData()?.concept as Concept
+      fromTagCache = sourceNode?.attributes?.tag ?? []
+      fromOptions.value = fromTagCache
+      // 载入边的目标标签选项
+      const targetNode = graph
+        .getCellById(((a.cell as Edge).target as { cell: string }).cell)
+        .getData()?.concept as Concept
+      toTagCache = targetNode?.attributes?.tag ?? []
+      toOptions.value = toTagCache
     }
 
     // 显示编辑窗口
@@ -315,12 +333,20 @@ const addNode = (x: number, y: number) => {
 }
 
 // 筛选
-const fillter = (v: string) =>
-  (options.value = cache.filter((concept: Concept) =>
+const filter = (v: string) =>
+  (options.value = concepts.filter((concept: Concept) =>
     concept.attributes.name.includes(v)
   ))
 
-const fillterTag = (v: string) => {}
+const filterFromTag = (v: string) =>
+  (fromOptions.value = fromTagCache.filter((tag: Tag) =>
+    tag.attributes.name.includes(v)
+  ))
+
+const filterToTag = (v: string) =>
+  (toOptions.value = toTagCache.filter((tag: Tag) =>
+    tag.attributes.name.includes(v)
+  ))
 
 const fd = () => {
   graph.zoomTo(graph.zoom() + 1)
