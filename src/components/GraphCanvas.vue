@@ -2,7 +2,7 @@
   <div class="layout">
     <div ref="container" class="cavs" style="flex: 1" />
     <DragWindow
-      title="编辑"
+      :title="`编辑${isEditEdge ? '关系' : '实体'}集合`"
       :show="show"
       :initPositionX="initPosition.x + 60"
       :initPositionY="initPosition.y - 100"
@@ -10,11 +10,25 @@
     >
       <template #top><Icon icon="logos:graphene" /></template>
 
+      <div
+        v-show="isEditEdge"
+        class="text-body2 q-my-md"
+        style="text-align: center"
+      >
+        <span>关系从&nbsp;</span>
+        <span class="concept">{{ edgeEditTip.from }}</span>
+        <span>&nbsp;的&nbsp;</span>
+        <span class="tag">{{ fromTag?.attributes.name ?? '?' }}</span>
+        <span>&nbsp;指向&nbsp;</span>
+        <span class="concept">{{ edgeEditTip.to }}</span>
+        <span>&nbsp;的&nbsp;</span>
+        <span class="tag">{{ toTag?.attributes.name ?? '?' }}&nbsp;</span>
+      </div>
+
       <q-select
         v-model="fromTag"
         v-show="isEditEdge"
         label="from"
-        hint="关系引出字段标签"
         use-input
         @input-value="filterFromTag"
         :options="fromOptions"
@@ -31,7 +45,6 @@
         v-model="toTag"
         v-show="isEditEdge"
         label="to"
-        hint="关系到达字段标签"
         use-input
         @input-value="filterToTag"
         :options="toOptions"
@@ -46,8 +59,8 @@
 
       <q-select
         v-model="concept"
-        label="概念"
-        hint="键入以筛选概念"
+        label="对应概念"
+        hint="键入以筛选"
         use-input
         @input-value="filter"
         :options="options"
@@ -147,6 +160,10 @@ const fromTag = ref<Tag>()
 const toTag = ref<Tag>()
 let fromTagCache: Tag[] = []
 let toTagCache: Tag[] = []
+const edgeEditTip = ref({
+  from: '概念A',
+  to: '概念B',
+})
 
 const editCell = () => {
   // 取得当前选中的节点和其属性
@@ -268,16 +285,21 @@ onMounted(async () => {
       toTag.value = a.cell.getData()?.to
 
       // 载入边的引出标签选项
-      const sourceNode = graph
-        .getCellById(((a.cell as Edge).source as { cell: string }).cell)
-        .getData()?.concept as Concept
-      fromTagCache = sourceNode?.attributes?.tag ?? []
+      const sourceNode = graph.getCellById(
+        ((a.cell as Edge).source as { cell: string }).cell
+      )
+      fromTagCache = sourceNode.getData()?.concept?.attributes?.tag ?? []
       fromOptions.value = fromTagCache
+      edgeEditTip.value.from =
+        sourceNode.getData()?.concept?.attributes?.name ?? '?'
+
       // 载入边的目标标签选项
-      const targetNode = graph
-        .getCellById(((a.cell as Edge).target as { cell: string }).cell)
-        .getData()?.concept as Concept
-      toTagCache = targetNode?.attributes?.tag ?? []
+      const targetNode = graph.getCellById(
+        ((a.cell as Edge).target as { cell: string }).cell
+      )
+      edgeEditTip.value.to =
+        targetNode.getData()?.concept?.attributes?.name ?? '?'
+      toTagCache = targetNode.getData()?.concept?.attributes?.tag ?? []
       toOptions.value = toTagCache
     }
 
@@ -380,6 +402,17 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   padding: 10px;
+
+  .concept {
+    color: $primary;
+    font-weight: bold;
+  }
+
+  .tag {
+    color: $secondary;
+    font-weight: bold;
+  }
+
   .cavs {
     width: 100%;
     height: 100%;
