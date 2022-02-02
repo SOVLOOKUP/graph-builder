@@ -11,6 +11,56 @@
       <template #top><Icon icon="logos:graphene" /></template>
 
       <q-select
+        v-model="fromTag"
+        v-show="isEditEdge"
+        label="from"
+        hint="关系引出字段标签"
+        use-input
+        @input-value="fillterTag"
+        :options="fromOptions"
+        :option-label="(opt) => opt.attributes.name"
+      >
+        <!-- <template v-slot:option="{ itemProps, opt }">
+          <q-item v-bind="itemProps">
+            <q-item-section>
+              <q-item-label v-html="opt.attributes.name" />
+            </q-item-section>
+          </q-item>
+        </template> -->
+
+        <template v-slot:no-option>
+          <q-item>
+            <q-item-section class="text-grey"> 无可用标签 </q-item-section>
+          </q-item>
+        </template>
+      </q-select>
+
+      <q-select
+        v-model="toTag"
+        v-show="isEditEdge"
+        label="to"
+        hint="关系到达字段标签"
+        use-input
+        @input-value="fillterTag"
+        :options="toOptions"
+        :option-label="(opt) => opt.attributes.name"
+      >
+        <!-- <template v-slot:option="{ itemProps, opt }">
+          <q-item v-bind="itemProps">
+            <q-item-section>
+              <q-item-label v-html="opt.attributes.name" />
+            </q-item-section>
+          </q-item>
+        </template> -->
+
+        <template v-slot:no-option>
+          <q-item>
+            <q-item-section class="text-grey"> 无可用标签 </q-item-section>
+          </q-item>
+        </template>
+      </q-select>
+
+      <q-select
         v-model="concept"
         label="概念"
         hint="键入以筛选概念"
@@ -82,38 +132,65 @@ cache = (await (await listConcepts()).json()).data
 options.value = cache
 const router = useRouter()
 const initPosition = ref({ x: 0, y: 0 })
+const isEditEdge = ref(false)
 const show = ref(false)
 const r = 60
 const container = ref(undefined)
 let graph: Graph
 const concept = ref<Concept>()
+const fromTag = ref<TagID>()
+const toTag = ref<TagID>()
 
 const editCell = () => {
+  // 取得当前选中的节点和其属性
   const cell = graph.getSelectedCells()[0]
   const newText = concept.value?.attributes?.name
+  const newFromTag = fromTag.value?.tagid
+  const newToTag = toTag.value?.tagid
 
+  const isEditEdge = cell.shape === 'edge'
+
+  // 校验
   if (newText === '' || newText === undefined) {
     toast.info('请选择概念')
-  } else {
-    cell.setData({
-      concept: concept.value,
-    })
+    return
+  }
 
-    if (cell.shape === 'edge') {
-      // edge
-      ;(cell as Edge).setLabels([newText])
-    } else {
-      // node
-      cell.setAttrs({
-        text: {
-          text: newText,
-        },
-      })
+  // 设置概念
+  cell.setData({
+    concept: concept.value,
+  })
+
+  if (isEditEdge) {
+    // 校验
+    if (newFromTag === undefined) {
+      toast.info('请选择引出标签')
+      return
     }
 
-    show.value = false
-    graph.unselect(cell)
+    if (newToTag === undefined) {
+      toast.info('请选择到达标签')
+      return
+    }
+
+    // 设置边属性
+    ;(cell as Edge).setData({
+      from: fromTag.value?.tagid,
+      to: toTag.value?.tagid,
+    })
+    // 设置边名称
+    ;(cell as Edge).setLabels([newText])
+  } else {
+    // 设置节点名称
+    cell.setAttrs({
+      text: {
+        text: newText,
+      },
+    })
   }
+
+  show.value = false
+  graph.unselect(cell)
 }
 
 onMounted(async () => {
@@ -171,9 +248,22 @@ onMounted(async () => {
 
   graph.on('cell:click', (a) => {
     graph.select(a.cell)
+
+    // 设置编辑窗口初始位置
     initPosition.value = { x: a.e.clientX, y: a.e.clientY }
+    // 是否在编辑边
+    isEditEdge.value = a.cell.shape === 'edge'
     // 载入节点概念
     concept.value = a.cell.getData()?.concept
+    // 载入边引出/目标标签
+    if (isEditEdge.value) {
+      fromTag.value = a.cell.getData()?.from
+      toTag.value = a.cell.getData()?.to
+
+      // todo 载入边引出/目标标签选项
+    }
+
+    // 显示编辑窗口
     show.value = true
   })
 
@@ -229,6 +319,8 @@ const fillter = (v: string) =>
   (options.value = cache.filter((concept: Concept) =>
     concept.attributes.name.includes(v)
   ))
+
+const fillterTag = (v: string) => {}
 
 const fd = () => {
   graph.zoomTo(graph.zoom() + 1)
