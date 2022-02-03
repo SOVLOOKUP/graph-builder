@@ -31,7 +31,7 @@
       stack-label
       @input-value="fillter"
       :options="options"
-      :option-label="(opt) => opt.attributes.name"
+      :option-label="(opt) => opt?.attributes.name ?? '引用的标签已删除'"
     >
       <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
         <q-item v-bind="itemProps">
@@ -146,7 +146,7 @@ const columns = [
     name: 'tags',
     label: '概念属性',
     field: async (item: Concept) =>
-      JSON.stringify(fillContent(item).map((i) => i?.attributes.name)),
+      JSON.stringify(fillContent(item).map((i) => i.attributes.name)),
   },
   {
     align: 'center',

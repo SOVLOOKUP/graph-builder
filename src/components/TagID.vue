@@ -1,4 +1,11 @@
-<template>{{ info.map((i) => i.name).join('、') }}</template>
+<template>
+  {{
+    info
+      .filter((i) => i?.status !== 'rejected')
+      .map((i) => i.name)
+      .join('、')
+  }}
+</template>
 <script lang="ts" setup>
 import { watch } from 'vue'
 import { ref } from 'vue'
@@ -9,7 +16,7 @@ const props = defineProps<{
 }>()
 
 const getTagsInfo = async (tags: number[]) =>
-  await Promise.all(
+  await Promise.allSettled(
     tags.map(
       async (id: number) => (await (await getTag(id)).json()).data.attributes
     )

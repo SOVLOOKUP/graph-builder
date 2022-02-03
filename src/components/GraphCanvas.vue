@@ -134,17 +134,18 @@ interface Concept {
 const options = ref<Concept[]>([] as any)
 const fromOptions = ref<Tag[]>([] as any)
 const toOptions = ref<Tag[]>([] as any)
-let concepts: Concept[] = (await (await listConcepts()).json()).data
+let concepts: Concept[] = []
 
 const getTagsInfo = async (tags: number[]) =>
-  await Promise.all(
+  await Promise.allSettled(
     tags.map(async (id: number) => (await (await getTag(id)).json()).data)
   )
 
-for (const concept of concepts) {
+for await (const concept of (await (await listConcepts()).json()).data) {
   concept.attributes.tag = await getTagsInfo(
     concept.attributes.tag.map((tag: any) => (tag as TagID).tagid)
   )
+  concepts.push(concept)
 }
 
 options.value = concepts
