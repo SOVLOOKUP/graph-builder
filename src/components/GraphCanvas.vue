@@ -142,9 +142,12 @@ const getTagsInfo = async (tags: number[]) =>
   )
 
 for await (const concept of (await (await listConcepts()).json()).data) {
-  concept.attributes.tag = await getTagsInfo(
-    concept.attributes.tag.map((tag: any) => (tag as TagID).tagid)
-  )
+  concept.attributes.tag = (
+    await getTagsInfo(
+      concept.attributes.tag.map((tag: any) => (tag as TagID).tagid)
+    )
+  ).map((tag: any) => tag.value)
+
   concepts.push(concept)
 }
 

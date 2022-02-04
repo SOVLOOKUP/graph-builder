@@ -2,7 +2,7 @@
   {{
     info
       .filter((i) => i?.status !== 'rejected')
-      .map((i) => i.name)
+      .map((i) => i.value.name)
       .join('、')
   }}
 </template>
