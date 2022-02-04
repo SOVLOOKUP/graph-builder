@@ -7,6 +7,6 @@ const createDataSource = async (name: string, type: string) =>
 const deleteDataSource = async (id: number) =>
   await api().delete(`gi-data-sources/${id}`)
 const listDataSources = async () =>
-  await api().get('gi-data-sources?fields=name,type')
+  await api().get('gi-data-sources?fields=name&populate=metadata')
 
 export { createDataSource, deleteDataSource, listDataSources }

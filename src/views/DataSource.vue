@@ -6,7 +6,7 @@
     :deleteItem="deleteDataSource"
     :createItem="createItem"
   >
-    <q-select v-model="newDSType" :options="tagType" label="数据源类型" />
+    <!-- <q-select v-model="newDSType" :options="tagType" label="数据源类型" /> -->
   </Table>
 </template>
 
@@ -22,7 +22,6 @@ const createItem = async (name: string) => {
   newDSType.value = ''
 }
 
-const tagType = ['raw', 'nodes', 'edges']
 const newDSType = ref('')
 
 const columns = [
@@ -40,9 +39,9 @@ const columns = [
   },
   {
     align: 'center',
-    name: 'type',
-    label: '数据源类型',
-    field: (item: any) => item.attributes.type,
+    name: 'metadata',
+    label: '数据元信息',
+    field: (item: any) => item.attributes.metadata,
   },
   {
     align: 'center',
