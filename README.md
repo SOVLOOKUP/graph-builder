@@ -2,7 +2,7 @@
 
 访问地址: https://gi.lingthink.com
 
-## TODO
+## 基本功能
 
 1. [x] 主页(用户信息、退出登录)
 2. [x] 标签录入
