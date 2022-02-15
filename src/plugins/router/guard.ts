@@ -21,19 +21,20 @@ const authGuard = async (
     redirectedFrom: from,
     meta: {},
   }
+  // 如果未登录前往登录
   if (!to.path.startsWith('/auth') && userStore.logintime === undefined) {
     return authURL
-  } else {
-    // jwt 超过 7 天重新登录
-    if (
-      (Date.now() - (userStore.logintime as number)) / 1000 / 60 / 60 / 24 >=
-      7
-    ) {
-      toast.info('身份认证超期，请重新登录')
-      return authURL
-    }
-    return true
   }
+
+  // jwt 超过 7 天重新登录
+  if (
+    (!to.path.startsWith('/auth') && (Date.now() - (userStore.logintime as number)) >= 604800000)
+  ) {
+    toast.info('身份认证超期，请重新登录')
+    return authURL
+  }
+
+  return true
 }
 
 // 自动隐藏/显示导航栏
