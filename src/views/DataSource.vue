@@ -62,6 +62,7 @@ const file = ref<File | null>(null)
 const metaData = ref<MetaData[] | null>(null)
 const loading = ref(false)
 const loadingUpload = ref(false)
+// const leftDrawerOpen = ref(true)
 
 type ColType = "string" | "number" | "bigint" | "boolean"
 interface MetaData { name: string; type: ColType }

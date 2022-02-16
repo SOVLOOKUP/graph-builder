@@ -1,6 +1,6 @@
 <template>
   <div class="layout">
-    <div ref="container" class="cavs" style="flex: 1" />
+    <div ref="container" class="cavs" style="flex: 1" @mousewheel="rollScroll"/>
     <DragWindow
       :title="`编辑${isEditEdge ? '关系' : '实体'}集合`"
       :show="show"
@@ -8,13 +8,11 @@
       :initPositionY="initPosition.y - 100"
       :ok="editCell"
     >
-      <template #top><Icon icon="logos:graphene" /></template>
+      <template #top>
+        <Icon icon="logos:graphene" />
+      </template>
 
-      <div
-        v-show="isEditEdge"
-        class="text-body2 q-my-md"
-        style="text-align: center"
-      >
+      <div v-show="isEditEdge" class="text-body2 q-my-md" style="text-align: center">
         <span>关系从&nbsp;</span>
         <span class="concept">{{ edgeEditTip.from }}</span>
         <span>&nbsp;的&nbsp;</span>
@@ -36,7 +34,7 @@
       >
         <template v-slot:no-option>
           <q-item>
-            <q-item-section class="text-grey"> 无可用标签 </q-item-section>
+            <q-item-section class="text-grey">无可用标签</q-item-section>
           </q-item>
         </template>
       </q-select>
@@ -52,7 +50,7 @@
       >
         <template v-slot:no-option>
           <q-item>
-            <q-item-section class="text-grey"> 无可用标签 </q-item-section>
+            <q-item-section class="text-grey">无可用标签</q-item-section>
           </q-item>
         </template>
       </q-select>
@@ -76,26 +74,42 @@
 
         <template v-slot:no-option>
           <q-item>
-            <q-item-section class="text-grey"> 无可用概念 </q-item-section>
+            <q-item-section class="text-grey">无可用概念</q-item-section>
           </q-item>
         </template>
       </q-select>
       <slot />
     </DragWindow>
 
-    <div class="toolbar" align="center">
-      <q-btn class="q-pa-md q-mx-xs" round @click="fd">
-        <Icon icon="mdi-plus"
-      /></q-btn>
-      <q-btn class="q-pa-md q-mx-xs" round @click="sx">
-        <Icon icon="mdi-minus"
-      /></q-btn>
-      <q-btn class="q-pa-md q-mx-xs" round @click="rf">
-        <Icon icon="mdi-scan-helper"
-      /></q-btn>
-      <q-btn class="q-pa-md q-mx-xs" round @click="sv">
-        <Icon icon="mdi-content-save"
-      /></q-btn>
+    <div class="toolbar">
+      <!-- <div align="left">
+        <q-btn class="q-pa-md q-mx-xs" round @click="build">
+          <q-tooltip>开始构建🚀</q-tooltip>
+          <Icon icon="codicon:debug-start" />
+        </q-btn>
+      </div> -->
+      <q-space />
+      <div align="center">
+        <q-btn class="q-pa-md q-mx-xs" round @click="fd">
+          <q-tooltip>放大(鼠标滚轮+)</q-tooltip>
+          <Icon icon="mdi-plus" />
+        </q-btn>
+        <q-btn class="q-pa-md q-mx-xs" round @click="sx">
+          <q-tooltip>缩小(鼠标滚轮-)</q-tooltip>
+          <Icon icon="mdi-minus" />
+        </q-btn>
+        <q-btn class="q-pa-md q-mx-xs" round @click="rf">
+          <q-tooltip>缩放至全屏</q-tooltip>
+          <Icon icon="mdi-scan-helper" />
+        </q-btn>
+        <q-btn class="q-pa-md q-mx-xs" round @click="sv">
+          <q-tooltip>保存</q-tooltip>
+          <Icon icon="mdi-content-save" />
+        </q-btn>
+      </div>
+      <q-space />
+      <!-- <div align="right">
+      </div> -->
     </div>
   </div>
 </template>
@@ -107,6 +121,7 @@ import { getModelJson, getTag, updateModelJson, listConcepts } from '../api'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import DragWindow from '@/components/DragCard.vue'
+import { MouseWheel } from '@antv/x6/lib/graph/mousewheel'
 const toast = useToast()
 
 interface TagID {
@@ -202,12 +217,12 @@ const editCell = () => {
     }
 
     // 设置边属性
-    ;(cell as Edge).setData({
+    ; (cell as Edge).setData({
       from: fromTag.value,
       to: toTag.value,
     })
-    // 设置边名称
-    ;(cell as Edge).setLabels([newText])
+      // 设置边名称
+      ; (cell as Edge).setLabels([newText])
   } else {
     // 设置节点名称
     cell.setAttrs({
@@ -358,28 +373,41 @@ const addNode = (x: number, y: number) => {
   )
 }
 
+const rollScroll = (e: WheelEvent)=>{
+if (e.deltaY < 0) {
+  fd()
+} else {
+  sx()
+}
+
+}
+
 // 筛选
 const filter = (v: string) =>
-  (options.value = concepts.filter((concept: Concept) =>
-    concept.attributes.name.includes(v)
-  ))
+(options.value = concepts.filter((concept: Concept) =>
+  concept.attributes.name.includes(v)
+))
 
 const filterFromTag = (v: string) =>
-  (fromOptions.value = fromTagCache.filter((tag: Tag) =>
-    tag.attributes.name.includes(v)
-  ))
+(fromOptions.value = fromTagCache.filter((tag: Tag) =>
+  tag.attributes.name.includes(v)
+))
 
 const filterToTag = (v: string) =>
-  (toOptions.value = toTagCache.filter((tag: Tag) =>
-    tag.attributes.name.includes(v)
-  ))
+(toOptions.value = toTagCache.filter((tag: Tag) =>
+  tag.attributes.name.includes(v)
+))
 
 const fd = () => {
   graph.zoomTo(graph.zoom() + 1)
 }
+
 const sx = () => {
-  graph.zoomTo(graph.zoom() - 1)
+  if ( graph.zoom()>= 2) {graph.zoomTo(graph.zoom() - 1)} else {
+    toast.info('已经是最小缩放级别')
+  }
 }
+
 const rf = () => {
   graph.zoomToFit()
 }
@@ -424,6 +452,8 @@ onUnmounted(() => {
   }
 
   .toolbar {
+    display: flex;
+    flex-direction: row;
     position: fixed;
     bottom: 6px;
     left: 10px;
