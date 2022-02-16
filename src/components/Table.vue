@@ -42,12 +42,23 @@
         </q-input>
       </template>
 
+      <template v-slot:body-cell-metadata="props">
+        <q-td :props="props">
+          <suspense>
+            <template #default>
+              {{props.row.attributes.metadata.map((tag:any) => tag?.name).join(', ')}}
+            </template>
+            <template #fallback> loading... </template>
+          </suspense>
+        </q-td>
+      </template>
+
       <template v-slot:body-cell-tags="props">
         <q-td :props="props">
           <suspense>
             <template #default>
               <TagID
-                :tags="props.row.attributes.tag.map((tag:any) => tag.tagid)"
+                :tags="props.row.attributes.tag.map((tag:any) => tag?.tagid)"
               />
             </template>
             <template #fallback> loading... </template>

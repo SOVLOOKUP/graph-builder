@@ -3,7 +3,7 @@
     info
       .filter((i) => i?.status !== 'rejected')
       .map((i) => i.value.name)
-      .join('、')
+      .join(', ')
   }}
 </template>
 <script lang="ts" setup>
