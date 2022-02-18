@@ -1,4 +1,21 @@
 import api from '.'
+import qs from 'qs'
+
+const query = qs.stringify({
+  fields: ['name', 'jsonldurl'],
+  populate: {
+    tag: {
+      populate: {
+        gi_tag: {
+          fields: ['name', 'description'],
+        }
+      },
+    }
+  }
+}, {
+  encodeValuesOnly: true,
+});
+
 
 const createConcept = async (
   name: string,
@@ -7,13 +24,15 @@ const createConcept = async (
 ) =>
   await api().post(`gi-concepts`, {
     json: {
-      data: { name, jsonldurl, tag: tags.map((tag) => ({ tagid: tag })) },
+      data: { name, jsonldurl, tag: tags.map((tag) => ({ gi_tag: tag })) },
     },
   })
+
 const deleteConcept = async (id: number) =>
   await api().delete(`gi-concepts/${id}`)
-const listConcepts = async () =>
-  await api().get('gi-concepts?fields=name,jsonldurl&populate=tag')
+
+const listConcepts = async () => await api().get(`gi-concepts?${query}`)
+
 const updateConcept = async (
   id: number,
   name: string,
@@ -25,7 +44,7 @@ const updateConcept = async (
       data: {
         name,
         jsonldurl,
-        tag: tags.map((tag) => ({ tagid: tag })),
+        tag: tags.map((tag) => ({ gi_tag: tag })),
       },
     },
   })

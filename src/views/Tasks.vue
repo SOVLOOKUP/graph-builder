@@ -1,18 +1,32 @@
 <template>
-  <q-dialog persistent v-model="dialog">
+  <q-dialog persistent full-height full-width v-model="dialog">
     <q-layout view="Lhh lpR fff" container class="bg-white">
       <q-header class="bg-primary">
         <q-toolbar>
-          <q-toolbar-title>TODO 数据字段匹配</q-toolbar-title>
-          <q-chip>4/54</q-chip>
-          <q-btn flat round dense v-close-popup @click="model = null">
+          <q-toolbar-title>数据字段匹配</q-toolbar-title>
+          <q-chip v-show="cells !== null">{{ cells?.length }} 个实体集需要匹配数据源</q-chip>
+          <q-btn
+            flat
+            round
+            dense
+            v-close-popup
+            @click="model = null;cells = null"
+          >
             <Icon icon="mdi:close" />
           </q-btn>
         </q-toolbar>
       </q-header>
 
       <q-page-container>
-        <q-page padding>匹配内容</q-page>
+        <q-inner-loading
+          :showing="dialogLoading"
+          label="模型加载中..."
+          label-class="text-teal"
+          label-style="font-size: 1.1em"
+        />
+        <q-page padding>
+          <DataMapper :cells="cells" :taskMeta="taskMeta"/>
+        </q-page>
       </q-page-container>
     </q-layout>
   </q-dialog>
@@ -29,7 +43,7 @@
       :options="options"
       label="本体模型"
       :option-label="(opt) => opt?.attributes.name"
-      @update:model-value="dialog = true"
+      @update:model-value="selectedModel"
     >
       <template v-slot:option="{ itemProps, opt }">
         <q-item v-bind="itemProps">
@@ -49,26 +63,52 @@
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent, ref } from 'vue'
-import { listTasks, listModels } from '../api'
+import { defineAsyncComponent, ref, watch } from 'vue'
+import { listTasks, listModels, getModelJson } from '../api'
 import { useToast } from 'vue-toastification'
+import type { CellData, TaskMeta, Category, DataMap } from 'src/types'
 const Table = defineAsyncComponent(() => import('@/components/Table.vue'))
+const DataMapper = defineAsyncComponent(() => import('@/components/DataMapper.vue'))
 
 const toast = useToast()
 const options = (await (await listModels()).json()).data
-const model = ref(null)
-// todo 匹配完自动关闭
+const model = ref<{ id: number; name: string } | null>(null)
 const dialog = ref(false)
+const dialogLoading = ref(false)
+const cells = ref<CellData[] | null>(null)
 
-// todo 下载 gephi 格式
+const taskMeta = ref<TaskMeta>({
+  categories: new Map<string, Category>(),
+  data: new Map<number, DataMap[]>(),
+})
+
 const getItems = async () => (await (await listTasks()).json()).data
 const createItem = async () => {
   if (model.value === null) {
-    toast.info("请选择本体模型")
+    toast.info('请选择本体模型')
     return
   }
-  // todo 构建成图谱JSON
+  // todo 用 taskMeta 构建图谱
 }
+
+// 选择模型后下载模型数据
+const selectedModel = async () => {
+  dialog.value = true
+  dialogLoading.value = true
+  const mjson = await getModelJson(model.value?.id.toString() as string)
+  cells.value = (await mjson.json()).data.attributes.data.cells
+    .map((cell: { data: CellData | undefined }) => cell.data)
+    .filter((i: CellData | undefined) => i !== undefined)
+  dialogLoading.value = false
+}
+
+// cells 处理完毕自动关闭映射界面
+watch([cells], () => {
+  if (cells.value !== null && cells.value.length <= 0) {
+    dialog.value = false
+    cells.value = null
+  }
+})
 
 const columns = [
   {

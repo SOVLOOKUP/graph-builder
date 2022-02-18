@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ConfigStore } from './types'
+import type { ConfigStore } from 'src/types'
 
 const AutoHideAppBarAtPath = ['/model/', '/auth']
 
@@ -21,5 +21,3 @@ export const useConfigStore = defineStore('config', {
   },
   persist: true,
 })
-
-export * from './types'

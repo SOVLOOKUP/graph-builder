@@ -1,6 +1,6 @@
 <template>
   <div class="layout">
-    <div ref="container" class="cavs" style="flex: 1" @mousewheel="rollScroll"/>
+    <div ref="container" class="cavs" style="flex: 1" @mousewheel="rollScroll" />
     <DragWindow
       :title="`编辑${isEditEdge ? '关系' : '实体'}集合`"
       :show="show"
@@ -30,7 +30,7 @@
         use-input
         @input-value="filterFromTag"
         :options="fromOptions"
-        :option-label="(opt) => opt.attributes.name"
+        :option-label="(opt: Tag) => opt.attributes.name"
       >
         <template v-slot:no-option>
           <q-item>
@@ -46,7 +46,7 @@
         use-input
         @input-value="filterToTag"
         :options="toOptions"
-        :option-label="(opt) => opt.attributes.name"
+        :option-label="(opt: Tag) => opt.attributes.name"
       >
         <template v-slot:no-option>
           <q-item>
@@ -62,7 +62,7 @@
         use-input
         @input-value="filter"
         :options="options"
-        :option-label="(opt) => opt.attributes.name"
+        :option-label="(opt: Concept) => opt.attributes.name"
       >
         <template v-slot:option="{ itemProps, opt }">
           <q-item v-bind="itemProps">
@@ -87,7 +87,7 @@
           <q-tooltip>开始构建🚀</q-tooltip>
           <Icon icon="codicon:debug-start" />
         </q-btn>
-      </div> -->
+      </div>-->
       <q-space />
       <div align="center">
         <q-btn class="q-pa-md q-mx-xs" round @click="fd">
@@ -109,64 +109,29 @@
       </div>
       <q-space />
       <!-- <div align="right">
-      </div> -->
+      </div>-->
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { Edge, Graph } from '@antv/x6'
-import { onMounted, onUnmounted, Ref, ref } from 'vue'
-import { getModelJson, getTag, updateModelJson, listConcepts } from '../api'
+import { onMounted, onUnmounted, ref } from 'vue'
+import { getModelJson, updateModelJson, listConcepts } from '../api'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import DragWindow from '@/components/DragCard.vue'
-import { MouseWheel } from '@antv/x6/lib/graph/mousewheel'
+import type { Concept, EdgeData, NodeData, Tag, GiTag } from 'src/types'
 const toast = useToast()
-
-interface TagID {
-  id: number
-  tagid: number
-}
-
-interface Tag {
-  id: number
-  attributes: {
-    name: string
-    description: string
-  }
-}
-
-interface Concept {
-  id: number
-  attributes: {
-    name: string
-    jsonldurl: string
-    tag: Tag[]
-  }
-}
 
 const options = ref<Concept[]>([] as any)
 const fromOptions = ref<Tag[]>([] as any)
 const toOptions = ref<Tag[]>([] as any)
 let concepts: Concept[] = []
 
-const getTagsInfo = async (tags: number[]) =>
-  await Promise.allSettled(
-    tags.map(async (id: number) => (await (await getTag(id)).json()).data)
-  )
-
-for await (const concept of (await (await listConcepts()).json()).data) {
-  concept.attributes.tag = (
-    await getTagsInfo(
-      concept.attributes.tag.map((tag: any) => (tag as TagID).tagid)
-    )
-  ).map((tag: any) => tag.value)
-
-  concepts.push(concept)
-}
-
+concepts = (await (await listConcepts()).json()).data as Concept[]
 options.value = concepts
+
 const router = useRouter()
 const initPosition = ref({ x: 0, y: 0 })
 const isEditEdge = ref(false)
@@ -297,29 +262,32 @@ onMounted(async () => {
     // 是否在编辑边
     isEditEdge.value = a.cell.shape === 'edge'
     // 载入节点概念
-    concept.value = a.cell.getData()?.concept
+    const cellData: EdgeData | undefined = a.cell.getData()
+    concept.value = cellData?.concept
+
     // 载入边引出/目标标签
     if (isEditEdge.value) {
-      fromTag.value = a.cell.getData()?.from
-      toTag.value = a.cell.getData()?.to
+      fromTag.value = cellData?.from
+      toTag.value = cellData?.to
 
       // 载入边的引出标签选项
-      const sourceNode = graph.getCellById(
+      const sourceNodeData: NodeData | undefined = graph.getCellById(
         ((a.cell as Edge).source as { cell: string }).cell
-      )
-      fromTagCache = sourceNode.getData()?.concept?.attributes?.tag ?? []
+      ).getData()
+      fromTagCache = sourceNodeData?.concept.attributes.tag.map((t: GiTag) => t.gi_tag.data).filter(i => i !== null) as Tag[] ?? []
       fromOptions.value = fromTagCache
       edgeEditTip.value.from =
-        sourceNode.getData()?.concept?.attributes?.name ?? '?'
+        sourceNodeData?.concept.attributes.name ?? '?'
 
       // 载入边的目标标签选项
-      const targetNode = graph.getCellById(
+      const targetNodeData: NodeData | undefined  = graph.getCellById(
         ((a.cell as Edge).target as { cell: string }).cell
-      )
-      edgeEditTip.value.to =
-        targetNode.getData()?.concept?.attributes?.name ?? '?'
-      toTagCache = targetNode.getData()?.concept?.attributes?.tag ?? []
+      ).getData()
+
+      toTagCache = targetNodeData?.concept.attributes.tag.map((t: GiTag) => t.gi_tag.data).filter(i => i !== null) as Tag[] ?? []
       toOptions.value = toTagCache
+      edgeEditTip.value.to =
+        targetNodeData?.concept.attributes.name ?? '?'
     }
 
     // 显示编辑窗口
@@ -350,35 +318,34 @@ onMounted(async () => {
 
 const addNode = (x: number, y: number) => {
   const halfr = r / 2
-  console.log(
-    graph.addNode({
-      label: 'Node',
-      x: x - halfr,
-      y: y - halfr,
-      width: r,
-      height: r,
-      shape: 'circle',
-      attrs: {
-        body: {
-          magnet: true,
-          fill: '#efdbff',
-          stroke: '#9254de',
-        },
-        label: {
-          textAnchor: 'middle',
-          textVerticalAnchor: 'middle',
-        },
+  graph.addNode({
+    label: 'Node',
+    x: x - halfr,
+    y: y - halfr,
+    width: r,
+    height: r,
+    shape: 'circle',
+    attrs: {
+      body: {
+        magnet: true,
+        fill: '#efdbff',
+        stroke: '#9254de',
       },
-    })
-  )
+      label: {
+        textAnchor: 'middle',
+        textVerticalAnchor: 'middle',
+      },
+    },
+  })
+
 }
 
-const rollScroll = (e: WheelEvent)=>{
-if (e.deltaY < 0) {
-  fd()
-} else {
-  sx()
-}
+const rollScroll = (e: WheelEvent) => {
+  if (e.deltaY < 0) {
+    fd()
+  } else {
+    sx()
+  }
 
 }
 
@@ -403,7 +370,7 @@ const fd = () => {
 }
 
 const sx = () => {
-  if ( graph.zoom()>= 2) {graph.zoomTo(graph.zoom() - 1)} else {
+  if (graph.zoom() >= 2) { graph.zoomTo(graph.zoom() - 1) } else {
     toast.info('已经是最小缩放级别')
   }
 }

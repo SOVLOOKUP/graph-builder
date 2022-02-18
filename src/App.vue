@@ -100,7 +100,7 @@ const modeTab: {
       icon: 'mdi-electron-framework',
     },
     {
-      path: '/graphbuilder',
+      path: '/tasks',
       name: '构建',
       icon: 'mdi-crane',
     },

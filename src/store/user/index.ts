@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { UserStore, UserAuth, UserLoginResp } from './types'
+import type { UserStore, UserAuth, UserLoginResp } from 'src/types'
 import { userLogin } from '../../api'
 import { useConfigStore } from '../config'
 export const useUserStore = defineStore('user', {
@@ -44,4 +44,3 @@ export const useUserStore = defineStore('user', {
   persist: true,
 })
 
-export * from './types'

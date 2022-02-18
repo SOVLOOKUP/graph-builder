@@ -42,6 +42,7 @@ import { listDataSources, deleteDataSource, createDataSource } from '../api'
 import { ref } from 'vue'
 import { useToast } from 'vue-toastification'
 import * as xlsx from 'xlsx'
+import type { DataType, MetaData } from 'src/types'
 const Table = defineAsyncComponent(() => import('@/components/Table.vue'))
 const toast = useToast()
 const getItems = async () => (await (await listDataSources()).json()).data
@@ -64,9 +65,6 @@ const loading = ref(false)
 const loadingUpload = ref(false)
 // const leftDrawerOpen = ref(true)
 
-type ColType = "string" | "number" | "bigint" | "boolean"
-interface MetaData { name: string; type: ColType }
-
 const readFile = async () => {
   if (file.value !== null) {
     // 开始读取
@@ -78,7 +76,7 @@ const readFile = async () => {
     colNames.forEach(name => {
       meta.push({
         name,
-        type: typeof data[0][name] as ColType
+        type: typeof data[0][name] as DataType
       })
     })
     metaData.value = meta

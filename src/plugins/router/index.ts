@@ -4,7 +4,7 @@ import { authGuard, autoHideBarGuard } from './guard'
 const Home = () => import('../../views/Home.vue')
 
 const DataSource = () => import('../../views/DataSource.vue')
-const GraphBuilder = () => import('../../views/GraphBuilder.vue')
+const Tasks = () => import('../../views/Tasks.vue')
 const Model = () => import('../../views/Model.vue')
 const ModelBuilder = () => import('../../views/ModelBuilder.vue')
 const TagManage = () => import('../../views/TagManage.vue')
@@ -70,9 +70,9 @@ const routes = [
     component: Concept,
   },
   {
-    path: '/graphbuilder',
+    path: '/tasks',
     name: '构建',
-    component: GraphBuilder,
+    component: Tasks,
   },
   {
     path: '/plugincenter',

@@ -7,12 +7,7 @@
     :createItem="createItem"
     :editItem="updateItem"
     @fillContent="fillContent"
-    @clearContent="
-      () => {
-        conceptTags = []
-        newItemJsonldurl = undefined
-      }
-    "
+    @clearContent="conceptTags = []; newItemJsonldurl = undefined"
   >
     <q-input
       label="JSON-LD引用"
@@ -42,17 +37,14 @@
             <q-item-label v-html="opt.attributes.description" />
           </q-item-section>
           <q-item-section side>
-            <q-toggle
-              :model-value="selected"
-              @update:model-value="toggleOption(opt)"
-            />
+            <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
           </q-item-section>
         </q-item>
       </template>
 
       <template v-slot:no-option>
         <q-item>
-          <q-item-section class="text-grey"> 无标签可用 </q-item-section>
+          <q-item-section class="text-grey">无标签可用</q-item-section>
         </q-item>
       </template>
     </q-select>
@@ -61,6 +53,7 @@
 >
 
 <script lang="ts" setup>
+import type { Tag, Concept } from 'src/types'
 import { defineAsyncComponent } from 'vue'
 import { ref } from 'vue'
 import {
@@ -74,31 +67,10 @@ const Table = defineAsyncComponent(() => import('@/components/Table.vue'))
 
 let cache: Tag[] = []
 
-interface TagID {
-  id: number
-  tagid: number
-}
-
-interface Tag {
-  id: number
-  attributes: {
-    name: string
-    description: string
-  }
-}
-
-interface Concept {
-  id: number
-  attributes: {
-    name: string
-    jsonldurl: string
-    tag: TagID[]
-  }
-}
-
 const conceptTags = ref<Tag[]>([])
 const options = ref<Tag[]>()
 const newItemJsonldurl = ref<undefined | string>(undefined)
+
 const createItem = async (name: string) => {
   await createConcept(
     name,
@@ -107,7 +79,9 @@ const createItem = async (name: string) => {
   )
   conceptTags.value = []
 }
+
 const getItems = async () => (await (await listConcepts()).json()).data
+
 const updateItem = async (id: number, name: string) =>
   updateConcept(
     id,
@@ -116,12 +90,9 @@ const updateItem = async (id: number, name: string) =>
     newItemJsonldurl.value
   )
 
-// 根据 ID 从概念标签中提取标签信息
 const fillContent = (e: Concept) => {
   newItemJsonldurl.value = e.attributes.jsonldurl
-  return (conceptTags.value = e.attributes.tag.map((i: TagID) =>
-    cache.find((tag: Tag) => tag.id === i.tagid)
-  ) as Tag[])
+  conceptTags.value = e.attributes.tag.map((tag) => tag.gi_tag.data).filter(i => i !== null) as Tag[]
 }
 
 // 筛选
@@ -145,8 +116,7 @@ const columns = [
     align: 'center',
     name: 'tags',
     label: '概念属性',
-    field: async (item: Concept) =>
-      JSON.stringify(fillContent(item).map((i) => i.attributes.name)),
+    field: (item: Concept) => item.attributes.tag.map(t => t.gi_tag.data?.attributes.name).filter(i => i !== undefined).join(', ')
   },
   {
     align: 'center',
