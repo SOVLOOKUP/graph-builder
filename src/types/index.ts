@@ -34,8 +34,6 @@ export interface Concept extends Item {
 }
 
 export interface CellData {
-    name: string
-    jsonldurl: string | null
     concept: Concept
     from?: Tag
     to?: Tag
@@ -124,4 +122,12 @@ export interface UserLoginResp {
 export interface UserStore extends UserLoginResp {
     // null is not login
     logintime?: number
+}
+
+export interface DataCollection {
+    id: number
+    attributes: {
+        name: string
+        metadata: MetaData[]
+    }
 }

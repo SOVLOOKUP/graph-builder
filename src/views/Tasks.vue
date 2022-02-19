@@ -4,13 +4,12 @@
       <q-header class="bg-primary">
         <q-toolbar>
           <q-toolbar-title>数据字段匹配</q-toolbar-title>
-          <q-chip v-show="cells !== null">{{ cells?.length }} 个实体集需要匹配数据源</q-chip>
+          <q-chip v-show="cells !== null">{{ cells?.length }} 个集合需要匹配数据源</q-chip>
           <q-btn
             flat
             round
             dense
-            v-close-popup
-            @click="model = null;cells = null"
+            @click="dialog = false;model = null;cells = null"
           >
             <Icon icon="mdi:close" />
           </q-btn>
@@ -25,7 +24,7 @@
           label-style="font-size: 1.1em"
         />
         <q-page padding>
-          <DataMapper :cells="cells" :taskMeta="taskMeta"/>
+          <DataMapper :cells="cells" :taskMeta="taskMeta" :dataCollectionOptions="dataCollectionOptions"/>
         </q-page>
       </q-page-container>
     </q-layout>
@@ -67,9 +66,11 @@ import { defineAsyncComponent, ref, watch } from 'vue'
 import { listTasks, listModels, getModelJson } from '../api'
 import { useToast } from 'vue-toastification'
 import type { CellData, TaskMeta, Category, DataMap } from 'src/types'
+import { listDataSources } from '../api'
 const Table = defineAsyncComponent(() => import('@/components/Table.vue'))
 const DataMapper = defineAsyncComponent(() => import('@/components/DataMapper.vue'))
 
+const dataCollectionOptions = (await (await listDataSources()).json()).data
 const toast = useToast()
 const options = (await (await listModels()).json()).data
 const model = ref<{ id: number; name: string } | null>(null)
