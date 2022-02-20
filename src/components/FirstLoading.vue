@@ -25,7 +25,7 @@ const fontName = import.meta.env.VITE_APP_FONT as string
 const value = ref(0)
 const ok = ref(false)
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     show: boolean
   }>(),
@@ -49,7 +49,7 @@ const loadFont = async () => {
 }
 
 onMounted(async () => {
-  await loadFont()
+  props.show && await loadFont()
   ok.value = true
   await emits('ok')
 })
