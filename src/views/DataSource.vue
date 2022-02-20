@@ -1,6 +1,6 @@
 <template>
   <Table
-    itemName="数据源"
+    itemName="数据集"
     :columns="columns"
     :getItems="getItems"
     :deleteItem="deleteDataSource"

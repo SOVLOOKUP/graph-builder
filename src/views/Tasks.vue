@@ -26,13 +26,19 @@
   </q-dialog>
 
   <Table
-    itemName="任务"
+    itemName="任务流"
     :createItem="createItem"
     :columns="columns"
     :getItems="getItems"
     :deleteItem="deleteTask"
-    @clearContent="model = null"
+    @clearContent="model = null; newTaskDescription = ''"
   >
+    <q-input
+      color="primary"
+      v-model="newTaskDescription"
+      label="描述"
+      autogrow
+    />
     <q-select
       v-model="model"
       :options="options"
@@ -54,6 +60,10 @@
         </q-item>
       </template>
     </q-select>
+
+    <template #edit="props">
+      <q-btn flat @click="startTask(props.item.id)" label="构建图谱" />
+    </template>
   </Table>
 </template>
 
@@ -73,6 +83,7 @@ const model = ref<{ id: number; name: string } | null>(null)
 const dialog = ref(false)
 const dialogLoading = ref(false)
 const cells = ref<CellData[] | null>(null)
+const newTaskDescription = ref('')
 let task: TaskMeta | null = null
 
 const getItems = async () => (await (await listTasks()).json()).data
@@ -81,8 +92,13 @@ const createItem = async (name: string) => {
     toast.info('请选择本体模型')
     return
   }
-  await createTask(name, task)
+  await createTask(name,newTaskDescription.value, task)
   task = null
+  newTaskDescription.value = ''
+}
+
+const startTask = async (id:number) =>{
+  console.log(id);
 }
 
 // 选择模型后下载模型数据
@@ -141,33 +157,20 @@ const columns = [
   {
     align: 'center',
     name: 'id',
-    label: '任务 ID',
+    label: '任务流 ID',
     field: 'id',
   },
   {
     align: 'center',
     name: 'name',
-    label: '任务名称',
+    label: '任务流名称',
     field: (item: any) => item.attributes.name,
   },
   {
     align: 'center',
-    name: 'status',
-    label: '状态',
-    field: (item: any) => {
-      switch (item.attributes.status) {
-        case 'pending':
-          return '等待中'
-        case 'running':
-          return '运行中'
-        case 'success':
-          return '成功'
-        case 'failed':
-          return '失败'
-        default:
-          return '未知'
-      }
-    },
+    name: 'description',
+    label: '描述',
+    field: (item: any) => item.attributes.description,
   },
   {
     align: 'center',

@@ -95,12 +95,14 @@ import type {
 } from 'src/types'
 import { ref } from 'vue'
 import { useToast } from 'vue-toastification'
-
 const toast = useToast()
+
 const dataCollection = ref<DataCollection | null>(null)
 const dataMap = ref<{
   [to: string]: MetaData
 }>({})
+
+const doneCells: CellData[] = []
 const taskMeta: TaskMeta = {
   // 所有的概念类
   categories: [],
@@ -144,10 +146,12 @@ const dataMapperOK = () => {
   // 解析 cell 以创建 task
   if (cell.from !== undefined && cell.to !== undefined) {
     if (
-      props.cells?.find((v) => v.id === cell.from?.id) === undefined ||
-      props.cells?.find((v) => v.id === cell.to?.id) === undefined
+      doneCells.filter((v) => v.id === cell.from?.id || v.id === cell.to?.id)
+        .length !== 2
     ) {
-      toast.error(`边 ${cell.concept.attributes.name} 是无效边, 请检查本体模型的概念是否齐全`)
+      toast.error(
+        `边 ${cell.concept.attributes.name} 是无效边, 请检查本体模型的概念是否齐全`,
+      )
     }
 
     // edge
@@ -203,7 +207,9 @@ const dataMapperOK = () => {
   }
 
   // 结束本条处理
-  props.cells?.splice(0, 1)
+  const doneCell = props.cells?.splice(0, 1)
+  // 放到垃圾堆
+  doneCell && doneCells.push(doneCell[0])
   dataCollection.value = null
   dataMap.value = {}
 

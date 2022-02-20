@@ -32,7 +32,7 @@ const createItem = async (name: string) => {
 const updateItem = async (id: number, name: string) =>
   updateTag(id, name, newTagDescription.value)
 
-let newTagDescription = ref('')
+const newTagDescription = ref('')
 
 const columns = [
   {
