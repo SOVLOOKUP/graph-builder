@@ -28,14 +28,14 @@
       <router-view v-slot="{ Component }">
         <template v-if="Component">
           <!-- <transition> -->
-          <!-- <keep-alive> -->
+          <keep-alive>
             <suspense timeout="0">
               <component :is="Component" />
               <template #fallback>
                 <Loading />
               </template>
             </suspense>
-          <!-- </keep-alive> -->
+          </keep-alive>
           <!-- </transition> -->
         </template>
       </router-view>
