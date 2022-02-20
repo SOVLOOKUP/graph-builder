@@ -101,7 +101,7 @@ const modeTab: {
     },
     {
       path: '/tasks',
-      name: '构建',
+      name: '任务',
       icon: 'mdi-crane',
     },
   ],

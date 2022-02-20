@@ -15,12 +15,14 @@ export interface GiTag {
 }
 
 // Tag 
+export interface TagField {
+    name: string
+    description: string
+}
+
 export interface Tag extends Item {
     id: number
-    attributes: {
-        name: string
-        description: string
-    }
+    attributes: TagField
 }
 
 // Concept 
@@ -34,9 +36,16 @@ export interface Concept extends Item {
 }
 
 export interface CellData {
+    id: string
     concept: Concept
-    from?: Tag
-    to?: Tag
+    from?: {
+        id: string,
+        tag: Tag
+    }
+    to?: {
+        id: string,
+        tag: Tag
+    }
 }
 
 // 数据类型
@@ -48,26 +57,49 @@ export interface MetaData { name: string; type: DataType }
 // 数据字段映射
 export interface DataMap {
     // 数据集的列名
-    from: string
+    fromField: string
     // tag 的名称, 转换后的字段名
-    to: string
+    toField: string
     // 数据类型
     type: DataType
 }
 
 // 概念类
 export interface Category {
+    name: string
     jsonldurl: string
+    tags: TagField[]
+}
+
+export interface NodeTask {
+    // task uuid
+    uuid: string
+    // 数据集 id 
+    id: number
+    // 隶属哪个 Category
+    category: string
+    // 字段映射
+    map: DataMap[]
+}
+
+interface fromto {
+    uuid: string
+    field: string
+}
+
+export interface EdgeTask extends NodeTask {
+    from: fromto
+    to: fromto
 }
 
 // 图谱构建任务
 export interface TaskMeta {
     // 所有的概念类
-    categories: Map<string, Category>
+    categories: Category[]
     // 数据映射, 数据集 id 和其字段的映射
-    data: Map<number, DataMap[]>
+    nodeTasks: NodeTask[]
+    edgeTasks: EdgeTask[]
 }
-
 
 // GraphCanvas
 export interface NodeData {

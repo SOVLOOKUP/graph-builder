@@ -1,19 +1,19 @@
 <template>
-    <div v-show="cells !== null">
+    <div v-show="cells !== null && cells.length > 0">
         <div class="row">
-            <div class="col-3">
-                <!-- <q-list bordered separator > -->
-                <div class="q-pb-md" v-for="cell in cells">
-                    <q-card :class="cells?.indexOf(cell) === 0 ? 'shadow-24' : ''">
+            <div class="col-4">
+                <div class="q-pb-lg" v-for="cell in cells">
+                    <q-card :class="cells?.indexOf(cell) === 0 ? 'shadow-10' : ''">
                         <q-card-section horizontal class="row">
-                            <q-img height="120px" class="col-5" src="/favicon.svg">
+                            <q-img height="130px" src="/favicon.svg">
                                 <div
                                     class="absolute-bottom text-body text-center"
                                 >{{ cell.concept.attributes.name }}</div>
                             </q-img>
                             <div class="q-ma-md col-6">
                                 <q-chip
-                                    :color="`${cell.from !== undefined ? 'secondary' : 'primary'} text-white`"
+                                    :color="`${cell.from !== undefined ? 'secondary' : 'primary'
+                                    } text-white`"
                                 >{{ cell.from !== undefined ? '关系' : '实体' }}</q-chip>
                                 <q-chip>{{ cell.concept.attributes.tag.length }}个字段</q-chip>
                                 <q-select
@@ -43,18 +43,14 @@
                         </q-card-section>
                     </q-card>
                 </div>
-                <!-- </q-list> -->
             </div>
-            <q-space @click="printres"/>
-            <!-- 2 + 6 < 12, so next element is placed on same line -->
-            <div class="col-8">
+            <q-space />
+            <div class="col-7">
                 <div v-if="dataCollection === null">请选择数据集</div>
-                <div
-                    v-else
-                    class="q-pb-md q-pr-lg"
-                    v-for="tag in (cells as CellData[])[0].concept.attributes.tag.filter(t => t.gi_tag.data !== null).map(t => t.gi_tag.data?.attributes.name)"
-                >
+                <div v-else>
                     <q-select
+                        class="q-pb-md"
+                        v-for="tag in getMapTags(cells?.at(0))"
                         clearable
                         v-model="dataMap[(tag as string)]"
                         :options="dataCollection.attributes.metadata"
@@ -74,6 +70,9 @@
                             </q-item>
                         </template>
                     </q-select>
+                    <q-card-actions align="right">
+                        <q-btn color="primary" @click="dataMapperOK">确认</q-btn>
+                    </q-card-actions>
                 </div>
             </div>
         </div>
@@ -81,27 +80,111 @@
 </template>
 
 <script setup lang="ts">
-import type { CellData, DataCollection, TaskMeta, MetaData, DataMap } from 'src/types'
+import type {
+    CellData,
+    DataCollection,
+    TaskMeta,
+    MetaData,
+    TagField,
+    NodeTask,
+    EdgeTask,
+} from 'src/types'
 import { ref } from 'vue'
 
 const dataCollection = ref<DataCollection | null>(null)
 const dataMap = ref<{
-    [to:string]:MetaData
+    [to: string]: MetaData
 }>({})
-
-const printres = ()=>{
-    console.log(dataMap.value);
-    // todo 确定后校验并转换数据
-    // celldata => Map<string, Category>
-    // metadata => DataMap =>  Map<number, DataMap[]>
-    // 删掉 cells[0]
-    dataCollection.value = null
-    dataMap.value = {}
+const taskMeta: TaskMeta = {
+    // 所有的概念类
+    categories: [],
+    // 数据映射, 数据集 id 和其字段的映射
+    nodeTasks: [],
+    edgeTasks: [],
 }
 
-defineProps<{
+const props = defineProps<{
     cells: CellData[] | null
-    taskMeta: TaskMeta
     dataCollectionOptions: DataCollection[]
 }>()
+
+const emits = defineEmits<{
+    (e: 'done', taskMeta: TaskMeta): void
+}>()
+
+const getMapTags = (cells?: CellData) => {
+    if (cells === undefined) return []
+    const result = cells.concept.attributes.tag
+        .map((t) => t.gi_tag.data?.attributes.name as string)
+    return result
+}
+
+const dataMapperOK = () => {
+    const cell = props.cells?.at(0) as CellData
+    const category = cell.concept.attributes.name
+    const id = dataCollection.value?.id as number
+    const uuid = cell.id
+    let task: NodeTask | EdgeTask
+    if (cell.from !== undefined && cell.to !== undefined) {
+        task = {
+            uuid,
+            id,
+            category,
+            from: {
+                uuid: cell.from.id,
+                field: cell.from.tag.attributes.name,
+            },
+            to: {
+                uuid: cell.to.id,
+                field: cell.to.tag.attributes.name,
+            },
+            map: [],
+        }
+    } else {
+        // node
+        task = {
+            uuid,
+            id,
+            category,
+            map: [],
+        }
+    }
+
+    // 添加概念类
+    if (taskMeta.categories.filter(c => c.name === category).length === 0) {
+        taskMeta.categories.push({
+            name: category,
+            jsonldurl: cell.concept.attributes.jsonldurl,
+            tags: cell.concept.attributes.tag
+                .map((t) => t.gi_tag.data?.attributes)
+                .filter((i) => i !== undefined) as TagField[],
+        })
+    }
+
+    // 添加数据映射
+    for (const toField of Object.keys(dataMap.value)) {
+        task.map.push({
+            fromField: dataMap.value[toField].name,
+            toField,
+            type: dataMap.value[toField].type,
+        })
+    }
+
+    // push 结果
+    if (cell.from !== undefined && cell.to !== undefined) {
+        taskMeta.edgeTasks.push(task as EdgeTask)
+    } else {
+        taskMeta.nodeTasks.push(task)
+    }
+
+    // 结束本条处理
+    props.cells?.splice(0, 1)
+    dataCollection.value = null
+    dataMap.value = {}
+
+    // 如果全部完毕则调用 done
+    if (props.cells !== null && props.cells.length <= 0) {
+        emits('done', taskMeta)
+    }
+}
 </script>

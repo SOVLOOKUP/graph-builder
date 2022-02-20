@@ -5,12 +5,7 @@
         <q-toolbar>
           <q-toolbar-title>数据字段匹配</q-toolbar-title>
           <q-chip v-show="cells !== null">{{ cells?.length }} 个集合需要匹配数据源</q-chip>
-          <q-btn
-            flat
-            round
-            dense
-            @click="dialog = false;model = null;cells = null"
-          >
+          <q-btn flat round dense @click="dialog = false; model = null; cells = null">
             <Icon icon="mdi:close" />
           </q-btn>
         </q-toolbar>
@@ -24,7 +19,7 @@
           label-style="font-size: 1.1em"
         />
         <q-page padding>
-          <DataMapper :cells="cells" :taskMeta="taskMeta" :dataCollectionOptions="dataCollectionOptions"/>
+          <DataMapper :cells="cells" :dataCollectionOptions="dataCollectionOptions" @done="done" />
         </q-page>
       </q-page-container>
     </q-layout>
@@ -35,6 +30,7 @@
     :createItem="createItem"
     :columns="columns"
     :getItems="getItems"
+    :deleteItem="deleteTask"
     @clearContent="model = null"
   >
     <q-select
@@ -62,10 +58,10 @@
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent, ref, watch } from 'vue'
-import { listTasks, listModels, getModelJson } from '../api'
+import { defineAsyncComponent, ref } from 'vue'
+import { listTasks, listModels, getModelJson, deleteTask, createTask } from '../api'
 import { useToast } from 'vue-toastification'
-import type { CellData, TaskMeta, Category, DataMap } from 'src/types'
+import type { CellData, GiTag, TaskMeta } from 'src/types'
 import { listDataSources } from '../api'
 const Table = defineAsyncComponent(() => import('@/components/Table.vue'))
 const DataMapper = defineAsyncComponent(() => import('@/components/DataMapper.vue'))
@@ -77,39 +73,69 @@ const model = ref<{ id: number; name: string } | null>(null)
 const dialog = ref(false)
 const dialogLoading = ref(false)
 const cells = ref<CellData[] | null>(null)
-
-const taskMeta = ref<TaskMeta>({
-  categories: new Map<string, Category>(),
-  data: new Map<number, DataMap[]>(),
-})
+let task: TaskMeta | null = null
 
 const getItems = async () => (await (await listTasks()).json()).data
-const createItem = async () => {
-  if (model.value === null) {
+const createItem = async (name: string) => {
+  if (task === null) {
     toast.info('请选择本体模型')
     return
   }
+  await createTask(name, task)
   // todo 用 taskMeta 构建图谱
+  task = null
 }
 
 // 选择模型后下载模型数据
 const selectedModel = async () => {
   dialog.value = true
   dialogLoading.value = true
-  const mjson = await getModelJson(model.value?.id.toString() as string)
-  cells.value = (await mjson.json()).data.attributes.data.cells
-    .map((cell: { data: CellData | undefined }) => cell.data)
-    .filter((i: CellData | undefined) => i !== undefined)
+
+  // 下载数据并预处理
+  console.log((await (await getModelJson(model.value?.id.toString() as string)).json()))
+
+  const mjson: CellData[] = (await (await getModelJson(model.value?.id.toString() as string)).json()).data.attributes.data.cells
+    // 剔除空值
+    .filter((cell: { data: object | undefined }) => cell.data !== undefined)
+    .map((cell: { data: object, id: string, source?: { cell: string }, target?: { cell: string } }) => {
+      // id
+      cell.data["id"] = cell.id   
+      // 边的 source 处理  
+      cell.source && (cell.data["from"] = {
+        id: cell.source.cell,
+        tag: cell.data["from"]
+      })
+      // 边的 target 处理  
+      cell.target && (cell.data["to"] = {
+        id: cell.target.cell,
+        tag: cell.data["to"]
+      })
+      return cell
+    })
+    .map((cell: { data: CellData }) => cell.data)
+
+  // 预处理 tag 的空值
+  for (const cell of mjson) {
+    cell.concept.attributes.tag = cell.concept.attributes.tag
+      .filter((t: GiTag) => t.gi_tag.data !== null)
+  }
+
+  // 将实体放在前面进行处理
+  mjson.sort((cell1, cell2) => {
+    const a = cell1.from === undefined ? 0 : 1
+    const b = cell2.from === undefined ? 0 : 1
+    return a - b
+  })
+
+  cells.value = mjson
   dialogLoading.value = false
 }
 
-// cells 处理完毕自动关闭映射界面
-watch([cells], () => {
-  if (cells.value !== null && cells.value.length <= 0) {
-    dialog.value = false
-    cells.value = null
-  }
-})
+const done = (taskMeta: TaskMeta) => {
+  task = taskMeta
+  dialog.value = false
+  cells.value = null
+}
 
 const columns = [
   {
@@ -142,6 +168,11 @@ const columns = [
           return '未知'
       }
     },
+  },
+  {
+    align: 'center',
+    name: 'action',
+    label: '操作',
   },
 ]
 </script>

@@ -71,7 +71,7 @@ const routes = [
   },
   {
     path: '/tasks',
-    name: '构建',
+    name: '任务',
     component: Tasks,
   },
   {
