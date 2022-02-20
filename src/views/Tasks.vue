@@ -82,7 +82,6 @@ const createItem = async (name: string) => {
     return
   }
   await createTask(name, task)
-  // todo 用 taskMeta 构建图谱
   task = null
 }
 
@@ -92,8 +91,6 @@ const selectedModel = async () => {
   dialogLoading.value = true
 
   // 下载数据并预处理
-  console.log((await (await getModelJson(model.value?.id.toString() as string)).json()))
-
   const mjson: CellData[] = (await (await getModelJson(model.value?.id.toString() as string)).json()).data.attributes.data.cells
     // 剔除空值
     .filter((cell: { data: object | undefined }) => cell.data !== undefined)
@@ -131,9 +128,12 @@ const selectedModel = async () => {
   dialogLoading.value = false
 }
 
+// 数据匹配结束
 const done = (taskMeta: TaskMeta) => {
   task = taskMeta
+  // 关闭 mapper
   dialog.value = false
+  // 清除 cells
   cells.value = null
 }
 

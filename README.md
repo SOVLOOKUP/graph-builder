@@ -34,7 +34,7 @@
 28. [x] 边配置窗口: 概念对应, from to 字段
 29. [x] 数据集: 名称、元信息后台
 30. [x] 元信息、csv 数据表 的展示和添加更新校验
-31. [ ] 选择本体进行构建: 每个 cell 的数据集选择&概念字段与数据集元信息匹配
+31. [x] 选择本体进行构建: 每个 cell 的数据集选择&概念字段与数据集元信息匹配
 32. [ ] 构建
 
 ## RoadMap
@@ -54,15 +54,10 @@
 ### 基于 cube.js 重构数据源与构建模块<数据 ETL 中台>
 
 1. [ ] 选择并配置数据源(左侧列表)，datasource 存: 名称、数据库链接配置信息、schema 列表
-
 2. [ ] 选中数据源，可用 schema 编辑器增加、编辑数据集(右侧卡片), schema 存于 strapi
-
 3. [ ] 点击发布 cube 依据 schema 动态创建服务 https://cube.dev/docs/recipes/multiple-sources-same-schema https://cube.dev/docs/schema/advanced/dynamic-schema-creation#usage-with-data-source
-
 4. [ ] 构建配置器基于 schema 生成数据集元信息进行匹配
-
 5. [ ] 构建器放在后端，异步任务化
-
 6. [ ] 构建器插件化, 连接数据源(neo4j/arangodb/surrealdb)进行流式注入
 
 ### 图数据库技术升级

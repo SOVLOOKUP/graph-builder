@@ -90,7 +90,9 @@ import type {
     EdgeTask,
 } from 'src/types'
 import { ref } from 'vue'
+import { useToast } from 'vue-toastification'
 
+const toast = useToast()
 const dataCollection = ref<DataCollection | null>(null)
 const dataMap = ref<{
     [to: string]: MetaData
@@ -112,20 +114,28 @@ const emits = defineEmits<{
     (e: 'done', taskMeta: TaskMeta): void
 }>()
 
-const getMapTags = (cells?: CellData) => {
-    if (cells === undefined) return []
-    const result = cells.concept.attributes.tag
+const getMapTags = (cells?: CellData) => cells === undefined ? [] :
+    cells.concept.attributes.tag
         .map((t) => t.gi_tag.data?.attributes.name as string)
-    return result
-}
+
 
 const dataMapperOK = () => {
     const cell = props.cells?.at(0) as CellData
+    const fieldNumber = Object.keys(dataMap.value).length
     const category = cell.concept.attributes.name
-    const id = dataCollection.value?.id as number
+    const id = dataCollection.value?.id ?? null
     const uuid = cell.id
     let task: NodeTask | EdgeTask
+
+    // 验证
+    if (fieldNumber < cell.concept.attributes.tag.length) {
+        toast.info(`还有 ${cell.concept.attributes.tag.length - fieldNumber} 个字段未选择`)
+        return
+    }
+
+    // 解析 cell 以创建 task
     if (cell.from !== undefined && cell.to !== undefined) {
+        // edge
         task = {
             uuid,
             id,
@@ -182,9 +192,15 @@ const dataMapperOK = () => {
     dataCollection.value = null
     dataMap.value = {}
 
-    // 如果全部完毕则调用 done
-    if (props.cells !== null && props.cells.length <= 0) {
-        emits('done', taskMeta)
+    if (props.cells !== null) {
+        // 如果全部完毕则调用 done
+        if (props.cells.length === 0) {
+            emits('done', taskMeta)
+        }
+
+        if (props.cells.at(0)?.concept.attributes.tag.length === 0) {
+            dataMapperOK()
+        }
     }
 }
 </script>

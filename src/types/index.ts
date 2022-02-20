@@ -75,7 +75,7 @@ export interface NodeTask {
     // task uuid
     uuid: string
     // 数据集 id 
-    id: number
+    id: number | null
     // 隶属哪个 Category
     category: string
     // 字段映射
