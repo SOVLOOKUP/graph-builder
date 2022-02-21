@@ -45,7 +45,7 @@ import { ref } from 'vue'
 import { getDBAddress, updateDBAddress } from '../api'
 import { useRouter } from 'vue-router'
 import { useConfigStore, useUserStore } from '../store'
-import type { ModeType } from '../store'
+import type { ModeType } from 'src/types'
 import { defineAsyncComponent } from 'vue'
 const Card = defineAsyncComponent(() => import('@/components/Card.vue'))
 

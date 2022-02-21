@@ -73,10 +73,12 @@ import { listTasks, listModels, getModelJson, deleteTask, createTask } from '../
 import { useToast } from 'vue-toastification'
 import type { CellData, GiTag, TaskMeta } from 'src/types'
 import { listDataSources } from '../api'
+import { useWorker } from '../lib/utils'
 const Table = defineAsyncComponent(() => import('@/components/Table.vue'))
 const DataMapper = defineAsyncComponent(() => import('@/components/DataMapper.vue'))
 
 const dataCollectionOptions = (await (await listDataSources()).json()).data
+const worker = useWorker()
 const toast = useToast()
 const options = (await (await listModels()).json()).data
 const model = ref<{ id: number; name: string } | null>(null)

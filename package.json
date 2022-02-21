@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
+    "dev": "concurrently -n worker,vite \"vite build --config vite-lib.config.ts -w \" \"vite\"",
+    "build": "vue-tsc --noEmit && vite build --config vite-lib.config.ts && vite build",
     "serve": "vite preview",
     "commit": "git add . && cz -a"
   },
@@ -19,6 +19,7 @@
     "@types/qs": "^6.9.7",
     "@vitejs/plugin-vue": "2.2.2",
     "commitizen": "^4.2.4",
+    "concurrently": "^7.0.0",
     "cz-emoji-conventional": "^1.0.1",
     "idb-keyval": "^6.1.0",
     "ky": "0.29.0",
@@ -28,6 +29,7 @@
     "qs": "^6.10.3",
     "quasar": "^2.5.5",
     "sass": "1.49.8",
+    "threads": "^1.7.0",
     "ts-debounce": "^4.0.0",
     "typescript": "4.5.5",
     "vite": "2.8.4",
