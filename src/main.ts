@@ -4,7 +4,7 @@ import router from './plugins/router'
 import { Quasar } from 'quasar'
 import pinia from './plugins/pinia'
 import { Icon } from '@iconify/vue'
-import worker from './plugins/thread'
+import worker from './plugins/worker'
 import Toast, { useToast } from 'vue-toastification'
 import 'vue-toastification/dist/index.css'
 
