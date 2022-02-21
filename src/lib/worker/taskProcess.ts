@@ -1,7 +1,7 @@
 import type {
     EdgeTask,
     FromTo,
-    GraphDBPlugin,
+    GraphDBAdapter,
     NodeTask,
     TaskMeta,
 } from 'src/types'
@@ -9,7 +9,7 @@ import { strapi } from '.'
 
 interface TaskParams<NodeType, EdgeType> {
     taskID: number
-    plugin: GraphDBPlugin<NodeType, EdgeType>
+    adapter: GraphDBAdapter<NodeType, EdgeType>
 }
 
 // 1. 读取实体数据转换为目标格式<写入到图数据库> 入参: 实体数据 返回: 数据库返回
@@ -49,7 +49,7 @@ class Task<NodeType, EdgeType> {
             this.taskMeta.categories
             const newItem = item
             // 写入到图数据库
-            const res = await this.params.plugin.nodeProcessor(newItem)
+            const res = await this.params.adapter.nodeProcessor(newItem)
             // todo 将返回值按 UUID 保存到 indexeddb
             res
         }
@@ -73,7 +73,7 @@ class Task<NodeType, EdgeType> {
                 field: '',
             }
             // 写入到图数据库
-            const res = await this.params.plugin.edgeProcessor(newItem, from, to)
+            const res = await this.params.adapter.edgeProcessor(newItem, from, to)
             // todo 将返回值按 UUID 保存到 indexeddb
             res
         }

@@ -43,6 +43,12 @@
 
 1. [ ] 我的服务器仅进行账户注册登录, 应用连同精简的后端打包成 electron
 
+### 插件化数据注入模块
+
+1. [ ] 可配置的图数据库链接列表, 用插件导出配置的 jsonschema 动态生成表单
+2. [ ] 构建器放在后端, 异步任务化
+3. [ ] 动态加载安装插件
+
 ### 插件市场
 
 1. [ ] 应用基于动态组件 indexeddb 创造一个插件市场
@@ -51,18 +57,11 @@
 4. [ ] 应用模式: 情报推理(图挖掘计算)
 5. [ ] 应用模式: 文本解析成数据源
 
-### 基于 cube.js 重构数据源与构建模块<数据 ETL 中台>
+### 基于 cube.js 重构数据源
 
 1. [ ] 选择并配置数据源(左侧列表)，datasource 存: 名称、数据库链接配置信息、schema 列表
 2. [ ] 选中数据源，可用 schema 编辑器增加、编辑数据集(右侧卡片), schema 存于 strapi
 3. [ ] 点击发布 cube 依据 schema 动态创建服务 https://cube.dev/docs/recipes/multiple-sources-same-schema https://cube.dev/docs/schema/advanced/dynamic-schema-creation#usage-with-data-source
-4. [ ] 构建配置器基于 schema 生成数据集元信息进行匹配
-5. [ ] 构建器放在后端，异步任务化
-6. [ ] 构建器插件化, 连接数据源(neo4j/arangodb/surrealdb)进行流式注入
-
-### 图数据库技术升级
-
-1. [ ] 基于 surrealdb 做图谱储存
 
 ## 构建时环境变量
 

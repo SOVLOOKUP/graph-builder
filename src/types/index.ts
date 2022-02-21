@@ -176,7 +176,7 @@ export interface Result<T> {
     msg?: string
 }
 
-export interface GraphDBPlugin<NodeType, EdgeType> {
+export interface GraphDBAdapter<NodeType, EdgeType> {
     nodeProcessor: (node: object) => Promise<Result<NodeType>>
     edgeProcessor: (
         edge: object,
