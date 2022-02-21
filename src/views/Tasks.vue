@@ -69,8 +69,6 @@ import { useToast } from 'vue-toastification'
 import type { CellData, GiTag, TaskMeta } from 'src/types'
 import { listDataSources } from '../api'
 import { useWorker } from '../plugins/worker'
-import neo4j from '../lib/adapter/neo4j'
-
 const Table = defineAsyncComponent(() => import('@/components/Table.vue'))
 const DataMapper = defineAsyncComponent(() => import('@/components/DataMapper.vue'))
 
@@ -99,7 +97,10 @@ const createItem = async (name: string) => {
 const startTask = async (id: number) => {
   await worker.startTask({
     taskID: id,
-    adapter: neo4j.adapter({}),
+    db: {
+      type: 'neo4j',
+      config: {}
+    }
   })
 }
 
