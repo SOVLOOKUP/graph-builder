@@ -33,12 +33,7 @@
     :deleteItem="deleteTask"
     @clearContent="model = null; newTaskDescription = ''"
   >
-    <q-input
-      color="primary"
-      v-model="newTaskDescription"
-      label="描述"
-      autogrow
-    />
+    <q-input color="primary" v-model="newTaskDescription" label="描述" autogrow />
     <q-select
       v-model="model"
       :options="options"
@@ -73,7 +68,9 @@ import { listTasks, listModels, getModelJson, deleteTask, createTask } from '../
 import { useToast } from 'vue-toastification'
 import type { CellData, GiTag, TaskMeta } from 'src/types'
 import { listDataSources } from '../api'
-import { useWorker } from '../lib/utils'
+import { useWorker } from '../plugins/worker'
+import neo4j from '../lib/dataProcessorPlugin/neo4j'
+
 const Table = defineAsyncComponent(() => import('@/components/Table.vue'))
 const DataMapper = defineAsyncComponent(() => import('@/components/DataMapper.vue'))
 
@@ -94,13 +91,16 @@ const createItem = async (name: string) => {
     toast.info('请选择本体模型')
     return
   }
-  await createTask(name,newTaskDescription.value, task)
+  await createTask(name, newTaskDescription.value, task)
   task = null
   newTaskDescription.value = ''
 }
 
-const startTask = async (id:number) =>{
-  console.log(await worker.startTask(id));
+const startTask = async (id: number) => {
+  await worker.startTask({
+    taskID: id,
+    plugin: neo4j({}),
+  })
 }
 
 // 选择模型后下载模型数据
@@ -114,7 +114,7 @@ const selectedModel = async () => {
     .filter((cell: { data: object | undefined }) => cell.data !== undefined)
     .map((cell: { data: object, id: string, source?: { cell: string }, target?: { cell: string } }) => {
       // id
-      cell.data["id"] = cell.id   
+      cell.data["id"] = cell.id
       // 边的 source 处理  
       cell.source && (cell.data["from"] = {
         id: cell.source.cell,

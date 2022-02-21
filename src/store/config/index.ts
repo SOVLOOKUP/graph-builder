@@ -5,7 +5,6 @@ const AutoHideAppBarAtPath = ['/model/', '/auth']
 
 export const useConfigStore = defineStore('config', {
   state: (): ConfigStore => ({
-    // todo 设置之后调用 worker _init
     serverBaseUrl:
       (import.meta.env.VITE_STRAPI_URL as string) ?? 'http://localhost:1337',
     mode: 'build',

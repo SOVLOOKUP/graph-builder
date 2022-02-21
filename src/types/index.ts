@@ -163,3 +163,24 @@ export interface DataCollection {
         metadata: MetaData[]
     }
 }
+
+// taskProcessor
+export interface FromTo<NodeType> {
+    node: NodeType
+    field: string
+}
+
+export interface Result<T> {
+    result: T
+    status: "success" | "error"
+    msg?: string
+}
+
+export interface GraphDBPlugin<NodeType, EdgeType> {
+    nodeProcessor: (node: object) => Promise<Result<NodeType>>
+    edgeProcessor: (
+        edge: object,
+        from: FromTo<NodeType>,
+        to: FromTo<NodeType>,
+    ) => Promise<Result<EdgeType>>
+}
