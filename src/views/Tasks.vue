@@ -100,7 +100,7 @@ const createItem = async (name: string) => {
 }
 
 const startTask = async (id:number) =>{
-  console.log(id);
+  console.log(await worker.startTask(id));
 }
 
 // 选择模型后下载模型数据

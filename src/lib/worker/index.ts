@@ -1,6 +1,17 @@
-async function add(a: number, b: number) {
-    return a + b
+import Strapi from "strapi-sdk-js"
+import taskProcess from './taskProcess'
+let strapi: Strapi
+
+const _init = (strapiURL: string) => {
+    strapi = new Strapi({ url: strapiURL })
 }
 
-const funcs = { add }
-export default funcs
+const apis = {
+    ...taskProcess
+}
+
+export default {
+    _init,
+    ...apis
+}
+export { apis, strapi }

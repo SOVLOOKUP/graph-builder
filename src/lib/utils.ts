@@ -1,7 +1,7 @@
 import { inject } from "vue"
-import type funcs from "./worker"
+import type { apis } from "./worker"
 
 const useWorker = () =>
-    inject("worker") as typeof funcs
+    (inject("worker") as typeof apis)
 
 export { useWorker }

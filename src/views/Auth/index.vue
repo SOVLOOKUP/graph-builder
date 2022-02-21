@@ -1,23 +1,19 @@
 <template>
   <div class="auth">
-    <Dialog v-model="dialog" title="设置" :ok="() => (dialog = false)">
-      <q-input
-        :label="'后端地址'"
-        type="text"
-        v-model="configStore.serverBaseUrl"
-      />
+    <Dialog v-model="dialog" title="设置" :ok="configOK">
+      <q-input :label="'后端地址'" type="text" v-model="newServerBaseUrl" />
     </Dialog>
 
     <Card :loading="loading">
       <router-view @toggleLoading="toggleLoading" />
     </Card>
     <div class="setting">
-      <q-btn flat round @click="dialog = true">
+      <q-btn flat round @click="dialog = true; newServerBaseUrl = configStore.serverBaseUrl">
         <Icon icon="icon-park-outline:setting-two" height="30" color="grey" />
       </q-btn>
       <q-btn flat round>
-        <q-tooltip> 微信: xiafanGO-NORTH </q-tooltip>
-        <Icon icon="topcoat:question" height="30" color="grey"> </Icon>
+        <q-tooltip>微信: xiafanGO-NORTH</q-tooltip>
+        <Icon icon="topcoat:question" height="30" color="grey"></Icon>
       </q-btn>
     </div>
   </div>
@@ -32,6 +28,12 @@ import { useConfigStore } from '../../store'
 const configStore = useConfigStore()
 const loading = ref(false)
 const dialog = ref(false)
+const newServerBaseUrl = ref('')
+
+const configOK = async () => {
+  dialog.value = false
+  await configStore.setServerBaseUrl(newServerBaseUrl.value)
+}
 
 const toggleLoading = (to?: boolean) => {
   if (to !== undefined) {
