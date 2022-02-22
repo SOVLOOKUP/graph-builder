@@ -1,18 +1,24 @@
 import type { GraphDBAdapter } from 'src/types'
 
-// todo neo4j 驱动
+// [2 todo] neo4j 驱动
 const adapter = (config: object): GraphDBAdapter<string, string> => ({
-    nodeProcessor: async (node) => ({
-        result: '',
-        status: 'success',
-    }),
-    edgeProcessor: async (edge, from, to) => ({
-        result: '',
-        status: 'success',
-    }),
+    nodeProcessor: async (tx) => {
+        console.log(tx)
+        return {
+            result: '',
+            status: 'success',
+        }
+    },
+    edgeProcessor: async (tx, from, to) => {
+        console.log(tx, from, to)
+        return {
+            result: '',
+            status: 'success',
+        }
+    },
 })
 
 export default {
     configSchema: {},
-    adapter
+    adapter,
 }

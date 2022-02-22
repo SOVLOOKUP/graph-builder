@@ -4,55 +4,32 @@
       show-value
       font-size="10px"
       class="q-ma-md"
-      :value="value"
+      :value="process"
       size="120px"
       :thickness="0.25"
       color="primary"
       track-color="grey-3"
     >
-      <Icon :icon="ok ? 'flat-color-icons:ok' : 'logos:graphene'" width="60" />
+      <Icon :icon="process >= 100 ? 'flat-color-icons:ok' : 'logos:graphene'" width="60" />
     </q-circular-progress>
     <span style="font-size: 2em">应用装载中</span>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, defineProps, withDefaults } from 'vue'
+import { defineProps, withDefaults } from 'vue'
 import { Icon } from '@iconify/vue'
-import ky from 'ky'
-import { set } from 'idb-keyval'
-const fontName = import.meta.env.VITE_APP_FONT as string
-const value = ref(0)
-const ok = ref(false)
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     show: boolean
+    process: number
   }>(),
   {
     show: false,
+    process: 0
   }
 )
-
-const emits = defineEmits<{
-  (e: 'ok'): Promise<void>
-}>()
-
-const loadFont = async () => {
-  const res = await ky.get(`/${fontName}.ttf`, {
-    onDownloadProgress: (e) => {
-      value.value = (e.transferredBytes * 100) / 10080628
-    },
-  })
-  const fontBuffer = await res.arrayBuffer()
-  await set(fontName, fontBuffer)
-}
-
-onMounted(async () => {
-  props.show && await loadFont()
-  ok.value = true
-  await emits('ok')
-})
 </script>
 
 <style lang="scss" scoped>

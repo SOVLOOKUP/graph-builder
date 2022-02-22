@@ -32,7 +32,7 @@ const newServerBaseUrl = ref('')
 
 const configOK = async () => {
   dialog.value = false
-  await configStore.setServerBaseUrl(newServerBaseUrl.value)
+  configStore.serverBaseUrl = newServerBaseUrl.value
 }
 
 const toggleLoading = (to?: boolean) => {

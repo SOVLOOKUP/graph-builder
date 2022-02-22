@@ -1,3 +1,4 @@
+import type { IDBPTransaction } from "idb"
 
 export interface Item extends Object {
     id: number
@@ -165,12 +166,13 @@ export interface DataCollection {
 }
 
 // taskProcessor
-export interface FromTo<NodeType> {
-    node: NodeType
+export interface FromTo {
+    tx: IDBPTransaction<unknown, [string], "readonly">
     field: string
 }
 
 export interface Result<T> {
+    id?: number
     result: T
     status: "success" | "error"
     msg?: string
@@ -180,7 +182,7 @@ export interface GraphDBAdapter<NodeType, EdgeType> {
     nodeProcessor: (node: object) => Promise<Result<NodeType>>
     edgeProcessor: (
         edge: object,
-        from: FromTo<NodeType>,
-        to: FromTo<NodeType>,
+        from: FromTo,
+        to: FromTo,
     ) => Promise<Result<EdgeType>>
 }

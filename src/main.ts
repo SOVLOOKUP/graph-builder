@@ -4,7 +4,6 @@ import router from './plugins/router'
 import { Quasar } from 'quasar'
 import pinia from './plugins/pinia'
 import { Icon } from '@iconify/vue'
-import worker from './plugins/worker'
 import Toast, { useToast } from 'vue-toastification'
 import 'vue-toastification/dist/index.css'
 
@@ -23,7 +22,6 @@ MainApp.use(Quasar, {
 })
 MainApp.use(pinia)
 MainApp.use(router)
-MainApp.use(worker)
 MainApp.use(Toast, {
   transition: 'Vue-Toastification__fade',
   maxToasts: 10,

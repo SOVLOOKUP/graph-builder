@@ -1,17 +1,6 @@
-import Strapi from "strapi-sdk-js"
-import taskProcess from './taskProcess'
-let strapi: Strapi
+import funcs from './funcs'
+import { spawn, Worker } from 'threads'
 
-const _init = (strapiURL: string) => {
-    strapi = new Strapi({ url: strapiURL })
-}
+const workers = await spawn<typeof funcs>(new Worker("/worker.es.js"))
 
-const apis = {
-    ...taskProcess
-}
-
-export default {
-    _init,
-    ...apis
-}
-export { apis, strapi }
+export default workers

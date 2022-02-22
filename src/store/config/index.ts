@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import type { ConfigStore } from 'src/types'
-import { workers } from '../../plugins/worker'
 const AutoHideAppBarAtPath = ['/model/', '/auth']
 
 export const useConfigStore = defineStore('config', {
@@ -17,11 +16,7 @@ export const useConfigStore = defineStore('config', {
       } else {
         this.showBar = true
       }
-    },
-    async setServerBaseUrl(url: string) {
-      await workers._init(url)
-      this.serverBaseUrl = url
-    },
+    }
   },
   persist: true,
 })

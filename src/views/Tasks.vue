@@ -68,12 +68,14 @@ import { listTasks, listModels, getModelJson, deleteTask, createTask } from '../
 import { useToast } from 'vue-toastification'
 import type { CellData, GiTag, TaskMeta } from 'src/types'
 import { listDataSources } from '../api'
-import { useWorker } from '../plugins/worker'
+import worker from '../lib/worker'
+import { useConfigStore } from '../store'
+
 const Table = defineAsyncComponent(() => import('@/components/Table.vue'))
 const DataMapper = defineAsyncComponent(() => import('@/components/DataMapper.vue'))
 
 const dataCollectionOptions = (await (await listDataSources()).json()).data
-const worker = useWorker()
+const configStore = useConfigStore()
 const toast = useToast()
 const options = (await (await listModels()).json()).data
 const model = ref<{ id: number; name: string } | null>(null)
@@ -95,13 +97,14 @@ const createItem = async (name: string) => {
 }
 
 const startTask = async (id: number) => {
-  await worker.startTask({
-    taskID: id,
+  await worker.initTaskFactory({
+    url: configStore.serverBaseUrl,
     db: {
       type: 'neo4j',
       config: {}
     }
   })
+  await worker.startTask(id)
 }
 
 // 选择模型后下载模型数据

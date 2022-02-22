@@ -29,51 +29,66 @@
         <template v-if="Component">
           <!-- <transition> -->
           <!-- <keep-alive> -->
-            <suspense timeout="0">
-              <component :is="Component" />
-              <template #fallback>
-                <Loading />
-              </template>
-            </suspense>
+          <suspense timeout="0">
+            <component :is="Component" />
+            <template #fallback>
+              <Loading />
+            </template>
+          </suspense>
           <!-- </keep-alive> -->
           <!-- </transition> -->
         </template>
       </router-view>
     </q-page-container>
-
-    <FirstLoading :show="show" @ok="ok" />
   </q-layout>
+  <FirstLoading :show="show" :process="process" />
 </template>
 
 <script setup lang="ts">
 import { useConfigStore } from './store'
 import Loading from '@/components/Loading.vue'
 import FirstLoading from '@/components/FirstLoading.vue'
-import { get } from 'idb-keyval'
+import ky from 'ky'
 import { onBeforeMount, ref } from 'vue'
+import { get, set } from 'idb-keyval'
 const fontName = import.meta.env.VITE_APP_FONT as string
 
 const configStore = useConfigStore()
 const show = ref(false)
+const process = ref(0)
+
+const loadFont = async () => {
+  // 加载字体
+  const res = await ky.get(`/${fontName}.ttf`, {
+    onDownloadProgress: (e) => {
+      process.value = (e.transferredBytes * 100) / 10080628
+    },
+  })
+  const fontBuffer = await res.arrayBuffer()
+  // 设置本地储存
+  await set(fontName, fontBuffer)
+  return fontBuffer
+}
 
 // 这里检测 indexeddb 资源是否存在，如果不存在，则启动首屏加载
 onBeforeMount(async () => {
-  const fontBuffer = await get(fontName)
+  let fontBuffer = await get(fontName)
+  // 如果资源不存在就下载
   if (fontBuffer === undefined) {
+    // 打开 loading
     show.value = true
-  } else {
-    await ok()
+    // 下载资源
+    fontBuffer = await loadFont()
+    // 关闭 loading
+    show.value = false
   }
-})
 
-const ok = async () => {
   // 加载字体
-  const fontBuffer = await get(fontName)
-  const font = await new FontFace(fontName, fontBuffer).load()
-  ;(document.fonts as any).add(font)
+  const font = new FontFace(fontName, fontBuffer)
+  await font.load()
+    ; (document.fonts as any).add(font)
   document.body.style.fontFamily = fontName
-  show.value = false
-}
+})
 
 const modeTab: {
   [ModeName: string]: { name: string; path: string; icon: string }[]
