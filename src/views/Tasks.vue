@@ -57,7 +57,7 @@
     </q-select>
 
     <template #edit="props">
-      <q-btn flat @click="startTask(props.item.id)" label="构建图谱" />
+      <q-btn flat @click="startTask(props.item.id)" label="构建图谱" :loading="buildLoading" />
     </template>
   </Table>
 </template>
@@ -83,6 +83,10 @@ const dialog = ref(false)
 const dialogLoading = ref(false)
 const cells = ref<CellData[] | null>(null)
 const newTaskDescription = ref('')
+const buildLoading = ref(false)
+const taskProcess = ref<{
+  [uuid: string]: number
+}>({})
 let task: TaskMeta | null = null
 
 const getItems = async () => (await (await listTasks()).json()).data
@@ -97,6 +101,29 @@ const createItem = async (name: string) => {
 }
 
 const startTask = async (id: number) => {
+  worker.values().subscribe((v) => {
+    // 开始
+    if (Array.isArray(v)) {
+      buildLoading.value = true
+      for (const i of v) {
+        taskProcess.value[i] = 0
+      }
+      return
+    }
+    // 结束
+    if (v === 'ok') {
+      buildLoading.value = false
+      taskProcess.value = {}
+      return
+    }
+    // 记录进度
+    const status = v as unknown as { uuid: string, process: number }
+    taskProcess.value[status.uuid] = status.process
+
+    // todo 展示进度
+    console.log(taskProcess.value)
+  })
+
   await worker.initTaskFactory({
     url: configStore.serverBaseUrl,
     db: {

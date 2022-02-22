@@ -1,6 +1,6 @@
-import funcs from './funcs'
+import taskProcess from './taskProcess'
 import { spawn, Worker } from 'threads'
 
-const workers = await spawn<typeof funcs>(new Worker("/worker.es.js"))
+const workers = await spawn<typeof taskProcess>(new Worker("/worker.es.js"))
 
 export default workers

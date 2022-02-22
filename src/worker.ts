@@ -1,4 +1,4 @@
 import { expose } from 'threads/worker'
-import funcs from './lib/worker/funcs'
+import taskProcessor from './lib/worker/taskProcess'
 
-expose(funcs)
+expose(taskProcessor)
