@@ -6,7 +6,7 @@ const API = () => {
   return ky.create({
     mode: 'cors',
     // throwHttpErrors: false,
-    prefixUrl: `${configStore.serverBaseUrl}/api/`,
+    prefixUrl: new URL('api', configStore.serverBaseUrl).href,
   })
 }
 
