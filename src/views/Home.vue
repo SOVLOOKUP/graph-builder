@@ -42,7 +42,6 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { getDBAddress, updateDBAddress } from '../api'
 import { useRouter } from 'vue-router'
 import { useConfigStore, useUserStore } from '../store'
 import type { ModeType } from 'src/types'
@@ -62,12 +61,6 @@ const config = [
     value: async () =>
       userInfo?.email + ' ' + (userInfo?.confirmed === true ? '✅' : '❔'),
     editable: false,
-  },
-  {
-    name: '图数据库地址',
-    value: async () =>
-      (await (await getDBAddress()).json()).data.attributes.domain,
-    editable: true,
   },
 ]
 
@@ -132,7 +125,7 @@ const refreshConfig = async (itemName?: string) => {
 }
 
 const editItem = async (p: Event, itemName: string) => {
-  await updateDBAddress((p?.target as HTMLInputElement).value)
+  // await updateDBAddress((p?.target as HTMLInputElement).value)
   await refreshConfig(itemName)
 }
 
