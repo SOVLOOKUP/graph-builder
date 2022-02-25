@@ -11,10 +11,6 @@
       <q-btn flat round @click="dialog = true; newServerBaseUrl = configStore.serverBaseUrl">
         <Icon icon="icon-park-outline:setting-two" height="30" color="grey" />
       </q-btn>
-      <q-btn flat round>
-        <q-tooltip>微信: xiafanGO-NORTH</q-tooltip>
-        <Icon icon="topcoat:question" height="30" color="grey"></Icon>
-      </q-btn>
     </div>
   </div>
 </template>

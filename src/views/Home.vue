@@ -26,7 +26,7 @@
             v-if="item.editable"
             v-model="item.value"
             v-slot="scope"
-            @change="(e:Event) => editItem(e, item.name)"
+            @change="(e: Event) => editItem(e, item.name)"
           >
             <q-input v-model="scope.value" dense autofocus counter />
           </q-popup-edit>
@@ -35,9 +35,22 @@
     </q-list>
 
     <q-card-actions align="right">
-      <q-btn flat @click="signout"> 退出登录 </q-btn>
+      <q-btn flat @click="signout">退出登录</q-btn>
     </q-card-actions>
   </Card>
+
+  <div class="setting">
+    <q-btn flat round>
+      <q-tooltip>
+        <q-img height="500px" width="400px" src="https://img.400511.net/2022/02/25/SsAVF2Jp.jpg" />
+      </q-tooltip>
+      <Icon icon="topcoat:question" height="30" color="grey"></Icon>
+    </q-btn>
+    <q-btn flat round @click="openFeedBack">
+      <q-tooltip>交流论坛</q-tooltip>
+      <Icon icon="topcoat:feedback" height="30" color="grey"></Icon>
+    </q-btn>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -130,4 +143,15 @@ const editItem = async (p: Event, itemName: string) => {
 }
 
 await refreshConfig()
+
+
+const openFeedBack = () => window.open('https://support.qq.com/products/381751/')
 </script>
+
+<style scoped>
+.setting {
+  position: fixed;
+  right: 10px;
+  bottom: 10px;
+}
+</style>
