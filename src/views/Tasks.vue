@@ -104,6 +104,7 @@ const startTask = async (id: number) => {
   worker.values().subscribe((v) => {
     // 开始
     if (Array.isArray(v)) {
+      toast.info(`任务正在处理, 请勿刷新页面!`)
       buildLoading.value = true
       for (const i of v) {
         taskProcess.value[i] = 0
@@ -113,6 +114,7 @@ const startTask = async (id: number) => {
     // 结束
     if (v === 'ok') {
       buildLoading.value = false
+      toast.success("任务已完成!")
       taskProcess.value = {}
       return
     }
@@ -121,17 +123,27 @@ const startTask = async (id: number) => {
     taskProcess.value[status.uuid] = status.process
 
     // todo 展示进度
-    console.log(taskProcess.value)
+    // console.log(taskProcess.value)
   })
 
   await worker.initTaskFactory({
     url: configStore.serverBaseUrl,
     db: {
       type: 'neo4j',
-      config: {}
+      // todo 编辑数据库配置
+      config: {
+        url:  'neo4j://localhost',
+        database: 'neo4j'
+      } 
     }
   })
-  await worker.startTask(id)
+  
+  try {
+    await worker.startTask(id)
+  } catch (e) {
+    toast.error("任务运行错误!\n" + (e as Error))
+    throw e
+  }
 }
 
 // 选择模型后下载模型数据

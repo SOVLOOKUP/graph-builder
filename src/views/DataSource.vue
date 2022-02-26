@@ -53,8 +53,11 @@ const createItem = async (name: string) => {
     return
   }
   loadingUpload.value = true
-  await createDataSource(name, data, metaData.value)
-  loadingUpload.value = false
+  try {
+    await createDataSource(name, data, metaData.value)
+  } finally {
+    loadingUpload.value = false
+  }
   metaData.value = null
 }
 

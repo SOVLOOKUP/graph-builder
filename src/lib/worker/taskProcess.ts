@@ -44,6 +44,10 @@ class TaskFactory {
       )
     ).data.attributes.taskMeta
 
+  private makeGet =
+    (storeName: string) => async (q: IDBValidKey | IDBKeyRange) =>
+      await this.db.get(storeName, q)
+
   private newTaskProcessor =
     (
       processor:
@@ -88,21 +92,15 @@ class TaskFactory {
           (task as EdgeTask).to !== undefined
         ) {
           // edge 任务查找返回
-          const fromTx = this.db.transaction(
-            (task as EdgeTask).from.uuid,
-            'readonly',
-          )
-          const toTx = this.db.transaction(
-            (task as EdgeTask).to.uuid,
-            'readonly',
-          )
           const from = {
-            tx: fromTx,
+            get: this.makeGet((task as EdgeTask).from.uuid),
             field: (task as EdgeTask).from.field,
+            category: (task as EdgeTask).from.category,
           }
           const to = (task as EdgeTask).to && {
-            tx: toTx,
+            get: this.makeGet((task as EdgeTask).to.uuid),
             field: (task as EdgeTask).to.field,
+            category: (task as EdgeTask).to.category,
           }
           // 写入到图数据库
           res = await processor(newItem, from, to)
@@ -140,7 +138,7 @@ class TaskFactory {
     // 初始化图数据库适配器
     switch (this.params.db.type) {
       case 'neo4j':
-        this.adapter = neo4j.adapter(this.params.db.config)
+        this.adapter = neo4j.adapter(this.params.db.config as any)
         break
       default:
         throw Error(`Not supported database type ${this.params.db.type}`)

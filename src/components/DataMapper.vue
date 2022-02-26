@@ -92,6 +92,7 @@ import type {
   TagField,
   NodeTask,
   EdgeTask,
+Concept,
 } from 'src/types'
 import { ref } from 'vue'
 import { useToast } from 'vue-toastification'
@@ -162,10 +163,12 @@ const dataMapperOK = () => {
       from: {
         uuid: cell.from.id,
         field: cell.from.tag.attributes.name,
+        category: doneCells.filter(item => item.id === cell.from?.id).at(0)?.concept.attributes.name as string
       },
       to: {
         uuid: cell.to.id,
         field: cell.to.tag.attributes.name,
+        category: doneCells.filter(item => item.id === cell.to?.id).at(0)?.concept.attributes.name  as string
       },
       map: [],
     }
