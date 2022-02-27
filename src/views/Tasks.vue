@@ -130,7 +130,7 @@ const startTask = async (id: number) => {
     url: configStore.serverBaseUrl,
     db: {
       type: 'neo4j',
-      // todo 编辑数据库配置
+      // [1 todo] 编辑数据库配置
       config: {
         url:  'neo4j://localhost',
         database: 'neo4j'

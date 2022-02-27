@@ -5,7 +5,7 @@ import type {
     NodeTask,
     TaskMeta,
 } from 'src/types'
-import neo4j from '../adapter/neo4j'
+import adapters, { AdapterNames } from '../adapter'
 import Strapi from 'strapi-sdk-js'
 import { Observable, Subject } from 'threads/observable'
 import { openDB, deleteDB, IDBPDatabase } from 'idb'
@@ -15,7 +15,7 @@ let subject = new Subject()
 interface TaskFactoryParams {
   url: string
   db: {
-    type: 'neo4j'
+    type: AdapterNames
     config: object
   }
 }
@@ -135,15 +135,13 @@ class TaskFactory {
     // 初始化客户端
     this.strapi = new Strapi({ url: this.params.url })
 
-    // 初始化图数据库适配器
-    switch (this.params.db.type) {
-      case 'neo4j':
-        this.adapter = neo4j.adapter(this.params.db.config as any)
-        break
-      default:
-        throw Error(`Not supported database type ${this.params.db.type}`)
+    const adapter = adapters[this.params.db.type]?.adapter
+
+    if (adapter === undefined) {
+      throw Error(`Not supported database type ${this.params.db.type}`)
     }
 
+    this.adapter = adapter(this.params.db.config as any)
     return this
   }
 

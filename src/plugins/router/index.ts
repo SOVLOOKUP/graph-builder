@@ -10,6 +10,7 @@ const ModelBuilder = () => import('../../views/ModelBuilder.vue')
 const TagManage = () => import('../../views/TagManage.vue')
 const Concept = () => import('../../views/Concept.vue')
 const PluginCenter = () => import('../../views/PluginCenter.vue')
+const Target = () => import('../../views/Target.vue')
 
 const Auth = () => import('../../views/Auth/index.vue')
 const Signin = () => import('../../views/Auth/Signin.vue')
@@ -58,6 +59,11 @@ const routes = [
     path: '/datasource',
     name: '数据源',
     component: DataSource,
+  },
+  {
+    path: '/target',
+    name: '图数据库',
+    component: Target,
   },
   {
     path: '/tagmanager',

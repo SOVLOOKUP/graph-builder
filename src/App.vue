@@ -105,14 +105,19 @@ const modeTab: {
       icon: 'mdi-script-text-outline',
     },
     {
+      path: '/model',
+      name: '模型',
+      icon: 'mdi-electron-framework',
+    },
+    {
       path: '/datasource',
       name: '数据源',
       icon: 'mdi-database',
     },
     {
-      path: '/model',
-      name: '模型',
-      icon: 'mdi-electron-framework',
+      path: '/target',
+      name: '图数据库',
+      icon: 'fluent:target-arrow-24-filled',
     },
     {
       path: '/tasks',
