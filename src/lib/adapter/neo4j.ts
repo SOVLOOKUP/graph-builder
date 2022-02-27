@@ -42,12 +42,12 @@ const adapter: GraphDBAdapterFactory<Neo4jAdapterConfig, any, any> = (
   })
 
   return {
-    nodeProcessor: async (node: any) => {
+    nodeProcessor: async (node) => {
       const tag = node?.category?.name
       delete node['category']
       const keys = Object.keys(node)
       // 插入这个 node
-      // [2 todo] 展示字段选择, 只能是字符串(这里和mapper中需要展示)
+      // [2 todo] 概念展示字段选择, 只能是字符串(这里和mapper中需要展示)
       const cmd = `CREATE (${node[keys.at(0) as string]}:${tag} ${toString(
         node,
         keys,
@@ -58,17 +58,17 @@ const adapter: GraphDBAdapterFactory<Neo4jAdapterConfig, any, any> = (
       }
     },
 
-    edgeProcessor: async (edge: any, from, to) => {
-      // [1 todo] edge 还需要标注哪个字段对应 from 哪个字段对应 to
+    edgeProcessor: async (edge, from, to, field) => {
       const tag = edge?.category?.name
       delete edge['category']
       const keys = Object.keys(edge)
-      // [2 todo] 展示字段选择, 只能是字符串
+      // [2 todo] 概念展示字段选择, 只能是字符串
+
       const cmd = `
        MATCH (a:${from.category}),(b:${to.category})
-       WHERE a.${from.field} = ${toString(edge['拨出电话'])} AND b.${
+       WHERE a.${from.field} = ${toString(edge[field.from])} AND b.${
         to.field
-      } = ${toString(edge['拨入电话'])}
+      } = ${toString(edge[field.to])}
        CREATE (a)-[${keys.at(0) as string}:${tag} ${toString(
         edge,
         keys,

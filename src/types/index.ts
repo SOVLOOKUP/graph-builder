@@ -90,9 +90,15 @@ interface fromto {
   category: string
 }
 
+export interface EdgeFromToField {
+  from: string
+  to: string
+}
+
 export interface EdgeTask extends NodeTask {
   from: fromto
   to: fromto
+  field: EdgeFromToField
 }
 
 // 图谱构建任务
@@ -186,10 +192,11 @@ export type GraphDBAdapterFactory<ConfigType, NodeType, EdgeType> = (
 ) => GraphDBAdapter<NodeType, EdgeType>
 
 export interface GraphDBAdapter<NodeType, EdgeType> {
-  nodeProcessor: (node: object) => Promise<Result<NodeType>>
+  nodeProcessor: (node: any) => Promise<Result<NodeType>>
   edgeProcessor: (
-    edge: object,
+    edge: any,
     from: FromTo,
     to: FromTo,
+    field: EdgeFromToField,
   ) => Promise<Result<EdgeType>>
 }

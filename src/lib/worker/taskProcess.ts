@@ -103,7 +103,7 @@ class TaskFactory {
             category: (task as EdgeTask).to.category,
           }
           // 写入到图数据库
-          res = await processor(newItem, from, to)
+          res = await processor(newItem, from, to, (task as EdgeTask).field)
         } else {
           // 写入到图数据库
           res = await (processor as typeof this.adapter['nodeProcessor'])(

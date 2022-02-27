@@ -142,6 +142,7 @@ const startTask = async (id: number) => {
     await worker.startTask(id)
   } catch (e) {
     toast.error("任务运行错误!\n" + (e as Error))
+    buildLoading.value = false
     throw e
   }
 }

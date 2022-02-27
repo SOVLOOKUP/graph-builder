@@ -5,44 +5,59 @@
         <div class="q-pb-lg" v-for="cell in cells">
           <q-card :class="cells?.indexOf(cell) === 0 ? 'shadow-10' : ''">
             <q-card-section horizontal class="row">
-              <q-img height="130px" src="/favicon.svg">
-                <div class="absolute-bottom text-body text-center">
-                  {{ cell.concept.attributes.name }}
-                </div>
+              <!-- todo 概念增加一个图标字段 -->
+              <q-img src="/favicon.svg">
+                <div
+                  class="absolute-bottom text-body text-center"
+                >{{ cell.concept.attributes.name }}</div>
               </q-img>
               <div class="q-ma-md col-6">
                 <q-chip
-                  :color="`${
-                    cell.from !== undefined ? 'secondary' : 'primary'
+                  :color="`${cell.from !== undefined ? 'secondary' : 'primary'
                   } text-white`"
-                  >{{ cell.from !== undefined ? '关系' : '实体' }}</q-chip
-                >
+                >{{ cell.from !== undefined ? '关系' : '实体' }}</q-chip>
                 <q-chip>{{ cell.concept.attributes.tag.length }}个字段</q-chip>
-                <q-select
-                  clearable
-                  v-model="dataCollection"
-                  label="数据集"
-                  v-show="cells?.indexOf(cell) === 0"
-                  :options="dataCollectionOptions"
-                  :option-label="(opt: DataCollection) => opt.attributes.name"
-                >
-                  <template v-slot:no-option>
-                    <q-item>
-                      <q-item-section class="text-grey"
-                        >无可用数据集</q-item-section
-                      >
-                    </q-item>
-                  </template>
-                  <template v-slot:option="{ itemProps, opt }">
-                    <q-item v-bind="itemProps">
-                      <q-item-section>
-                        <q-item-label
-                          v-html="(opt as DataCollection).attributes.name"
-                        />
-                      </q-item-section>
-                    </q-item>
-                  </template>
-                </q-select>
+                <!-- 只在第一个显示表单 -->
+                <div v-show="cells?.indexOf(cell) === 0">
+                  <q-select
+                    clearable
+                    v-model="dataCollection"
+                    label="数据集"
+                    v-show="cell.concept.attributes.tag.length !== 0"
+                    :options="dataCollectionOptions"
+                    :option-label="(opt: DataCollection) => opt.attributes.name"
+                  >
+                    <template v-slot:no-option>
+                      <q-item>
+                        <q-item-section class="text-grey">无可用数据集</q-item-section>
+                      </q-item>
+                    </template>
+                    <template v-slot:option="{ itemProps, opt }">
+                      <q-item v-bind="itemProps">
+                        <q-item-section>
+                          <q-item-label v-html="(opt as DataCollection).attributes.name" />
+                        </q-item-section>
+                      </q-item>
+                    </template>
+                  </q-select>
+                  <!-- 是边才需要填写这些字段 -->
+                  <div v-if="cell.from !== undefined">
+                    <q-select
+                      clearable
+                      v-model="fromtoField.from"
+                      label="from 对应字段"
+                      :options="cell.concept.attributes.tag"
+                      :option-label="(opt) => opt.gi_tag?.data.attributes.name"
+                    />
+                    <q-select
+                      clearable
+                      v-model="fromtoField.to"
+                      label="to 对应字段"
+                      :options="cell.concept.attributes.tag"
+                      :option-label="(opt) => opt.gi_tag?.data.attributes.name"
+                    />
+                  </div>
+                </div>
               </div>
             </q-card-section>
           </q-card>
@@ -50,14 +65,14 @@
       </div>
       <q-space />
       <div class="col-7">
-        <div v-if="dataCollection === null">请选择数据集</div>
+        <div v-if="!showForm(dataCollection !== null, cells?.at(0)?.from !== undefined)">请填写左侧字段</div>
         <div v-else>
           <q-select
             class="q-pb-md"
             v-for="tag in getMapTags(cells?.at(0))"
             clearable
             v-model="dataMap[(tag as string)]"
-            :options="dataCollection.attributes.metadata"
+            :options="dataCollection?.attributes.metadata"
             :label="tag"
             :option-label="(opt: MetaData) => opt.name"
           >
@@ -92,7 +107,7 @@ import type {
   TagField,
   NodeTask,
   EdgeTask,
-Concept,
+  GiTag
 } from 'src/types'
 import { ref } from 'vue'
 import { useToast } from 'vue-toastification'
@@ -102,7 +117,13 @@ const dataCollection = ref<DataCollection | null>(null)
 const dataMap = ref<{
   [to: string]: MetaData
 }>({})
-
+const fromtoField = ref<{
+  from: GiTag | null
+  to: GiTag | null
+}>({
+  from: null,
+  to: null
+})
 const doneCells: CellData[] = []
 const taskMeta: TaskMeta = {
   // 所有的概念类
@@ -121,14 +142,30 @@ const emits = defineEmits<{
   (e: 'done', taskMeta: TaskMeta): void
 }>()
 
+const showForm = (isDataCollectionSelected: boolean, isEdge: boolean) => {
+  // 是边则需要把 from, to 映射都填满, 并且如果没有 tag 不需要进一步填写映射, 就不需要填写数据集
+  if (isEdge && fromtoField.value.from !== null && fromtoField.value.to !== null && (props.cells?.at(0)?.concept.attributes.tag.length !== 0 ? isDataCollectionSelected : true)) {
+    return true
+  }
+
+  // 是节点填写数据集即可
+  if (!isEdge) {
+    return isDataCollectionSelected
+  }
+
+  return false
+}
+
+// 将 tag 转换为其名称
 const getMapTags = (cells?: CellData) =>
   cells === undefined
     ? []
     : cells.concept.attributes.tag.map(
-        (t) => t.gi_tag.data?.attributes.name as string,
-      )
+      (t) => t.gi_tag.data?.attributes.name as string,
+    )
 
 const dataMapperOK = () => {
+  // 处理第一个节点
   const cell = props.cells?.at(0) as CellData
   const fieldNumber = Object.keys(dataMap.value).length
   const category = cell.concept.attributes.name
@@ -168,7 +205,11 @@ const dataMapperOK = () => {
       to: {
         uuid: cell.to.id,
         field: cell.to.tag.attributes.name,
-        category: doneCells.find(item => item.id === cell.from?.id)?.concept.attributes.name  as string
+        category: doneCells.find(item => item.id === cell.from?.id)?.concept.attributes.name as string
+      },
+      field: {
+        from: fromtoField.value.from?.gi_tag.data?.attributes.name as string,
+        to: fromtoField.value.to?.gi_tag.data?.attributes.name as string
       },
       map: [],
     }
@@ -217,14 +258,18 @@ const dataMapperOK = () => {
   dataMap.value = {}
 
   if (props.cells !== null) {
+    fromtoField.value = {
+      from: null,
+      to: null
+    }
     // 如果全部完毕则调用 done
     if (props.cells.length === 0) {
       emits('done', taskMeta)
     }
 
-    if (props.cells.at(0)?.concept.attributes.tag.length === 0) {
-      dataMapperOK()
-    }
+    // if (props.cells.at(0)?.concept.attributes.tag.length === 0) {
+    //   dataMapperOK()
+    // }
   }
 }
 </script>
