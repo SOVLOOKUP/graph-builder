@@ -100,9 +100,7 @@ const updateItem = async ({
   value: () => Promise<any> | any
   editable: boolean
 }) => {
-  const itemIndex = listItems.value.indexOf(
-    listItems.value.filter((item: { name: string }) => item.name === name)[0]
-  )
+  const itemIndex = listItems.value.findIndex((item: { name: string }) => item.name === name)
 
   let itemValue: any = value
 

@@ -163,12 +163,12 @@ const dataMapperOK = () => {
       from: {
         uuid: cell.from.id,
         field: cell.from.tag.attributes.name,
-        category: doneCells.filter(item => item.id === cell.from?.id).at(0)?.concept.attributes.name as string
+        category: doneCells.find(item => item.id === cell.from?.id)?.concept.attributes.name as string
       },
       to: {
         uuid: cell.to.id,
         field: cell.to.tag.attributes.name,
-        category: doneCells.filter(item => item.id === cell.to?.id).at(0)?.concept.attributes.name  as string
+        category: doneCells.find(item => item.id === cell.from?.id)?.concept.attributes.name  as string
       },
       map: [],
     }
@@ -183,7 +183,7 @@ const dataMapperOK = () => {
   }
 
   // 添加概念类
-  if (taskMeta.categories.filter((c) => c.name === category).length === 0) {
+  if (!taskMeta.categories.some((c) => c.name === category)) {
     taskMeta.categories.push({
       name: category,
       jsonldurl: cell.concept.attributes.jsonldurl,
