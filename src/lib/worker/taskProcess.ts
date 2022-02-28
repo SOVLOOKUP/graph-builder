@@ -16,7 +16,7 @@ interface TaskFactoryParams {
   url: string
   db: {
     type: AdapterNames
-    config: object
+    config: string
   }
 }
 
@@ -141,7 +141,7 @@ class TaskFactory {
       throw Error(`Not supported database type ${this.params.db.type}`)
     }
 
-    this.adapter = adapter(this.params.db.config as any)
+    this.adapter = adapter(JSON.parse(this.params.db.config))
     return this
   }
 

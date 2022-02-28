@@ -5,7 +5,7 @@
         <div class="q-pb-lg" v-for="cell in cells">
           <q-card :class="cells?.indexOf(cell) === 0 ? 'shadow-10' : ''">
             <q-card-section horizontal class="row">
-              <!-- todo 概念增加一个图标字段 -->
+              <!-- [2 todo] 概念增加一个图标字段 -->
               <q-img src="/favicon.svg">
                 <div
                   class="absolute-bottom text-body text-center"

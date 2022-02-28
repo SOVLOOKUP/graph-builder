@@ -17,7 +17,6 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, withDefaults } from 'vue'
 import { Icon } from '@iconify/vue'
 
 withDefaults(

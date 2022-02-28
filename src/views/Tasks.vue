@@ -57,9 +57,39 @@
     </q-select>
 
     <template #edit="props">
-      <q-btn flat @click="startTask(props.item.id)" label="构建图谱" :loading="buildLoading" />
+      <q-btn flat @click="dbConfig = null; showConfigSelectDialog = true; selectedTask = props.item.id" label="构建图谱" :loading="buildLoading" />
     </template>
   </Table>
+  <!-- 询问目标图数据库 -->
+  <Dialog 
+    v-model="showConfigSelectDialog"
+    title="选择目标图数据库"
+    :ok="startTask"
+  >
+    <q-select
+      v-model="dbConfig"
+      clearable
+      :options="graphDBConfigOptions"
+      label="目标图数据库"
+      :option-label="(opt) => opt?.attributes.name"
+    >
+      <template v-slot:option="{ itemProps, opt }">
+        <q-item v-bind="itemProps">
+          <q-item-section>
+            <q-item-label v-html="opt.attributes.name" />
+          </q-item-section>
+        </q-item>
+      </template>
+
+      <template v-slot:no-option>
+        <q-item>
+          <q-item-section class="text-grey">无图数据库可用</q-item-section>
+        </q-item>
+      </template>
+    </q-select>
+
+  </Dialog>
+    
 </template>
 
 <script lang="ts" setup>
@@ -67,14 +97,16 @@ import { defineAsyncComponent, ref } from 'vue'
 import { listTasks, listModels, getModelJson, deleteTask, createTask } from '../api'
 import { useToast } from 'vue-toastification'
 import type { CellData, GiTag, TaskMeta } from 'src/types'
-import { listDataSources } from '../api'
+import { listDataSources, listGraphConfigs } from '../api'
 import worker from '../lib/worker'
 import { useConfigStore } from '../store'
+import Dialog from '../components/Dialog.vue'
 
 const Table = defineAsyncComponent(() => import('@/components/Table.vue'))
 const DataMapper = defineAsyncComponent(() => import('@/components/DataMapper.vue'))
 
 const dataCollectionOptions = (await (await listDataSources()).json()).data
+const graphDBConfigOptions = (await (await listGraphConfigs()).json()).data
 const configStore = useConfigStore()
 const toast = useToast()
 const options = (await (await listModels()).json()).data
@@ -87,6 +119,10 @@ const buildLoading = ref(false)
 const taskProcess = ref<{
   [uuid: string]: number
 }>({})
+const dbConfig = ref<any | null>(null)
+const showConfigSelectDialog = ref<boolean>(false)
+const selectedTask = ref<number | null>(null)
+
 let task: TaskMeta | null = null
 
 const getItems = async () => (await (await listTasks()).json()).data
@@ -100,10 +136,15 @@ const createItem = async (name: string) => {
   newTaskDescription.value = ''
 }
 
-const startTask = async (id: number) => {
+const startTask = async () => {
+  if (dbConfig.value === null || selectedTask.value === null) {
+    toast.info('请选择目标图数据库')
+    return
+  }
   worker.values().subscribe((v) => {
     // 开始
     if (Array.isArray(v)) {
+      showConfigSelectDialog.value = false
       toast.info(`任务正在处理, 请勿刷新页面!`)
       buildLoading.value = true
       for (const i of v) {
@@ -122,24 +163,20 @@ const startTask = async (id: number) => {
     const status = v as unknown as { uuid: string, process: number }
     taskProcess.value[status.uuid] = status.process
 
-    // todo 展示进度
+    // [0 todo] 展示进度
     // console.log(taskProcess.value)
   })
-
+  
   await worker.initTaskFactory({
     url: configStore.serverBaseUrl,
     db: {
-      type: 'neo4j',
-      // [1 todo] 编辑数据库配置
-      config: {
-        url:  'neo4j://localhost',
-        database: 'neo4j'
-      } 
+      type: dbConfig.value.attributes.type,
+      config: JSON.stringify(dbConfig.value.attributes.config)
     }
   })
   
   try {
-    await worker.startTask(id)
+    await worker.startTask(selectedTask.value)
   } catch (e) {
     toast.error("任务运行错误!\n" + (e as Error))
     buildLoading.value = false

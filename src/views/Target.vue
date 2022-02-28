@@ -5,13 +5,18 @@
         :getItems="getItems"
         :deleteItem="deleteGraphConfig"
         :createItem="createItem"
-        @clearContent="newDBType = null;newConfig = null"
+        @clearContent="newDBType = null; newConfig = null"
     >
         <q-select clearable v-model="newDBType" label="数据库类型" :options="AdapterTypes" />
-        <div v-if="newDBType !== null">
-        <!-- todo 根据schema生成表单 -->
-        {{adapters[newDBType as string]['configSchema']}}
-        </div>
+        <q-card class="q-pa-md q-mt-md" v-if="newDBType !== null">
+            <VueForm
+                v-model="newConfig"
+                :schema="adapters[newDBType as string]['configSchema']"
+                :form-footer="{
+                    show: false
+                }"
+            />
+        </q-card>
     </Table>
 </template>
 
@@ -24,8 +29,12 @@ import {
     deleteGraphConfig,
     listGraphConfigs
 } from '../api'
-import adapters, { AdapterTypes } from '../lib/adapter'
+
+const _adapter = await import('../lib/adapter')
+const adapters = _adapter.default
+const AdapterTypes = _adapter.AdapterTypes
 const Table = defineAsyncComponent(() => import('@/components/Table.vue'))
+const VueForm = defineAsyncComponent(() => import('@lljj/vue3-form-element'))
 const toast = useToast()
 
 const newDBType = ref<AdapterNames | null>(null)

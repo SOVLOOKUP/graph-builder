@@ -25,8 +25,9 @@ const toString = (ob: object | string, defaultKeys?: string[]) => {
 const adapter: GraphDBAdapterFactory<Neo4jAdapterConfig, any, any> = (
   config,
 ) => {
-  const auth =
-    config.auth && neo4j.auth.basic(config.auth.username, config.auth.password)
+  let auth
+  config?.auth?.password &&
+    (auth = neo4j.auth.basic(config.auth.username, config.auth.password))
   const driver = neo4j.driver(config.url, auth)
   const session = driver.session({
     database: config.database,
@@ -39,7 +40,7 @@ const adapter: GraphDBAdapterFactory<Neo4jAdapterConfig, any, any> = (
       delete node['category']
       const keys = Object.keys(node)
       // 插入这个 node
-      // [2 todo] 概念展示字段选择, 只能是字符串(这里和mapper中需要展示)
+      // [1 todo] 概念展示字段选择, 只能是字符串(这里和mapper中需要展示)
       const cmd = `CREATE (${node[keys.at(0) as string]}:${tag} ${toString(
         node,
         keys,
@@ -54,7 +55,7 @@ const adapter: GraphDBAdapterFactory<Neo4jAdapterConfig, any, any> = (
       const tag = edge?.category?.name
       delete edge['category']
       const keys = Object.keys(edge)
-      // [2 todo] 概念展示字段选择, 只能是字符串
+      // [1 todo] 概念展示字段选择, 只能是字符串
 
       const cmd = `
        MATCH (a:${from.category}),(b:${to.category})
@@ -77,6 +78,14 @@ const adapter: GraphDBAdapterFactory<Neo4jAdapterConfig, any, any> = (
 export default {
   configSchema: {
     properties: {
+      url: {
+        type: 'string',
+        title: '数据库URL',
+      },
+      database: {
+        type: 'string',
+        title: '数据库名称',
+      },
       auth: {
         properties: {
           password: {
@@ -89,18 +98,9 @@ export default {
           },
         },
         type: 'object',
-        required: ['password', 'username'],
-        title: '数据库配置',
-      },
-      database: {
-        type: 'string',
-        title: '数据库类型',
-      },
-      url: {
-        type: 'string',
-        title: '数据库URL',
       },
     },
+    title: 'Neo4j 数据库配置',
     type: 'object',
     required: ['database', 'url'],
   },

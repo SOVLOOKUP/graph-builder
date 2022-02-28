@@ -12,14 +12,20 @@ import quasarIconSet from 'quasar/icon-set/svg-material-icons'
 import 'quasar/src/css/index.sass'
 import posthog from 'posthog-js'
 
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
+
 const MainApp = createApp(App)
 const toast = useToast()
+
+MainApp.config.unwrapInjectedRef = true
 
 MainApp.use(Quasar, {
   lang: quasarLang,
   iconSet: quasarIconSet,
   plugins: {}, // import Quasar plugins and add here
 })
+MainApp.use(ElementPlus)
 MainApp.use(pinia)
 MainApp.use(router)
 MainApp.use(Toast, {
