@@ -205,7 +205,7 @@ const dataMapperOK = () => {
       to: {
         uuid: cell.to.id,
         field: cell.to.tag.attributes.name,
-        category: doneCells.find(item => item.id === cell.from?.id)?.concept.attributes.name as string
+        category: doneCells.find(item => item.id === cell.to?.id)?.concept.attributes.name as string
       },
       field: {
         from: fromtoField.value.from?.gi_tag.data?.attributes.name as string,
