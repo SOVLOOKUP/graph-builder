@@ -1,118 +1,155 @@
 <template>
-  <!-- <v-dialog v-model="dialog" persistent>
-    <v-card style="transform: translate(0, -50px)">
-      <v-card-title>
-        <span>修改组织域名空间</span>
-      </v-card-title>
-      <v-card-text>
-        <v-container>
-          <v-row>
-            <v-col cols="12">
-              <v-text-field
-                label="组织域名"
-                type="text"
-                v-model="newBackendDomain"
-                variant="outlined"
-                hide-details="auto"
-                @keydown="
-                  (e: KeyboardEvent) => {
-                    if (e.key === 'Enter') {
-                      editBackendDomain()
-                    }
-                  }
-                "
-              />
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn text @click="dialog = false"> 取消 </v-btn>
-        <v-btn color="primary" text @click="editBackendDomain"> 确认 </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog> -->
-
   <Card :loading="loading">
-    <v-divider />
-    <v-container class="mb-4">
-      <v-row class="mt-2">
-        <v-col><div class="text-subtitle-1">用户名</div></v-col>
-        <v-col>
-          <div>{{ userInfo?.username }}</div>
-        </v-col>
-
-        <v-divider class="mx-4"></v-divider>
-      </v-row>
-
-      <v-row class="mt-2">
-        <v-col><div class="text-subtitle-1">邮箱</div></v-col>
-        <v-col class="d-flex align-center">
-          <v-row>
-            <span>
-              {{ userInfo?.email }}
-            </span>
-            <v-icon
-              :icon="
-                userInfo?.confirmed ? 'mdi-shield-check' : 'mdi-shield-alert'
-              "
+    <q-list bordered class="q-my-md">
+      <q-item clickable v-ripple>
+        <q-item-section>模式</q-item-section>
+        <q-item-section>
+          <span>
+            <q-btn-toggle
+              v-model="configStore.mode"
+              toggle-color="primary"
+              :options="[
+                { label: '构建', value: 'build' },
+                { label: '应用', value: 'app' },
+              ]"
+              @update:model-value="(e: ModeType) => (configStore.mode = e)"
             />
-          </v-row>
-        </v-col>
+          </span>
+        </q-item-section>
+      </q-item>
 
-        <v-divider class="mx-4"></v-divider>
-      </v-row>
+      <q-item clickable v-ripple v-for="item in listItems">
+        <q-item-section>{{ item.name }}</q-item-section>
+        <q-item-section style="white-space: nowrap">
+          {{ item.value }}
+          <q-popup-edit
+            v-if="item.editable"
+            v-model="item.value"
+            v-slot="scope"
+            @change="(e: Event) => editItem(e, item.name)"
+          >
+            <q-input v-model="scope.value" dense autofocus counter />
+          </q-popup-edit>
+        </q-item-section>
+      </q-item>
+    </q-list>
 
-      <v-row class="mt-2">
-        <v-col><div class="text-subtitle-1">图数据库地址</div></v-col>
-        <v-col class="d-flex align-center">
-          <v-row>
-            {{ store.state.user?.dbUrl }}
-          </v-row>
-          <!-- <v-icon
-            @click="
-              () => {
-                dialog = true
-                newBackendDomain = ''
-              }
-            "
-            icon="mdi-circle-edit-outline "
-          /> -->
-        </v-col>
-      </v-row>
-    </v-container>
-    <v-divider />
-    <v-card-actions class="d-flex justify-end">
-      <v-btn
-        flat
-        @click="
-          () => {
-            store.commit('signout')
-            $router.push('/auth/signin')
-          }
-        "
-      >
-        退出登录
-      </v-btn>
-    </v-card-actions>
+    <q-card-actions align="right">
+      <q-btn flat @click="signout">退出登录</q-btn>
+    </q-card-actions>
   </Card>
+
+  <div class="setting">
+    <q-btn flat round>
+      <q-tooltip>
+        <q-img height="500px" width="400px" src="https://img.400511.net/2022/02/25/SsAVF2Jp.jpg" />
+      </q-tooltip>
+      <Icon icon="topcoat:question" height="30" color="grey"></Icon>
+    </q-btn>
+    <q-btn flat round @click="openFeedBack">
+      <q-tooltip>交流论坛</q-tooltip>
+      <Icon icon="topcoat:feedback" height="30" color="grey"></Icon>
+    </q-btn>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import Card from '@/components/Card.vue'
-import { useStore } from '../store'
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useConfigStore, useUserStore } from '../store'
+import type { ModeType } from 'src/types'
+import { defineAsyncComponent } from 'vue'
+const Card = defineAsyncComponent(() => import('@/components/Card.vue'))
 
-const dialog = ref(false)
 const loading = ref(false)
-const store = useStore()
-const userInfo = store.state.user?.user
-// const newBackendDomain = ref('')
+const configStore = useConfigStore()
+const userStore = useUserStore()
+const userInfo = userStore.user
+const router = useRouter()
 
-// const editBackendDomain = () => {
-//   dialog.value = false
-//   if (newBackendDomain.value !== '')
-//     store.commit('editBackendDomain', newBackendDomain.value)
-// }
+// 动态config
+const config = [
+  {
+    name: '邮箱',
+    value: async () =>
+      userInfo?.email + ' ' + (userInfo?.confirmed === true ? '✅' : '❔'),
+    editable: false,
+  },
+]
+
+const listItems = ref([
+  {
+    name: '用户名',
+    value: userInfo?.username,
+    editable: false,
+  },
+])
+
+const signout = async () => {
+  userStore.signout()
+  await router.push('/auth/signin')
+}
+
+// 更新配置项
+const updateItem = async ({
+  name,
+  value,
+  editable,
+}: {
+  name: string
+  value: () => Promise<any> | any
+  editable: boolean
+}) => {
+  const itemIndex = listItems.value.findIndex((item: { name: string }) => item.name === name)
+
+  let itemValue: any = value
+
+  if (typeof value === 'function') {
+    itemValue = await value()
+  }
+
+  if (itemIndex === -1) {
+    listItems.value.push({
+      name,
+      value: itemValue,
+      editable,
+    })
+  } else {
+    listItems.value[itemIndex].value = itemValue
+  }
+}
+
+// 根据名称指定更新或全部更新配置项
+const refreshConfig = async (itemName?: string) => {
+  loading.value = true
+  if (itemName !== undefined) {
+    const item = config.find((item) => item.name === itemName)
+    if (item !== undefined) {
+      await updateItem(item)
+    }
+  } else {
+    for (const item of config) {
+      await updateItem(item)
+    }
+  }
+  loading.value = false
+}
+
+const editItem = async (p: Event, itemName: string) => {
+  // await updateDBAddress((p?.target as HTMLInputElement).value)
+  await refreshConfig(itemName)
+}
+
+await refreshConfig()
+
+
+const openFeedBack = () => window.open('https://support.qq.com/products/381751/')
 </script>
+
+<style scoped>
+.setting {
+  position: fixed;
+  right: 10px;
+  bottom: 10px;
+}
+</style>

@@ -7,12 +7,14 @@
     "strict": true,
     "jsx": "preserve",
     "sourceMap": true,
+    "allowJs":true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "lib": ["esnext", "dom"],
     "importHelpers": true,
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
+    "suppressImplicitAnyIndexErrors": true,
     "baseUrl": "."
   },
   "paths": {
@@ -22,7 +24,6 @@
     "src/**/*.ts",
     "src/**/*.d.ts",
     "src/**/*.tsx",
-    "src/**/*.vue",
-    "src/index.ts"
+    "src/**/*.vue"
   ]
 }

@@ -1,126 +1,116 @@
 <template>
-  <v-dialog v-model="dialog" persistent>
-    <v-card style="transform: translate(0, -100px)">
-      <v-card-title>
-        <span>新增数据源</span>
-      </v-card-title>
-      <v-card-text>
-        <v-container>
-          <v-row>
-            <v-col cols="12">
-              <v-text-field
-                label="数据源名称"
-                type="text"
-                v-model="newDataSourceName"
-                variant="outlined"
-                hide-details="auto"
-              />
-            </v-col>
-            <span>数据类型</span>
-            <v-col cols="12">
-              <v-radio-group v-model="newDSType">
-                <v-radio
-                  v-for="n in DSType"
-                  :key="n"
-                  :label="n"
-                  :value="n"
-                ></v-radio>
-              </v-radio-group>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn text @click="dialog = false"> 取消 </v-btn>
-        <v-btn color="primary" text @click="addDataSource"> 确认 </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+  <Table
+    itemName="数据集"
+    :columns="columns"
+    :getItems="getItems"
+    :deleteItem="deleteDataSource"
+    :createItem="createItem"
+    @clearContent="file = null; metaData = null"
+  >
+    <q-inner-loading
+      :showing="loadingUpload"
+      label="上传数据中..."
+      label-class="text-teal"
+      label-style="font-size: 1.1em"
+    />
 
-  <v-container class="mt-6">
-    <v-btn flat @click="addNewDataSource">
-      添加数据源<v-icon icon="mdi-plus" />
-    </v-btn>
-    <v-table>
-      <thead>
-        <tr>
-          <th class="text-center">
-            <h2>数据源名称</h2>
-          </th>
-          <th class="text-center">
-            <h2>类型</h2>
-          </th>
-          <th class="text-center">
-            <h2>操作</h2>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="item in dataSources" :key="item.id">
-          <td class="text-center">
-            <span>
-              {{ item.attributes.name }}
-            </span>
-          </td>
-          <td class="text-center">
-            <span>
-              {{ item.attributes.type }}
-            </span>
-          </td>
-          <td class="text-center" width="300px">
-            <v-container class="d-flex justify-space-around">
-              <v-btn flat @click="openDataSourceItem(item.id)">
-                编辑<v-icon icon="mdi-open-in-app" />
-              </v-btn>
-              <v-btn flat @click="deleteDS(item.id)">
-                删除<v-icon icon="mdi-delete" />
-              </v-btn>
-            </v-container>
-          </td>
-        </tr>
-      </tbody>
-    </v-table>
-  </v-container>
+    <q-file
+      v-model="file"
+      label="数据文件(xlsx)"
+      clearable
+      accept=".xlsx"
+      counter
+      variant="outlined"
+      :loading="loading"
+      @update:model-value="readFile"
+      @clear="metaData = null"
+    />
+
+    <div v-show="metaData !== null">
+      字段信息:
+      <q-item v-for="item in metaData" style="text-align: center;">
+        <q-item-section>{{ item.name }}</q-item-section>
+        <q-item-section style="white-space: nowrap">{{ item.type }}</q-item-section>
+      </q-item>
+    </div>
+  </Table>
 </template>
 
 <script lang="ts" setup>
-import { onBeforeMount, ref } from 'vue'
+import { defineAsyncComponent } from 'vue'
 import { listDataSources, deleteDataSource, createDataSource } from '../api'
-import config from '../config'
+import { ref } from 'vue'
+import { useToast } from 'vue-toastification'
+import * as xlsx from 'xlsx'
+import type { DataType, MetaData } from 'src/types'
+const Table = defineAsyncComponent(() => import('@/components/Table.vue'))
+const toast = useToast()
+const getItems = async () => (await (await listDataSources()).json()).data
 
-const refresh = async () => {
-  dataSources.value = (await (await listDataSources()).json()).data
+const createItem = async (name: string) => {
+  if (metaData.value === null) {
+    toast.info("请上传数据文件")
+    return
+  }
+  loadingUpload.value = true
+  try {
+    await createDataSource(name, data, metaData.value)
+  } finally {
+    loadingUpload.value = false
+  }
+  metaData.value = null
 }
-onBeforeMount(refresh)
 
-const DSType = ['raw', 'nodes', 'edges']
-const newDataSourceName = ref('')
-const newDSType = ref('')
-const dialog = ref(false)
-const dataSources = ref()
+let data: object[] = []
+const file = ref<File | null>(null)
+const metaData = ref<MetaData[] | null>(null)
+const loading = ref(false)
+const loadingUpload = ref(false)
+// const leftDrawerOpen = ref(true)
 
-const addNewDataSource = async () => {
-  newDataSourceName.value = ''
-  dialog.value = true
-}
-
-const addDataSource = async () => {
-  dialog.value = false
-  if (newDataSourceName.value !== '' && newDSType.value !== '') {
-    await createDataSource(newDataSourceName.value, newDSType.value)
-    await refresh()
+const readFile = async () => {
+  if (file.value !== null) {
+    // 开始读取
+    loading.value = true
+    const f = xlsx.read(await file.value.arrayBuffer())
+    data = xlsx.utils.sheet_to_json(f.Sheets[f.SheetNames[0]])
+    const colNames = Object.keys(data[0])
+    const meta: MetaData[] = []
+    colNames.forEach(name => {
+      meta.push({
+        name,
+        type: typeof data[0][name] as DataType
+      })
+    })
+    metaData.value = meta
+    // 结束读取
+    loading.value = false
   }
 }
 
-const deleteDS = async (id: number) => {
-  await deleteDataSource(id)
-  await refresh()
-}
-
-const openDataSourceItem = async (id: number) => {
-  window.open(
-    `${config.serverBaseUrl}/admin/content-manager/collectionType/api::gi-data-source.gi-data-source/${id}`
-  )
-}
+const columns = [
+  {
+    align: 'center',
+    name: 'id',
+    label: '数据集 ID',
+    field: 'id',
+  },
+  {
+    align: 'center',
+    name: 'name',
+    label: '数据集名称',
+    field: (item: any) => item.attributes.name,
+  },
+  {
+    align: 'center',
+    name: 'metadata',
+    label: '数据字段',
+    field: (item: any) => item.attributes.metadata,
+  },
+  {
+    align: 'center',
+    name: 'action',
+    label: '操作',
+  },
+]
 </script>

@@ -1,69 +1,20 @@
-import { AuthedKy } from '../base'
-import config from '../../config'
+import API from '../base'
+// import { useUserStore } from '../../store'
 
-const api = AuthedKy.extend({
-  prefixUrl: `${config.serverBaseUrl}/api/`,
-})
-
-const listTags = async () => await api.get('gi-tags?fields=name,type')
-const listDataSources = async () =>
-  await api.get('gi-data-sources?fields=name,type')
-const listConcepts = async () => await api.get('gi-concepts?fields=name')
-const listTasks = async () => await api.get('gi-tasks?fields=name,status')
-const listModels = async () => await api.get('gi-models?fields=name')
-
-const getModelJson = async (id: string) =>
-  await api.get(`gi-models/${id}?fields=data`)
-
-const createConcept = async (name: string, tags: number[]) =>
-  await api.post(`gi-concepts`, {
-    json: { data: { name, tag: tags.map((tag) => ({ tagid: tag })) } },
-  })
-const createModel = async (name: string) =>
-  await api.post(`gi-models`, {
-    json: { data: { name, data: {} } },
-  })
-
-const createTag = async (name: string, type: string) =>
-  await api.post(`gi-tags`, {
-    json: { data: { name, type } },
-  })
-
-const createDataSource = async (name: string, type: string) =>
-  await api.post(`gi-data-sources`, {
-    json: { data: { name, type } },
-  })
-
-const removeConcepts = async (id: number) =>
-  await api.delete(`gi-concepts/${id}`)
-const deleteModel = async (id: number) => await api.delete(`gi-models/${id}`)
-const deleteTag = async (id: number) => await api.delete(`gi-tags/${id}`)
-const deleteDataSource = async (id: number) =>
-  await api.delete(`gi-data-sources/${id}`)
-
-const updateModelJson = async (id: string, json: object) =>
-  await api.put(`gi-models/${id}`, {
-    json: {
-      data: {
-        data: json,
-      },
+const AuthedAPI = () => {
+  // const userStore = useUserStore()
+  return API().extend({
+    headers: {
+      // Authorization: `Bearer ${userStore.jwt}`,
     },
   })
-
-export {
-  listTags,
-  listDataSources,
-  listTasks,
-  listModels,
-  deleteModel,
-  createModel,
-  updateModelJson,
-  getModelJson,
-  listConcepts,
-  removeConcepts,
-  createConcept,
-  deleteTag,
-  createTag,
-  deleteDataSource,
-  createDataSource,
 }
+
+export default AuthedAPI
+
+export * from './tag'
+export * from './concept'
+export * from './datasource'
+export * from './model'
+export * from './task'
+export * from './graphdbconfig'

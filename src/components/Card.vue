@@ -1,38 +1,27 @@
 <template>
-  <v-container class="auth-card">
-    <v-card class="mx-auto" min-width="450" elevation="3">
-      <v-progress-linear
-        indeterminate
-        absolute
-        v-show="loading"
-        color="#673AB7"
-      />
-
-      <!-- logo -->
-      <div class="pa-10">
-        <div class="text-center mb-4">
-          <span class="text-h6 text--secondary">
-            <img
-              :src="config.logoURL"
-              alt="GraphIntelligence"
-              width="24"
-              style="vertical-align: middle"
-              class="mr-1"
-            />
+  <div class="c">
+    <div class="out-card">
+      <q-card class="auth-card">
+        <transition name="fade">
+          <q-linear-progress indeterminate v-show="loading" />
+        </transition>
+        <div class="q-pa-xl">
+          <q-toolbar-title class="q-py-lg">
+            <q-avatar>
+              <Icon icon="logos:graphene" width="30" />
+            </q-avatar>
             <span class="font-family-body">GraphIntelligence</span>
-          </span>
-        </div>
+          </q-toolbar-title>
 
-        <!-- form -->
-        <slot />
-      </div>
-    </v-card>
-  </v-container>
+          <!-- form -->
+          <slot />
+        </div>
+      </q-card>
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import config from '../config'
-
 withDefaults(
   defineProps<{
     loading?: boolean
@@ -43,10 +32,35 @@ withDefaults(
 )
 </script>
 
-<style lang="scss">
-.auth-card {
-  height: 100%;
+<style lang="scss" scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.c {
   display: flex;
+  justify-content: center;
   align-items: center;
+
+  .out-card {
+    width: 400px;
+    margin: auto;
+    text-align: center;
+    padding: auto;
+    vertical-align: middle;
+    left: 0;
+    right: 0;
+    display: flex;
+
+    .auth-card {
+      width: 100%;
+    }
+  }
 }
 </style>

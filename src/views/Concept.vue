@@ -1,114 +1,130 @@
 <template>
-  <v-dialog v-model="dialog" persistent>
-    <v-card style="transform: translate(0, -50px)">
-      <v-card-title>
-        <span>新增概念</span>
-      </v-card-title>
-      <v-card-text>
-        <v-container>
-          <v-row>
-            <v-col cols="12">
-              <v-text-field
-                label="概念名称"
-                type="text"
-                v-model="newConceptName"
-                variant="outlined"
-                hide-details="auto"
-                @keydown="
-                  (e: KeyboardEvent) => {
-                    if (e.key === 'Enter') {
-                      addConcept()
-                    }
-                  }
-                "
-              />
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn text @click="dialog = false"> 取消 </v-btn>
-        <v-btn color="primary" text @click="addConcept"> 确认 </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+  <Table
+    itemName="概念"
+    :columns="columns"
+    :getItems="getItems"
+    :deleteItem="deleteConcept"
+    :createItem="createItem"
+    :editItem="updateItem"
+    @fillContent="fillContent"
+    @clearContent="conceptTags = []; newItemJsonldurl = undefined"
+  >
+    <q-input
+      label="JSON-LD引用"
+      type="text"
+      v-model="newItemJsonldurl"
+      variant="outlined"
+      hide-details="auto"
+    />
+    <q-select
+      v-model="conceptTags"
+      label="概念属性标签"
+      hint="键入以筛选标签"
+      multiple
+      use-input
+      use-chips
+      stack-label
+      @input-value="fillter"
+      :options="options"
+      :option-label="(opt) => opt?.attributes.name ?? '引用的标签已删除'"
+    >
+      <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
+        <q-item v-bind="itemProps">
+          <q-item-section>
+            <q-item-label v-html="opt.attributes.name" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label v-html="opt.attributes.description" />
+          </q-item-section>
+          <q-item-section side>
+            <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
+          </q-item-section>
+        </q-item>
+      </template>
 
-  <v-container class="mt-6">
-    <v-btn flat @click="addNewConcept">
-      新增概念<v-icon icon="mdi-plus" />
-    </v-btn>
-    <v-table>
-      <thead>
-        <tr>
-          <th class="text-center">
-            <h2>概念名称</h2>
-          </th>
-
-          <th class="text-center">
-            <h2>操作</h2>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="item in concepts" :key="item.id">
-          <td class="text-center">
-            <span>
-              {{ item.attributes.name }}
-            </span>
-          </td>
-
-          <td class="text-center" width="300px">
-            <v-container class="d-flex justify-space-around">
-              <v-btn flat @click="openConceptItem(item.id)">
-                编辑<v-icon icon="mdi-open-in-app" />
-              </v-btn>
-              <v-btn flat @click="deleteConcept(item.id)">
-                删除<v-icon icon="mdi-delete" />
-              </v-btn>
-            </v-container>
-          </td>
-        </tr>
-      </tbody>
-    </v-table>
-  </v-container>
+      <template v-slot:no-option>
+        <q-item>
+          <q-item-section class="text-grey">无标签可用</q-item-section>
+        </q-item>
+      </template>
+    </q-select>
+  </Table>
 </template>
+>
 
 <script lang="ts" setup>
-import { onBeforeMount, ref } from 'vue'
-import { listConcepts, removeConcepts, createConcept } from '../api'
-import config from '../config'
+import type { Tag, Concept } from 'src/types'
+import { defineAsyncComponent } from 'vue'
+import { ref } from 'vue'
+import {
+  listConcepts,
+  deleteConcept,
+  createConcept,
+  listTags,
+  updateConcept,
+} from '../api'
+const Table = defineAsyncComponent(() => import('@/components/Table.vue'))
 
-const refresh = async () =>
-  (concepts.value = (await (await listConcepts()).json()).data)
+let cache: Tag[] = []
 
-onBeforeMount(refresh)
+const conceptTags = ref<Tag[]>([])
+const options = ref<Tag[]>()
+const newItemJsonldurl = ref<undefined | string>(undefined)
 
-const newConceptName = ref('')
-const dialog = ref(false)
-const concepts = ref()
-
-const deleteConcept = async (id: number) => {
-  await removeConcepts(id)
-  await refresh()
-}
-
-const addNewConcept = async () => {
-  newConceptName.value = ''
-  dialog.value = true
-}
-
-const addConcept = async () => {
-  dialog.value = false
-  if (newConceptName.value !== '') {
-    await createConcept(newConceptName.value, [])
-    await refresh()
-  }
-}
-
-const openConceptItem = async (id: number) => {
-  window.open(
-    `${config.serverBaseUrl}/admin/content-manager/collectionType/api::gi-concept.gi-concept/${id}`
+const createItem = async (name: string) => {
+  await createConcept(
+    name,
+    conceptTags.value.map((tag) => tag.id),
+    newItemJsonldurl.value
   )
+  conceptTags.value = []
 }
+
+const getItems = async () => (await (await listConcepts()).json()).data
+
+const updateItem = async (id: number, name: string) =>
+  updateConcept(
+    id,
+    name,
+    conceptTags.value.map((tag) => tag.id),
+    newItemJsonldurl.value
+  )
+
+const fillContent = (e: Concept) => {
+  newItemJsonldurl.value = e.attributes.jsonldurl
+  conceptTags.value = e.attributes.tag.map((tag) => tag.gi_tag.data).filter(i => i !== null) as Tag[]
+}
+
+// 筛选
+const fillter = (v: string) =>
+  (options.value = cache.filter((tag: Tag) => tag.attributes.name.includes(v)))
+
+const columns = [
+  {
+    align: 'center',
+    name: 'id',
+    label: '概念 ID',
+    field: 'id',
+  },
+  {
+    align: 'center',
+    name: 'name',
+    label: '概念名称',
+    field: (item: Concept) => item.attributes.name,
+  },
+  {
+    align: 'center',
+    name: 'tags',
+    label: '概念属性',
+    field: (item: Concept) => item.attributes.tag.map(t => t.gi_tag.data?.attributes.name).filter(i => i !== undefined).join(', ')
+  },
+  {
+    align: 'center',
+    name: 'action',
+    label: '操作',
+  },
+]
+
+cache = (await (await listTags()).json()).data
+options.value = cache
 </script>

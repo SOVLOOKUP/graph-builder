@@ -1,17 +1,13 @@
 import ky from 'ky'
-import { store } from '../store'
+import { useConfigStore } from '../store'
 
-// todo 处理 jwt 续期
+const API = () => {
+  const configStore = useConfigStore()
+  return ky.create({
+    mode: 'cors',
+    // throwHttpErrors: false,
+    prefixUrl: new URL('api', configStore.serverBaseUrl).href,
+  })
+}
 
-const defaultKy = ky.create({
-  mode: 'cors',
-  throwHttpErrors: false,
-})
-
-export default defaultKy
-
-export const AuthedKy = defaultKy.extend({
-  headers: {
-    Authorization: `Bearer ${store.state.user?.jwt}`,
-  },
-})
+export default API
