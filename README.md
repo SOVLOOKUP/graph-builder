@@ -74,4 +74,4 @@
 ## 已知依赖问题
 
 1. [ ] keep-alive _调试问题_ https://github.com/vuejs/core/pull/5165
-2. [ ] suspense _调试问题_ 与动态组件组合使用问题 https://github.com/vuejs/core/issues/5110
+2. [x] suspense _调试问题_ 与动态组件组合使用问题 https://github.com/vuejs/core/issues/5110
