@@ -5,40 +5,18 @@
     </q-card-section>
 
     <q-form>
-      <q-input
-        v-model="email"
-        :label="'邮箱'"
-        name="login"
-        type="text"
-        :error="error"
-        @focus="resetForm"
-      />
+      <q-input v-model="email" :label="'邮箱'" name="login" type="text" :error="error" @focus="resetForm" />
 
-      <q-input
-        v-model="username"
-        :label="'用户名'"
-        name="login"
-        type="text"
-        :error="error"
-        @focus="resetForm"
-      />
+      <q-input v-model="username" :label="'用户名'" name="login" type="text" :error="error" @focus="resetForm" />
 
-      <q-input
-        v-model="password"
-        :label="'密码'"
-        name="password"
-        type="password"
-        :error="error"
-        class="mr-auto"
-        @focus="resetForm"
-        @keydown="
+      <q-input v-model="password" :label="'密码'" name="password" type="password" :error="error" class="mr-auto"
+        @focus="resetForm" @keydown="
           (e: KeyboardEvent) => {
             if (e.key === 'Enter') {
               next()
             }
           }
-        "
-      />
+        " />
       <q-card-actions align="center">
         <q-btn flat @click="() => $router.push('signin')">返回登录</q-btn>
       </q-card-actions>
@@ -79,7 +57,7 @@ const next = async () => {
     if (res.status == 200) {
       // ok
       // 发送激活邮件
-      await sendEmailConfirmation(email.value)
+      // await sendEmailConfirmation(email.value)
       // 跳转
       router.push('verify')
     } else {

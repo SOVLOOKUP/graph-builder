@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { autoHideBarGuard } from './guard'
+import { authGuard, autoHideBarGuard } from './guard'
 
 const Home = () => import('../../views/Home.vue')
 
@@ -92,7 +92,7 @@ const router = createRouter({
   routes,
 })
 
-// router.beforeEach(authGuard)
+router.beforeEach(authGuard)
 router.beforeEach(autoHideBarGuard)
 
 export default router

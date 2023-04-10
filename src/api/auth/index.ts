@@ -1,7 +1,11 @@
 import type { UserAuth, UserRegister } from 'src/types'
-import API from '../base'
+import ky from 'ky'
 
-const CloudEntry = API()
+const CloudEntry = ky.create({
+  mode: 'cors',
+  // throwHttpErrors: false,
+  prefixUrl: "http://localhost:1337/api",
+})
 
 const userLogin = async ({ identifier, password }: UserAuth) =>
   await CloudEntry.post('auth/local', {
